@@ -136,3 +136,46 @@ function obtenerUnUsuario($email)
 
     return ["empleado" => $fila];
 }
+
+function obtenerEmpleadosResponsables(array $rolesPermitidos = [1, 2, 6]) // <-- CAMBIO CLAVE AQUÍ
+{
+    // Asegúrate de que los IDs de roles son enteros
+    $rolesStr = implode(', ', array_map('intval', $rolesPermitidos));
+
+    // --- Conectar ---
+    $conn = conectar_base_datos();
+    if (!$conn) {
+        return ["error" => "Error al conectar con la base de datos"];
+    }
+
+    // --- Consulta: solo usuarios activos y con roles permitidos ---
+    $sql = "
+        SELECT 
+            U.id_usuario,
+            (U.nombre || ' ' || U.apellido) AS nombre_completo,
+            U.id_rol,
+            R.nombre_rol
+        FROM seguridad_acceso.usuario U
+        INNER JOIN seguridad_acceso.rol R 
+            ON U.id_rol = R.id_rol
+        WHERE 
+            U.activo = TRUE 
+            AND U.id_rol IN ({$rolesStr})
+        ORDER BY U.nombre, U.apellido ASC
+    ";
+
+    $res = pg_query($conn, $sql);
+
+    if (!$res) {
+        return [
+            "error" => "Error ejecutando consulta de empleados responsables",
+            "detalle" => pg_last_error($conn)
+        ];
+    }
+
+    $empleados = pg_fetch_all($res);
+    if (!$empleados) $empleados = [];
+
+    // La clave 'empleados' es necesaria para que la función JS 'cargarSelect' funcione correctamente.
+    return ["empleados" => $empleados];
+}

@@ -35,12 +35,7 @@ async function cargarSelect(selectId, apiAction, dataKey, idField, displayField,
     }
 }
 
-/**
- * Carga los selects estáticos del formulario principal (Compra).
- * Se ejecuta al cargar el DOM.
- */
 async function cargarSelectsCompraPrincipal() {
-    // Proveedores (compra_id_proveedor)
     await cargarSelect(
         "compra_id_proveedor",
         "obtener_proveedores",
@@ -54,7 +49,7 @@ async function cargarSelectsCompraPrincipal() {
     const sucursales = await cargarSelect(
         "compra_id_sucursal",
         "obtener_sucursales",
-        "filas",
+        "filas", // NOTA: Asumo que la API de sucursales devuelve 'filas' como key
         "id_sucursal",
         "nombre",
         "Seleccione una sucursal..."
@@ -71,14 +66,15 @@ async function cargarSelectsCompraPrincipal() {
     );
 
     // Empleado Responsable (compra_id_usuario)
+    // *** MODIFICADO: Usar la nueva acción API y la clave de datos 'empleados' ***
     await cargarSelect(
         "compra_id_usuario",
-        "obtener_todos_los_empleados",
-        "empleados",
+        "obtener_empleados_responsables", // <-- CAMBIO DE ACCIÓN
+        "empleados",                       // <-- CLAVE DE DATOS EN LA RESPUESTA
         "id_usuario",
         "nombre_completo",
         "Seleccione un empleado...",
-        { sucursal: null, rol: null, estado: 1 }
+        // { sucursal: null, rol: null, estado: 1 } <-- ELIMINADOS
     );
 
     // Seleccionar automáticamente la primera sucursal si existe

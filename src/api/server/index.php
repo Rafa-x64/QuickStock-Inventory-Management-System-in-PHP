@@ -107,6 +107,11 @@ switch ($accion) {
         $out = obtenerDetalleSucursal($peticion["id_sucursal"]);
         break;
 
+    case "obtener_empleados_responsables": // <-- NUEVA ACCIÓN
+        include_once __DIR__ . "/seguridad_acceso/usuario.php"; // <-- Incluir el nuevo archivo
+        $out = obtenerEmpleadosResponsables(); // <-- Llamar a la nueva función
+        break;
+
     //se procesa una peticion
     /*case "mostrar_suma":
         $out = mostrarSuma();
