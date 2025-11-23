@@ -30,6 +30,7 @@
     background-color: var(--backgroun-color-medium);
     border: 1px solid transparent;
     border-radius: 1rem;
+    color: var(--default-font-color)
 }
 
 .text-marquee {
@@ -480,7 +481,7 @@
         background-color: var(--backgroun-color-medium);
     }
 
-    .Quick-card .form-label {
+    .Quick-card label {
         color: var(--default-font-color) !important;
     }
 
@@ -489,6 +490,8 @@
         color: var(--font-color-light);
         border: 1px solid var(--font-color-dark);
     }
+
+
 }
 
 /*media querys*/
