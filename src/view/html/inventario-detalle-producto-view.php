@@ -25,7 +25,7 @@ $id_producto = $_POST["id_producto"] ?? null;
             </div>
 
             <!-- Información General del Producto -->
-            <div class="card mb-4 shadow-sm">
+            <div class="card mb-4 shadow-sm Quick-card">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="bi bi-box"></i> Información General</h5>
                 </div>
@@ -94,13 +94,13 @@ $id_producto = $_POST["id_producto"] ?? null;
             </div>
 
             <!-- Inventario por Sucursal -->
-            <div class="card mb-4 shadow-sm">
+            <div class="card mb-4 shadow-sm Quick-card">
                 <div class="card-header bg-warning text-dark">
                     <h5 class="mb-0"><i class="bi bi-shop"></i> Distribución por Sucursal</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered align-middle" id="tabla_inventario">
+                        <table class="Quick-table" id="tabla_inventario">
                             <thead class="table-light">
                                 <tr>
                                     <th>Sucursal</th>
@@ -118,27 +118,27 @@ $id_producto = $_POST["id_producto"] ?? null;
             </div>
 
             <!-- Estadísticas del Producto -->
-            <div class="card shadow-sm">
+            <div class="card shadow-sm Quick-card">
                 <div class="card-header bg-success text-white">
                     <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Estadísticas</h5>
                 </div>
                 <div class="card-body">
                     <div class="row text-center">
                         <div class="col-md-4 mb-3">
-                            <div class="p-3 border rounded bg-light shadow-sm">
-                                <h6 class="text-muted">Total en Inventario</h6>
-                                <h4 class="fw-bold text-dark" id="total_inventario">0</h4>
+                            <div class="p-3 border rounded sucursal shadow-sm Quick-widget">
+                                <h6 class="">Total en Inventario</h6>
+                                <h4 class="fw-bold text-primary" id="total_inventario">0</h4>
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <div class="p-3 border rounded bg-light shadow-sm">
-                                <h6 class="text-muted">Stock Mínimo Global</h6>
+                            <div class="p-3 border rounded sucursal shadow-sm Quick-widget">
+                                <h6 class="">Stock Mínimo Global</h6>
                                 <h4 class="fw-bold text-danger" id="stock_minimo_global">0</h4>
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <div class="p-3 border rounded bg-light shadow-sm">
-                                <h6 class="text-muted">Sucursales con Bajo Stock</h6>
+                            <div class="p-3 border rounded sucursal shadow-sm Quick-widget">
+                                <h6 class="">Sucursales con Bajo Stock</h6>
                                 <h4 class="fw-bold text-warning" id="sucursales_bajo_stock">0</h4>
                             </div>
                         </div>
