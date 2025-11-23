@@ -138,4 +138,5 @@
         </div>
     </div>
 </div>
+<script type="module" src="api/client/compra-producto-unificado.js"></script>
 <script src="view/js/compra-producto-unificado.js"></script>
