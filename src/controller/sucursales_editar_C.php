@@ -12,7 +12,7 @@ class sucursales_editar_C extends mainModel {
         $activo = trim($formulario['activo'] ?? 'false');
 
         // La fecha de registro no se usa en la actualización UPDATE
-        $telefono = str_replace([' ', '-'], '', trim($formulario['telefono_sucursal'] ?? ''));
+        $telefono = trim($formulario['telefono_sucursal']);
 
         if (!empty($direccion)) {
             $direccion = ucwords($direccion);

@@ -12,7 +12,7 @@ class sucursales_añadir_C extends mainModel{
         } else {
             $direccion = null;
         }
-        $telefono = str_replace([' ', '-'], '', trim($formulario['telefono_sucursal']));
+        $telefono = trim($formulario['telefono_sucursal']);
         $fecha_registro = trim($formulario['fecha_registro']);
 
         if (sucursal::existeSucursalPorNombre($nombre)) {

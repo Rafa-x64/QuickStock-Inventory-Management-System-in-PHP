@@ -102,6 +102,11 @@ switch ($accion) {
         $out = obtenerCategoriasFiltro($peticion["string"]);
         break;
 
+    case "obtener_detalle_sucursal":
+        include_once __DIR__ . "/core/sucursal.php";
+        $out = obtenerDetalleSucursal($peticion["id_sucursal"]);
+        break;
+
     //se procesa una peticion
     /*case "mostrar_suma":
         $out = mostrarSuma();

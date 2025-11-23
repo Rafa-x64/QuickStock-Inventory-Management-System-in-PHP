@@ -73,6 +73,27 @@ class sucursal extends mainModel
         return (bool)$resultado;
     }
 
+    public static function eliminar($id_sucursal): bool
+    {
+        $conn = parent::conectar_base_datos();
+
+        if ($id_sucursal <= 0) {
+            return false;
+        }
+
+        $sql = "UPDATE core.sucursal 
+            SET activo = 'f' 
+            WHERE id_sucursal = $1";
+
+        $params = [$id_sucursal];
+
+        $statement_name = "desactivar_sucursal_" . time();
+        $stmt = pg_prepare($conn, $statement_name, $sql);
+        $result = pg_execute($conn, $statement_name, $params);
+
+        return $result !== false && pg_affected_rows($result) > 0;
+    }
+
     public static function existeSucursalPorNombre($nombre)
     {
         $conn = parent::conectar_base_datos();

@@ -20,7 +20,6 @@ function obtenerSucursales()
 
 function obtenerUnaSucursalPorId($id_sucursal)
 {
-    // Asegúrate de que esta función esté definida para conectar a tu DB
     $conn = conectar_base_datos();
 
     // Normalizar y validar el ID
@@ -81,4 +80,78 @@ function obtenerUnaSucursalPorId($id_sucursal)
     }
 
     return ["sucursal" => $sucursal];
+}
+
+function obtenerDetalleSucursal($id_sucursal)
+{
+    if (!$id_sucursal) {
+        return ["status" => "error", "message" => "ID de sucursal es requerido."];
+    }
+
+    $conn = conectar_base_datos();
+    $id_sucursal = (int)$id_sucursal; // Asegurar que es un entero
+
+    // --- 1. Consulta Principal de la Sucursal ---
+    // (Esta parte no cambia, ya que obtiene los datos de core.sucursal)
+    $sql_sucursal = "
+        SELECT 
+            id_sucursal,
+            nombre,
+            rif,
+            direccion,
+            telefono,
+            fecha_registro,
+            activo
+        FROM core.sucursal 
+        WHERE id_sucursal = $1
+    ";
+
+    $stmt_suc = "stmt_detalle_sucursal_" . uniqid();
+    if (!pg_prepare($conn, $stmt_suc, $sql_sucursal)) {
+        return ["status" => "error", "message" => "Error preparando consulta de sucursal", "detalle" => pg_last_error($conn)];
+    }
+    $result_suc = pg_execute($conn, $stmt_suc, [$id_sucursal]);
+    $sucursal = pg_fetch_assoc($result_suc);
+
+    if (!$sucursal) {
+        return ["status" => "error", "message" => "Sucursal no encontrada.", "detalle" => null];
+    }
+
+    if (isset($sucursal['fecha_registro'])) {
+        $sucursal['fecha_registro'] = date('Y-m-d', strtotime($sucursal['fecha_registro']));
+    }
+
+
+    // --- 2. Nueva Consulta de Empleados (Usuarios) Relacionados ---
+
+    // ⭐ CAMBIAMOS LA TABLA A seguridad_acceso.usuario
+    // Mapeamos los campos: nombre, apellido, id_rol (como cargo), telefono
+    $sql_empleados = "
+        SELECT 
+            u.nombre || ' ' || u.apellido AS nombre,
+            u.activo AS activo,
+            r.nombre_rol AS cargo,                     -- Obtenemos el nombre del Rol
+            u.telefono
+        FROM seguridad_acceso.usuario u           
+        JOIN seguridad_acceso.rol r ON u.id_rol = r.id_rol
+        WHERE u.id_sucursal = $1
+        ORDER BY u.nombre ASC
+    ";
+
+    $stmt_emp = "stmt_empleados_sucursal_" . uniqid();
+    if (!pg_prepare($conn, $stmt_emp, $sql_empleados)) {
+        $sucursal['empleados_error'] = "Error consultando empleados.";
+        $empleados = [];
+    } else {
+        $result_emp = pg_execute($conn, $stmt_emp, [$id_sucursal]);
+        $empleados = pg_fetch_all($result_emp) ?: [];
+    }
+
+
+    // --- 3. Retorno Final ---
+    return [
+        "status" => "success",
+        "sucursal" => $sucursal,
+        "empleados" => $empleados
+    ];
 }

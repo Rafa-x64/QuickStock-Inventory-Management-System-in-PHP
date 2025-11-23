@@ -1,3 +1,7 @@
+<?php
+$accion = $_POST["accion"] ?? null;
+$id_sucursal = $_POST["id_sucursal"] ?? null;
+?>
 <div class="container-fluid" id="mainContent">
     <div class="row d-flex flex-column justify-content-center align-items-center">
         <div class="col-12 p-3 p-lg-5">
@@ -34,6 +38,17 @@
                     </table>
                 </div>
             </div>
+            <?php
+            if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["accion"] == "eliminar_sucursal") {
+                include_once "controller/sucursales_eliminar_C.php";
+                $respuesta = sucursales_eliminar_C::eliminarSucursal($_POST);
+                if ($respuesta["estado"] == "exito") {
+                    echo '<script>alert(' . $respuesta["mensaje"] . ');</script>';
+                } else {
+                    echo '<script>alert(' . $respuesta["mensaje"] . ');</script>';
+                }
+            }
+            ?>
         </div>
     </div>
 </div>
