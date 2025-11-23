@@ -439,6 +439,8 @@
         width: 100%;
         border-collapse: collapse;
         overflow-x: auto;
+        border: 1px solid transparent;
+        border-radius: 0.5rem;
     }
 
     .Quick-table thead {
@@ -468,6 +470,24 @@
 
     .Quick-table tbody tr:hover {
         background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .Quick-card {
+        border: none;
+    }
+
+    .Quick-card .card-body {
+        background-color: var(--backgroun-color-medium);
+    }
+
+    .Quick-card .form-label {
+        color: var(--default-font-color) !important;
+    }
+
+    .Quick-card .form-control {
+        background-color: var(--backgroun-color-medium) !important;
+        color: var(--font-color-light);
+        border: 1px solid var(--font-color-dark);
     }
 }
 

@@ -55,7 +55,6 @@
                             <div class="menu-submenu d-flex flex-column ps-2">
                                 <a href="sucursales-añadir" class="ms-3">Añadir Sucursal</a>
                                 <a href="sucursales-listado" class="ms-3">Listado de Sucursales</a>
-                                <a href="sucursales-detalle" class="ms-3">Detalle de Sucursal</a>
                             </div>
                         </details>
                     </div>
@@ -260,7 +259,6 @@
                     <div class="menu-submenu d-flex flex-column ps-5">
                         <a href="sucursales-añadir" class="ms-3">Añadir Sucursal</a>
                         <a href="sucursales-listado" class="ms-3">Listado de Sucursales</a>
-                        <a href="sucursales-detalle" class="ms-3">Detalle de Sucursal</a>
                     </div>
                 </details>
             </div>
