@@ -122,6 +122,11 @@ switch ($accion) {
         $out = obtenerHistorialCompras();
         break;
 
+    case "obtener_detalle_compra":
+        include_once __DIR__ . "/inventario/compra.php"; // <--- Nuevo archivo a crear
+        $out = obtenerDetalleCompra($peticion["id_compra"]);
+        break;
+
     //se procesa una peticion
     /*case "mostrar_suma":
         $out = mostrarSuma();

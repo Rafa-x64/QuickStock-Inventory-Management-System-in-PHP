@@ -127,3 +127,96 @@ function obtenerHistorialCompras()
 
     return ["compras" => $filas];
 }
+
+function obtenerDetalleCompra($id_compra)
+{
+    if (empty($id_compra)) {
+        return ["error" => "ID de compra es requerido."];
+    }
+
+    // Nota: Asumo que conectar_base_datos() y pg_query_params() están definidos.
+    $conn = conectar_base_datos();
+    if (!$conn) {
+        return ["error" => "Error al conectar con la base de datos"];
+    }
+
+    // --- 1. Obtener Cabecera de la Compra ---
+    $sql_cabecera = "
+        SELECT
+            C.id_compra,
+            C.fecha_compra,
+            C.numero_factura, -- Incluido para el nuevo campo en la vista
+            C.estado,
+            C.total,
+            C.subtotal,
+            C.monto_impuesto,
+            C.observaciones,
+            P.nombre AS nombre_proveedor,
+            S.nombre AS nombre_sucursal,
+            M.codigo AS codigo_moneda,
+            (U.nombre || ' ' || U.apellido) AS nombre_empleado_responsable
+        FROM 
+            inventario.compra AS C
+        INNER JOIN 
+            core.proveedor AS P ON C.id_proveedor = P.id_proveedor
+        INNER JOIN 
+            core.sucursal AS S ON C.id_sucursal = S.id_sucursal
+        INNER JOIN 
+            seguridad_acceso.usuario AS U ON C.id_usuario = U.id_usuario
+        LEFT JOIN 
+            finanzas.moneda AS M ON C.id_moneda = M.id_moneda
+        WHERE
+            C.id_compra = $1 AND C.activo = TRUE;
+    ";
+
+    $res_cabecera = pg_query_params($conn, $sql_cabecera, [$id_compra]);
+    if (!$res_cabecera) {
+        return ["error" => "Error al buscar la cabecera de la compra", "detalle" => pg_last_error($conn)];
+    }
+
+    $compra = pg_fetch_assoc($res_cabecera);
+    if (!$compra) {
+        return ["error" => "Compra no encontrada o inactiva."];
+    }
+
+    // --- 2. Obtener Detalle de Productos ---
+    $sql_detalle = "
+        SELECT
+            DC.id_detalle_compra,
+            DC.cantidad,
+            DC.precio_unitario,
+            DC.subtotal, -- El campo 'subtotal' de detalle_compra es el subtotal de la línea
+            PR.nombre AS nombre_producto,
+            CA.nombre AS nombre_categoria,
+            CO.nombre AS nombre_color,
+            T.rango_talla AS nombre_talla
+        FROM
+            inventario.detalle_compra AS DC
+        INNER JOIN
+            inventario.producto AS PR ON DC.id_producto = PR.id_producto
+        LEFT JOIN 
+            core.categoria AS CA ON PR.id_categoria = CA.id_categoria
+        LEFT JOIN 
+            core.color AS CO ON PR.id_color = CO.id_color
+        LEFT JOIN 
+            core.talla AS T ON PR.id_talla = T.id_talla
+        WHERE
+            DC.id_compra = $1
+        ORDER BY
+            PR.nombre;
+    ";
+
+    $res_detalle = pg_query_params($conn, $sql_detalle, [$id_compra]);
+    if (!$res_detalle) {
+        return ["error" => "Error al buscar los detalles de la compra", "detalle" => pg_last_error($conn)];
+    }
+
+    $detalles = pg_fetch_all($res_detalle);
+    if (!$detalles) $detalles = [];
+
+    // 3. Devolver los resultados combinados
+    return [
+        "compra" => $compra,
+        "detalles" => $detalles
+    ];
+}

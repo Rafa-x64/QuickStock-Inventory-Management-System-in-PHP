@@ -1,5 +1,3 @@
-<!--ponerle id= y name= a los campos para procesarlos-->
-<!--hacer validacion tipo bootstrap con js-->
 <style>
     .was-validated .form-control:invalid~.invalid-tooltip,
     .form-control.is-invalid~.invalid-tooltip {
