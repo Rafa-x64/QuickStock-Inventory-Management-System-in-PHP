@@ -117,6 +117,11 @@ switch ($accion) {
         $out = obtenerMonedas();
         break;
 
+    case "obtener_historial_compras":
+        include_once __DIR__ . "/inventario/compra.php"; // <--- Nuevo archivo a crear
+        $out = obtenerHistorialCompras();
+        break;
+
     //se procesa una peticion
     /*case "mostrar_suma":
         $out = mostrarSuma();

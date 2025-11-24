@@ -27,7 +27,7 @@ $email  = $_POST["email"]  ?? ($_POST["id_email"] ?? null);
             </div>
 
             <!-- Información General -->
-            <div class="card mb-4 shadow-sm">
+            <div class="card mb-4 shadow-sm Quick-card">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="bi bi-person-badge"></i> Información General</h5>
                 </div>
@@ -89,7 +89,7 @@ $email  = $_POST["email"]  ?? ($_POST["id_email"] ?? null);
             </div>
 
             <!-- Dirección y Fecha -->
-            <div class="card mb-4 shadow-sm">
+            <div class="card mb-4 shadow-sm Quick-card">
                 <div class="card-header bg-info text-white">
                     <h5 class="mb-0"><i class="bi bi-geo-alt"></i> Información Adicional</h5>
                 </div>
@@ -115,30 +115,30 @@ $email  = $_POST["email"]  ?? ($_POST["id_email"] ?? null);
             </div>
 
             <!-- Actividad del Empleado -->
-            <div class="card shadow-sm">
+            <div class="card shadow-sm Quick-card">
                 <div class="card-header bg-success text-white">
                     <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Actividad del Empleado</h5>
                 </div>
                 <div class="card-body">
                     <div class="row text-center">
 
-                        <div class="col-md-4 mb-3">
-                            <div class="p-3 border rounded bg-light shadow-sm">
-                                <h6 class="text-muted">Ventas realizadas</h6>
+                        <div class="col-md-4 mb-3 Quick-widget">
+                            <div class="p-3 border rounded shadow-sm">
+                                <h6 class="">Ventas realizadas</h6>
                                 <h4 class="fw-bold text-dark" id="det_ventas">84</h4>
                             </div>
                         </div>
 
-                        <div class="col-md-4 mb-3">
-                            <div class="p-3 border rounded bg-light shadow-sm">
-                                <h6 class="text-muted">Clientes atendidos</h6>
+                        <div class="col-md-4 mb-3 Quick-widget">
+                            <div class="p-3 border rounded shadow-sm">
+                                <h6 class="">Clientes atendidos</h6>
                                 <h4 class="fw-bold text-primary" id="det_clientes">142</h4>
                             </div>
                         </div>
 
-                        <div class="col-md-4 mb-3">
-                            <div class="p-3 border rounded bg-light shadow-sm">
-                                <h6 class="text-muted">Última actividad</h6>
+                        <div class="col-md-4 mb-3 Quick-widget">
+                            <div class="p-3 border rounded shadow-sm">
+                                <h6 class="">Última actividad</h6>
                                 <h4 class="fw-bold text-success" id="det_ultima_actividad">2025-11-10</h4>
                             </div>
                         </div>
