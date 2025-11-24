@@ -112,6 +112,11 @@ switch ($accion) {
         $out = obtenerEmpleadosResponsables(); // <-- Llamar a la nueva función
         break;
 
+    case "obtener_monedas":
+        include_once __DIR__ . "/finanzas/moneda.php";
+        $out = obtenerMonedas();
+        break;
+
     //se procesa una peticion
     /*case "mostrar_suma":
         $out = mostrarSuma();

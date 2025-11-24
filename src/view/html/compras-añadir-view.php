@@ -23,7 +23,7 @@
                 <div class="Quick-widget col-12 col-lg-12 p-2 p-md-4 mt-3">
                     <div class="col-12 Quick-form p-3 p-md-5 rounded-2">
 
-                        <form id="formCompraProducto" class="py-2 needs-validate" novalidate>
+                        <form action="" method="POST" id="formCompraProducto" class="py-2 needs-validate" novalidate>
 
                             <div class="row">
                                 <div class="col-12">
@@ -133,7 +133,53 @@
 
                     </div>
                 </div>
+                <?php
+                // Asegúrate de incluir tu modelo de Compra y otros modelos de apoyo si no están cargados automáticamente
+                require_once "model/inventario.compra.php";
+                require_once "controller/compras_añadir_C.php"; // Incluir la clase controladora que definimos
 
+
+                $respuesta = ["success" => false, "message" => "Ocurrió un error inesperado."];
+
+                // 1. Verificar si la solicitud es de tipo POST
+                if ($_SERVER["REQUEST_METHOD"] === "POST") {
+                    echo $_POST["id_proveedor"];
+
+                    // 2. Instanciar el controlador/gestor de la lógica de negocio
+                    $controladorCompra = new compras_añadir_C();
+
+                    // El método crearCompra() dentro de la clase compras_añadir_C ya se encarga de:
+                    // a) Recolectar y limpiar $_POST
+                    // b) Llamar a $modeloCompra->registrarTransaccionCompra(...)
+                    $resultadoTransaccion = $controladorCompra->crearCompra();
+
+                    // 3. Procesar el resultado
+                    if (isset($resultadoTransaccion['success']) && $resultadoTransaccion['success'] === true) {
+                        $id_compra = $resultadoTransaccion['id_compra'];
+                        $respuesta['success'] = true;
+                        $respuesta['message'] = "✅ Compra registrada exitosamente con ID: " . $id_compra;
+                        // Opcional: Redirigir al usuario al detalle de la compra.
+                        // header("Location: /compra/detalle?id=" . $id_compra);
+                        // exit();
+                    } else {
+                        // En caso de error, el modelo ya hizo el ROLLBACK y devolvió el mensaje de error.
+                        $respuesta['message'] = "❌ Error al registrar la compra: " . ($resultadoTransaccion['error'] ?? 'Error desconocido.');
+                    }
+                } else {
+                    $respuesta['message'] = "⚠️ Método de solicitud no válido.";
+                    // Opcional: Mostrar la vista del formulario si no es un POST
+                    // include 'view/compras/form_añadir.php';
+                }
+
+                // 4. Devolver la respuesta (p. ej., si estás usando AJAX para la vista)
+                // header('Content-Type: application/json');
+                // echo json_encode($respuesta);
+                // exit(); 
+
+                // Si no usas AJAX, puedes simplemente imprimir la variable $respuesta['message'] en la vista.
+                echo $respuesta['message'];
+
+                ?>
             </div>
         </div>
     </div>
