@@ -6,8 +6,7 @@ include_once "model/core.talla.php";
 
 class compras_añadir_C extends mainModel
 {
-
-    // --- (Métodos limpiar_cadena y normalizarTexto deben estar aquí) ---
+    // En el archivo compras_añadir_C.php
 
     public function crearCompra()
     {
@@ -15,7 +14,6 @@ class compras_añadir_C extends mainModel
             return ["error" => "Método no permitido"];
         }
 
-        // --- 1. OBTENER Y NORMALIZAR DATOS ---
         $datosCompraPrincipal = [];
         $productosAdquiridos = [];
 
@@ -37,7 +35,6 @@ class compras_añadir_C extends mainModel
             if ($campo === 'observaciones') {
                 $datosCompraPrincipal[$campo] = $valorLimpio;
             } else if ($campo === 'numero_factura') {
-                // No aplicar capitalize a números de factura
                 $datosCompraPrincipal[$campo] = $this->normalizarTexto($valorLimpio, false);
             } else {
                 $datosCompraPrincipal[$campo] = $valorLimpio;
@@ -52,25 +49,24 @@ class compras_añadir_C extends mainModel
                 $productoLimpio['nombre']       = $this->normalizarTexto($producto['nombre'] ?? '');
                 $productoLimpio['id_categoria'] = $this->limpiar_cadena($producto['id_categoria'] ?? '');
 
-                // Conversión a números antes de la limpieza si es posible, aunque limpiar_cadena ya elimina tags
                 $productoLimpio['cantidad']     = (int) $this->limpiar_cadena($producto['cantidad'] ?? 0);
                 $productoLimpio['precio_compra'] = (float) $this->limpiar_cadena($producto['precio_compra'] ?? 0);
                 $productoLimpio['precio_venta']  = (float) $this->limpiar_cadena($producto['precio_venta'] ?? 0);
 
-                // Lógica de Color
+                // Lógica de Color CORREGIDA: se busca '_nombre_color' para coincidir con el POST
                 if (isset($producto['id_color']) && !empty($producto['id_color'])) {
                     $productoLimpio['tipo_color'] = 'existente';
                     $productoLimpio['id_color']   = $this->limpiar_cadena($producto['id_color']);
                     $productoLimpio['nombre_color'] = null;
-                } else if (isset($producto['nombre_color']) && !empty($producto['nombre_color'])) {
+                } else if (isset($producto['_nombre_color']) && !empty($producto['_nombre_color'])) { // 👈 CLAVE CORREGIDA
                     $productoLimpio['tipo_color'] = 'nuevo';
                     $productoLimpio['id_color']   = null;
-                    $productoLimpio['nombre_color'] = $this->normalizarTexto($producto['nombre_color']);
+                    $productoLimpio['nombre_color'] = $this->normalizarTexto($producto['_nombre_color']); // 👈 CLAVE CORREGIDA
                 } else {
                     $productoLimpio['tipo_color'] = 'error';
                 }
 
-                // Lógica de Talla
+                // Lógica de Talla (Correcta, ya que el POST envía 'id_talla')
                 if (isset($producto['id_talla']) && !empty($producto['id_talla'])) {
                     $productoLimpio['tipo_talla'] = 'existente';
                     $productoLimpio['id_talla']   = $this->limpiar_cadena($producto['id_talla']);
@@ -83,7 +79,6 @@ class compras_añadir_C extends mainModel
                     $productoLimpio['tipo_talla'] = 'error';
                 }
 
-                // VALIDACIÓN CRÍTICA DEL PRODUCTO: Descartar si está incompleto o tiene valores no válidos
                 if (
                     $productoLimpio['tipo_color'] === 'error' ||
                     $productoLimpio['tipo_talla'] === 'error' ||
@@ -91,17 +86,15 @@ class compras_añadir_C extends mainModel
                     $productoLimpio['cantidad'] <= 0 ||
                     $productoLimpio['precio_compra'] <= 0
                 ) {
-                    continue; // Pasa al siguiente producto, descartando este
+                    continue;
                 }
 
                 $productosAdquiridos[] = $productoLimpio;
             }
         }
 
-        // --- 2. VALIDACIÓN DE DATOS MÍNIMA ANTES DE LA TRANSACCIÓN (MEJORADA) ---
         $idsRequeridos = ['id_proveedor', 'id_sucursal', 'id_usuario', 'id_moneda'];
         foreach ($idsRequeridos as $id) {
-            // Verifica que los IDs requeridos no estén vacíos y sean mayores a 0
             if (empty($datosCompraPrincipal[$id]) || intval($datosCompraPrincipal[$id]) < 1) {
                 return ["error" => "Datos de compra o productos incompletos: Falta seleccionar $id."];
             }
@@ -111,14 +104,12 @@ class compras_añadir_C extends mainModel
             return ["error" => "Datos de compra o productos incompletos: Debe agregar al menos un producto válido."];
         }
 
-        // --- 3. EJECUTAR TRANSACCIÓN EN EL MODELO ---
         $modeloCompra = new compra();
         $resultado = $modeloCompra->registrarTransaccionCompra($datosCompraPrincipal, $productosAdquiridos);
 
         return $resultado;
     }
 
-    // --- (Métodos auxiliarres normalizarTexto y limpiar_cadena quedan igual) ---
     protected function normalizarTexto(string $cadena, bool $capitalizeFirst = true): string
     {
         $cadena = $this->limpiar_cadena($cadena);
