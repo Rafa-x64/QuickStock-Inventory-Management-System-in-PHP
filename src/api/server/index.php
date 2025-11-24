@@ -127,6 +127,11 @@ switch ($accion) {
         $out = obtenerDetalleCompra($peticion["id_compra"]);
         break;
 
+    case "obtener_compra_por_id":
+        include_once __DIR__ . "/inventario/compra.php"; // <--- Nuevo archivo a crear
+        $out = obtenerCompraPorId($peticion["id_compra"]);
+        break;
+
     //se procesa una peticion
     /*case "mostrar_suma":
         $out = mostrarSuma();

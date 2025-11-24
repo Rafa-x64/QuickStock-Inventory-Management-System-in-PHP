@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 function obtenerHistorialCompras()
 {
@@ -219,4 +219,72 @@ function obtenerDetalleCompra($id_compra)
         "compra" => $compra,
         "detalles" => $detalles
     ];
+}
+function obtenerCompraPorId($id_compra)
+{
+    // Verificación básica del ID
+    if (empty($id_compra)) {
+        return ["error" => "ID de compra es requerido para la edición."];
+    }
+
+    // 1. Conectar a la base de datos
+    // ASUMO que 'conectar_base_datos()' existe en el contexto global o está incluido.
+    $conn = conectar_base_datos();
+    if (!$conn) {
+        return ["error" => "Error al conectar con la base de datos."];
+    }
+
+    $data = ['compra' => null, 'detalles' => []];
+
+    // --- 1. Consulta para obtener los datos principales de la compra (Cabecera) ---
+    // (Esta sección queda igual)
+    $sql_compra = "
+        SELECT 
+            id_proveedor, id_sucursal, id_usuario, id_moneda, numero_factura, 
+            TO_CHAR(fecha_compra, 'YYYY-MM-DD') as fecha_compra, -- Formato para input type='date'
+            subtotal, monto_impuesto, total, observaciones, estado
+        FROM inventario.compra 
+        WHERE id_compra = $1 AND activo = TRUE
+    ";
+    $res_compra = pg_query_params($conn, $sql_compra, [$id_compra]);
+
+    if (!$res_compra) {
+        return ["error" => "Error al buscar la cabecera de la compra.", "detalle" => pg_last_error($conn)];
+    }
+
+    $data['compra'] = pg_fetch_assoc($res_compra);
+
+    if (!$data['compra']) {
+        return ["error" => "Compra ID $id_compra no encontrada o está inactiva."];
+    }
+
+    // --- 2. Consulta para obtener los detalles de los productos adquiridos (Líneas) ---
+    // MODIFICACIÓN CLAVE AQUÍ: Se excluye dc.subtotal y se añaden campos de producto
+    $sql_detalles = "
+        SELECT 
+            dc.id_detalle_compra, 
+            dc.cantidad, 
+            dc.precio_unitario AS precio_compra, -- Renombrado para el JS de edición
+            p.id_producto, 
+            p.nombre, 
+            p.codigo_barra,         -- <<-- AGREGADO
+            p.precio_venta,         -- <<-- AGREGADO
+            p.id_categoria,
+            p.id_color,             -- <<-- AGREGADO
+            p.id_talla              -- <<-- AGREGADO
+        FROM inventario.detalle_compra dc
+        JOIN inventario.producto p ON dc.id_producto = p.id_producto
+        WHERE dc.id_compra = $1
+        ORDER BY dc.id_detalle_compra
+    ";
+    $res_detalles = pg_query_params($conn, $sql_detalles, [$id_compra]);
+
+    if (!$res_detalles) {
+        return ["error" => "Error al buscar los detalles de los productos.", "detalle" => pg_last_error($conn)];
+    }
+
+    $data['detalles'] = pg_fetch_all($res_detalles) ?: [];
+
+    // 3. Devolver los resultados combinados
+    return ["success" => true, "data" => $data];
 }
