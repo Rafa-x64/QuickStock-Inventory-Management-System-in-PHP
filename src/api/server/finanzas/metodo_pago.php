@@ -6,29 +6,28 @@ function obtenerMetodosPago($filtro = null, $referencia = null, $estado = null)
     $sql = "SELECT * FROM finanzas.metodo_pago";
     $params = [];
     $whereClauses = [];
-    $paramIndex = 1;
+    $paramIndex = 1; // Contador para los parámetros posicionales ($1, $2, etc.)
 
-    // 1. FILTRO POR NOMBRE
+    // 2. Lógica para FILTRO POR NOMBRE
     if (!empty($filtro)) {
-        // Uso de LIKE y LOWER para búsqueda sin distinción de mayúsculas/minúsculas
         $whereClauses[] = "(LOWER(nombre) LIKE LOWER($" . $paramIndex++ . "))";
         $params[] = "%$filtro%";
     }
 
-    // 2. FILTRO POR REFERENCIA (Booleano 't' o 'f')
+    // 3. Lógica para FILTRO POR REFERENCIA ('t' o 'f')
     if ($referencia === 't' || $referencia === 'f') {
-        // En PostgreSQL, comparas directamente el valor booleano
         $whereClauses[] = "referencia = $" . $paramIndex++ . "";
-        $params[] = $referencia;
+        // Se usa 'TRUE' o 'FALSE' en mayúsculas para mejor compatibilidad con booleanos de PostgreSQL
+        $params[] = ($referencia === 't' ? 'TRUE' : 'FALSE');
     }
 
-    // 3. FILTRO POR ESTADO (Booleano 't' o 'f')
+    // 4. Lógica para FILTRO POR ESTADO ('t' o 'f')
     if ($estado === 't' || $estado === 'f') {
         $whereClauses[] = "activo = $" . $paramIndex++ . "";
-        $params[] = $estado;
+        $params[] = ($estado === 't' ? 'TRUE' : 'FALSE');
     }
 
-    // Construir la cláusula WHERE
+    // 5. Construir la cláusula WHERE
     if (count($whereClauses) > 0) {
         $sql .= " WHERE " . implode(" AND ", $whereClauses);
     }
@@ -43,7 +42,6 @@ function obtenerMetodosPago($filtro = null, $referencia = null, $estado = null)
     $metodo = pg_fetch_all($result) ?: [];
     return ["data" => $metodo];
 }
-
 function obtenerMetodoPagoPorId($id)
 {
     $conn = conectar_base_datos();
