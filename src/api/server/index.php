@@ -132,6 +132,16 @@ switch ($accion) {
         $out = obtenerCompraPorId($peticion["id_compra"]);
         break;
 
+    case "obtener_metodos_pago":
+        include_once __DIR__ . "/finanzas/metodo_pago.php";
+        $out = obtenerMetodosPago($peticion["filtro"] ?? null);
+        break;
+
+    case "obtener_metodo_pago_detalle":
+        include_once __DIR__ . "/finanzas/metodo_pago.php";
+        $out = obtenerMetodoPagoPorId($peticion["id_metodo_pago"]);
+        break;
+
     //se procesa una peticion
     /*case "mostrar_suma":
         $out = mostrarSuma();

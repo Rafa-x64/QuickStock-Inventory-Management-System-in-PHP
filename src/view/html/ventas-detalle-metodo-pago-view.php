@@ -1,164 +1,98 @@
+<?php
+// Recoger el ID del método de pago enviado por POST desde el listado
+$id_metodo = $_POST['id_metodo_pago'] ?? null;
+?>
 <div class="container-fluid" id="mainContent">
     <div class="row">
         <div class="col-12 p-4">
 
-            <!-- Encabezado -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h1 class="mb-1">Detalle del Método de Pago</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="pagos-ver-metodos-view.php">Métodos de Pago</a></li>
-                            <li class="breadcrumb-item active">Transferencia Bancaria</li>
+                            <li class="breadcrumb-item"><a href="ventas-lista-metodos-pago">Ventas /</a></li>
+                            <li class="" id="breadcrumb-nombre">Cargando...</li>
                         </ol>
                     </nav>
                 </div>
-                <a href="pagos-ver-metodos-view.php" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left"></i> Volver a la lista
+                <a href="ventas-lista-metodos-pago" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al listado
                 </a>
             </div>
 
-            <!-- Información del Método -->
-            <div class="card mb-4">
+            <input type="hidden" id="id_metodo_pago" value="<?php echo htmlspecialchars($id_metodo); ?>">
+
+            <div class="card Quick-card mb-4">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="bi bi-credit-card-2-front"></i> Información del Método de Pago
+                    <h5 class="mb-0" id="detalle-nombre">
+                        <i class="bi bi-credit-card"></i> Información General
                     </h5>
-                    <a href="editar_metodo_pago.html" class="btn btn-light btn-sm">
-                        <i class="bi bi-pencil"></i> Editar Método
-                    </a>
                 </div>
+
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="info-group mb-3">
-                                <label class="form-label fw-bold text-muted small">Código</label>
-                                <div class="form-control bg-light">MP-002</div>
+                                <label class="form-label fw-bold text-muted small">ID del Método</label>
+                                <div class="form-control bg-light" id="detalle-id">Cargando...</div>
                             </div>
+
                             <div class="info-group mb-3">
-                                <label class="form-label fw-bold text-muted small">Nombre del Método</label>
-                                <div class="form-control bg-light">Transferencia Bancaria</div>
-                            </div>
-                            <div class="info-group mb-3">
-                                <label class="form-label fw-bold text-muted small">¿Requiere Número de Referencia?</label>
-                                <div class="form-control bg-light">
-                                    <span class="badge bg-info">Sí</span>
-                                </div>
+                                <label class="form-label fw-bold text-muted small">Nombre</label>
+                                <div class="form-control bg-light" id="detalle-nombre-completo">Cargando...</div>
                             </div>
                         </div>
+
                         <div class="col-md-6">
                             <div class="info-group mb-3">
-                                <label class="form-label fw-bold text-muted small">Estado</label>
-                                <div class="form-control bg-light">
-                                    <span class="badge bg-success">Activo</span>
+                                <label class="form-label fw-bold text-muted small">Requiere Referencia</label>
+                                <div class="form-control bg-light" id="detalle-referencia">
+                                    <span class="badge bg-secondary">Cargando...</span>
                                 </div>
                             </div>
+
                             <div class="info-group mb-3">
-                                <label class="form-label fw-bold text-muted small">Fecha de Registro</label>
-                                <div class="form-control bg-light">2024-03-15</div>
+                                <label class="form-label fw-bold text-muted small">Estado</label>
+                                <div class="form-control bg-light" id="detalle-estado">
+                                    <span class="badge bg-secondary">Cargando...</span>
+                                </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
                             <div class="info-group mb-3">
-                                <label class="form-label fw-bold text-muted small">Última Actualización</label>
-                                <div class="form-control bg-light">2025-10-25</div>
+                                <label class="form-label fw-bold text-muted small">Descripción</label>
+                                <div class="form-control bg-light" id="detalle-descripcion" style="min-height: 80px;">Cargando...</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Uso del Método de Pago -->
-            <div class="card mb-4">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-cash-stack"></i> Uso del Método en Ventas
-                    </h5>
+            <div class="card Quick-card">
+                <div class="card-header bg-warning">
+                    <h5 class="text-white">Transacciones Asociadas (Opcional)</h5>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead class="table-dark">
+                <div class="card-body m-0">
+                    <p>Aquí puedes mostrar un resumen o una tabla de las últimas transacciones que usaron este método de pago.</p>
+                    <div class="col-12 Quick-table m-0 p-0">
+                        <table class="w-100">
+                            <thead>
                                 <tr>
-                                    <th>Fecha de Venta</th>
-                                    <th>N° Venta</th>
-                                    <th>Cliente</th>
-                                    <th>Monto Pagado</th>
-                                    <th>N° Referencia</th>
-                                    <th>Estado</th>
+                                    <th># Transacción</th>
+                                    <th>Monto</th>
+                                    <th>Fecha</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="tabla_transacciones">
                                 <tr>
-                                    <td>2025-10-28</td>
-                                    <td><strong>VEN-2025-178</strong></td>
-                                    <td>María López</td>
-                                    <td><span class="fw-bold text-success">$145.00</span></td>
-                                    <td>REF-993845</td>
-                                    <td><span class="badge bg-success">Procesado</span></td>
-                                </tr>
-                                <tr>
-                                    <td>2025-09-10</td>
-                                    <td><strong>VEN-2025-142</strong></td>
-                                    <td>Juan Pérez</td>
-                                    <td><span class="fw-bold text-success">$220.50</span></td>
-                                    <td>REF-883214</td>
-                                    <td><span class="badge bg-success">Procesado</span></td>
-                                </tr>
-                                <tr>
-                                    <td>2025-08-02</td>
-                                    <td><strong>VEN-2025-109</strong></td>
-                                    <td>Laura Fernández</td>
-                                    <td><span class="fw-bold text-success">$95.75</span></td>
-                                    <td>REF-772091</td>
-                                    <td><span class="badge bg-success">Procesado</span></td>
-                                </tr>
-                                <tr>
-                                    <td>2025-07-18</td>
-                                    <td><strong>VEN-2025-098</strong></td>
-                                    <td>Pedro García</td>
-                                    <td><span class="fw-bold text-success">$310.00</span></td>
-                                    <td>REF-748212</td>
-                                    <td><span class="badge bg-success">Procesado</span></td>
+                                    <td colspan="3" class="text-center text-muted">Aún no hay datos de transacciones.</td>
                                 </tr>
                             </tbody>
-                            <tfoot>
-                                <tr class="table-active">
-                                    <td colspan="3" class="fw-bold">Total de Ventas Procesadas con este Método:</td>
-                                    <td class="fw-bold text-primary">$771.25</td>
-                                    <td colspan="2"></td>
-                                </tr>
-                            </tfoot>
                         </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Estadísticas del Método -->
-            <div class="card">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-graph-up"></i> Estadísticas del Método
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-md-4 mb-3">
-                            <div class="p-3 border rounded bg-light shadow-sm">
-                                <h6 class="text-muted">Total Transacciones</h6>
-                                <h4 class="fw-bold text-dark">48</h4>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="p-3 border rounded bg-light shadow-sm">
-                                <h6 class="text-muted">Monto Total Procesado</h6>
-                                <h4 class="fw-bold text-success">$5,882.30</h4>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="p-3 border rounded bg-light shadow-sm">
-                                <h6 class="text-muted">Promedio por Transacción</h6>
-                                <h4 class="fw-bold text-primary">$122.55</h4>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -166,3 +100,5 @@
         </div>
     </div>
 </div>
+
+<script type="module" src="api/client/ventas-detalle-metodo-pago.js"></script>
