@@ -87,7 +87,6 @@
                                 <a href="ventas-cierre-caja" class="ms-3">Cierre de Caja</a>
                                 <a href="ventas-añadir-metodo-pago" class="ms-3">Añadir Metodo de Pago</a>
                                 <a href="ventas-lista-metodos-pago" class="ms-3">Listado de Metodos de pago</a>
-                                <a href="ventas-detalle-metodo-pago" class="ms-3">Detalle Metodo de Pago</a>
                             </div>
                         </details>
                     </div>
@@ -288,7 +287,6 @@
                         <a href="ventas-cierre-caja" class="ms-3">Cierre de Caja</a>
                         <a href="ventas-añadir-metodo-pago" class="ms-3">Añadir Metodo de Pago</a>
                         <a href="ventas-lista-metodos-pago" class="ms-3">Listado de Metodos de pago</a>
-                        <a href="ventas-detalle-metodo-pago" class="ms-3">Detalle Metodo de Pago</a>
                     </div>
                 </details>
             </div>
