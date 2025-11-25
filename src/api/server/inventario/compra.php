@@ -110,7 +110,7 @@ function obtenerHistorialCompras()
         WHERE
             {$whereString}
         ORDER BY 
-            C.fecha_compra DESC;
+            C.id_compra DESC;
     ";
 
     $res = pg_query_params($conn, $sql, $params);

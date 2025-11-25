@@ -62,19 +62,11 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="container-fluid p-0">
                 <div class="row g-1">
                     
-                    <div class="col-6">
+                    <div class="col-12">
                         <form action="compras-editar" method="POST" class="d-inline">
                             <input type="hidden" name="accion" value="editar">
                             <input type="hidden" name="id_compra" value="${compra.id_compra}">
                             <button type="submit" class="btn btn-warning btn-sm w-100">Editar</button>
-                        </form>
-                    </div>
-
-                    <div class="col-6">
-                        <form action="" method="POST" class="d-inline eliminar-compra-form">
-                            <input type="hidden" name="accion" value="eliminar">
-                            <input type="hidden" name="id_compra" value="${compra.id_compra}">
-                            <button type="submit" class="btn btn-danger btn-sm w-100">Eliminar</button>
                         </form>
                     </div>
                     

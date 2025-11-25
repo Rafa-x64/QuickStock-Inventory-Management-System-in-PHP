@@ -192,4 +192,176 @@ class compra extends mainModel
             }
         }
     }
+
+    public function actualizarTransaccionCompra(array $datosCompra, array $productosEntrantes): array
+    {
+        $conn = parent::conectar_base_datos();
+        pg_query($conn, "BEGIN"); // ⬅️ START TRANSACTION
+
+        try {
+            $id_compra = intval($datosCompra['id_compra']);
+            $id_sucursal = intval($datosCompra['id_sucursal']);
+
+            // ***************************************************************
+            // PASO 1: Obtener detalles actuales de la BD (para detectar eliminados y cambios)
+            // ***************************************************************
+            $sql_detalles = "SELECT id_detalle_compra, id_producto, cantidad FROM inventario.detalle_compra WHERE id_compra = $1";
+            $res_detalles = pg_query_params($conn, $sql_detalles, [$id_compra]);
+
+            $detallesEnBD = []; // Mapa: id_detalle_compra => [id_producto, cantidad]
+            while ($row = pg_fetch_assoc($res_detalles)) {
+                $detallesEnBD[intval($row['id_detalle_compra'])] = [
+                    'id_producto' => intval($row['id_producto']),
+                    'cantidad' => intval($row['cantidad'])
+                ];
+            }
+
+            // Identificar IDs que vienen en el POST
+            $idsEntrantes = [];
+            $subtotalGlobal = 0;
+
+            // ***************************************************************
+            // PASO 2: Procesar productos ENTRANTES (Updates e Inserts)
+            // ***************************************************************
+
+            foreach ($productosEntrantes as $item) {
+                // 2.1 Resolver IDs de Color, Talla y Producto (Lógica compartida con Crear)
+                // -----------------------------------------------------------------------
+                $id_color = $item['id_color'];
+                if (isset($item['tipo_color']) && $item['tipo_color'] === 'nuevo') {
+                    $id_color = color::buscarOCrearPorNombre($item['nombre_color']);
+                }
+
+                $id_talla = $item['id_talla'];
+                if (isset($item['tipo_talla']) && $item['tipo_talla'] === 'nuevo') {
+                    $id_talla = talla::buscarOCrearPorRango($item['rango_talla']);
+                }
+
+                // Resolver Producto (Buscar existente o Crear nuevo)
+                // Nota: Si es una línea existente editada, id_producto_existente ya viene, pero verificamos integridad.
+                $id_producto = null;
+                $productoExistente = producto::buscarPorNombreOCodigo($item['nombre'], $item['codigo_barra']);
+
+                if ($productoExistente) {
+                    $id_producto = intval($productoExistente['id_producto']);
+                    // Opcional: Actualizar precio venta si cambió
+                    // producto::actualizarPrecioVenta($id_producto, $item['precio_venta']); 
+                } else {
+                    // Si no existe, CREAR NUEVO PRODUCTO
+                    $nuevoProducto = new producto(
+                        0,
+                        $item['nombre'],
+                        null,
+                        $item['id_categoria'] ?? null,
+                        $id_color,
+                        $id_talla,
+                        $item['precio_venta'],
+                        $datosCompra['id_proveedor'],
+                        true,
+                        $item['codigo_barra'],
+                        $item['precio_compra']
+                    );
+                    $id_producto = $nuevoProducto->crear();
+                }
+
+                if (!$id_producto) throw new Exception("Error al resolver producto: " . $item['nombre']);
+
+                // Calculamos subtotal de la línea
+                $subtotalLinea = $item['cantidad'] * $item['precio_compra'];
+                $subtotalGlobal += $subtotalLinea;
+
+                // 2.2 Distinguir entre UPDATE e INSERT
+                // -----------------------------------------------------------------------
+                if (!empty($item['id_detalle_compra']) && isset($detallesEnBD[$item['id_detalle_compra']])) {
+                    // --- CASO: ACTUALIZACIÓN ---
+                    $id_detalle = intval($item['id_detalle_compra']);
+                    $datosAntiguos = $detallesEnBD[$id_detalle];
+                    $cantidadNueva = intval($item['cantidad']);
+                    $cantidadAntigua = intval($datosAntiguos['cantidad']);
+
+                    // Actualizar registro en detalle_compra
+                    $sql_upd_det = "UPDATE inventario.detalle_compra SET id_producto = $1, cantidad = $2, precio_unitario = $3, subtotal = $4 WHERE id_detalle_compra = $5";
+                    pg_query_params($conn, $sql_upd_det, [$id_producto, $cantidadNueva, $item['precio_compra'], $subtotalLinea, $id_detalle]);
+
+                    // Actualizar Inventario (Diferencial)
+                    // Si el producto cambió (raro en edición, pero posible), revertimos stock del viejo y sumamos al nuevo
+                    if ($datosAntiguos['id_producto'] != $id_producto) {
+                        $this->actualizarInventario($conn, $datosAntiguos['id_producto'], $id_sucursal, - ($cantidadAntigua)); // Revertir antiguo
+                        $this->actualizarInventario($conn, $id_producto, $id_sucursal, $cantidadNueva); // Sumar nuevo
+                    } else {
+                        // Mismo producto, solo ajustamos diferencia (Nueva - Antigua)
+                        // Ej: Tenia 5, ahora 8. Diff = 3. Sumar 3.
+                        // Ej: Tenia 5, ahora 2. Diff = -3. Restar 3.
+                        $diferencia = $cantidadNueva - $cantidadAntigua;
+                        if ($diferencia != 0) {
+                            $this->actualizarInventario($conn, $id_producto, $id_sucursal, $diferencia);
+                        }
+                    }
+
+                    // Marcar ID como procesado
+                    $idsEntrantes[] = $id_detalle;
+                } else {
+                    // --- CASO: INSERCIÓN (Nueva línea en edición) ---
+                    $this->crearDetalleCompra($conn, $id_compra, [
+                        'id_producto' => $id_producto,
+                        'cantidad' => $item['cantidad'],
+                        'precio_compra' => $item['precio_compra'],
+                        'subtotal_detalle' => $subtotalLinea
+                    ]);
+
+                    // Sumar al inventario
+                    $this->actualizarInventario($conn, $id_producto, $id_sucursal, $item['cantidad']);
+                }
+            }
+
+            // ***************************************************************
+            // PASO 3: Procesar ELIMINACIONES (IDs en BD que no vinieron en POST)
+            // ***************************************************************
+            foreach ($detallesEnBD as $id_detalle_bd => $infoBD) {
+                if (!in_array($id_detalle_bd, $idsEntrantes)) {
+                    // Revertir Stock (Restar lo que se había comprado)
+                    $this->actualizarInventario($conn, $infoBD['id_producto'], $id_sucursal, - ($infoBD['cantidad']));
+
+                    // Eliminar fila
+                    pg_query_params($conn, "DELETE FROM inventario.detalle_compra WHERE id_detalle_compra = $1", [$id_detalle_bd]);
+                }
+            }
+
+            // ***************************************************************
+            // PASO 4: Actualizar Cabecera de Compra
+            // ***************************************************************
+            $ivaRate = 0.16;
+            $montoImpuesto = round($subtotalGlobal * $ivaRate, 2);
+            $totalGlobal = $subtotalGlobal + $montoImpuesto;
+
+            $sql_update_header = "UPDATE inventario.compra SET 
+                id_proveedor=$1, id_sucursal=$2, id_usuario=$3, id_moneda=$4, 
+                numero_factura=$5, fecha_compra=$6, subtotal=$7, monto_impuesto=$8, 
+                total=$9, observaciones=$10, estado=$11 
+                WHERE id_compra=$12";
+
+            $res_head = pg_query_params($conn, $sql_update_header, [
+                $datosCompra['id_proveedor'],
+                $datosCompra['id_sucursal'],
+                $datosCompra['id_usuario'],
+                $datosCompra['id_moneda'],
+                $datosCompra['numero_factura'],
+                $datosCompra['fecha_compra'],
+                $subtotalGlobal,
+                $montoImpuesto,
+                $totalGlobal,
+                $datosCompra['observaciones'],
+                $datosCompra['estado'],
+                $id_compra
+            ]);
+
+            if (!$res_head) throw new Exception("Error al actualizar la cabecera de la compra.");
+
+            pg_query($conn, "COMMIT"); // ⬅️ COMMIT
+            return ["success" => true, "id_compra" => $id_compra];
+        } catch (Exception $e) {
+            pg_query($conn, "ROLLBACK"); // ⬅️ ROLLBACK
+            return ["success" => false, "error" => "Error en actualización: " . $e->getMessage()];
+        }
+    }
 }

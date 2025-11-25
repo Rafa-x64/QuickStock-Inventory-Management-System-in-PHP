@@ -126,7 +126,9 @@ $id_compra = $_REQUEST["id_compra"] ?? null;
                             <div class="row mt-4">
                                 <div class="col-12 d-flex justify-content-around">
                                     <button type="submit" class="btn btn-success">Guardar Cambios</button>
-                                    <button type="reset" class="btn btn-danger">Cancelar Edición</button>
+                                    <a href="compras-historial">
+                                        <button type="button" class="btn btn-danger">Cancelar Edición</button>
+                                    </a>
                                 </div>
                             </div>
 
@@ -134,29 +136,33 @@ $id_compra = $_REQUEST["id_compra"] ?? null;
 
                     </div>
                 </div>
-                <?php /*
+                <?php
+                // Se asume que estos archivos existen en las rutas indicadas
                 require_once "model/inventario.compra.php";
-                // En el caso de edición, necesitarías un controlador diferente (ej: compras_editar_C.php)
-                require_once "controller/compras_editar_C.php"; // <--- Nuevo Controlador para Editar
+                require_once "controller/compras_editar_C.php"; // El nuevo controlador creado arriba
 
-                $respuesta = ["success" => false, "message" => "Ocurrió un error inesperado."];
+                $respuesta = ["success" => false, "message" => ""];
 
                 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-                    // La lógica para editar/actualizar la compra irá en el nuevo controlador.
-                    $controladorCompra = new compras_editar_C();
-                    $resultadoTransaccion = $controladorCompra->actualizarCompra(); // <--- Nuevo método
+
+                    $controladorEditar = new compras_editar_C();
+                    $resultadoTransaccion = $controladorEditar->actualizarCompra();
 
                     if (isset($resultadoTransaccion['success']) && $resultadoTransaccion['success'] === true) {
                         $id_compra_act = $resultadoTransaccion['id_compra'];
                         $respuesta['success'] = true;
-                        $respuesta['message'] = "✅ Compra #$id_compra_act actualizada exitosamente.";
-                    } else {
-                        $respuesta['message'] = "❌ Error al actualizar la compra: " . ($resultadoTransaccion['error'] ?? 'Error desconocido.');
-                    }
-                }
+                        $respuesta['message'] = "✅ Compra #" . $id_compra_act . " actualizada exitosamente.";
 
-                echo '<script>alert("' . $respuesta['message'] . '")</script>';
-                */ ?>
+                        // Opcional: Recargar la página o redireccionar
+                        // echo "<script>setTimeout(() => { window.location.href = 'index.php?ruta=compras'; }, 1500);</script>";
+                    } else {
+                        $respuesta['message'] = "❌ Error al actualizar: " . ($resultadoTransaccion['error'] ?? 'Error desconocido.');
+                    }
+
+                    // Mostrar alerta JS
+                    echo '<script>alert("' . $respuesta['message'] . '");</script>';
+                }
+                ?>
             </div>
         </div>
     </div>
