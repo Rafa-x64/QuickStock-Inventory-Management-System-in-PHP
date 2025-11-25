@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict HZw9HUekAH9jVeaxnvceSCi2707aZjVqD28yQgB7t3KxfjsAhuuOOEuQrpfbwgJ
+\restrict QEPogO5dp3t59HeohEzhZ4DuHMEAkyWCQH2hnMCHdPVN02XADHuTzfFJXU4bEA0
 
 -- Dumped from database version 18.0
 -- Dumped by pg_dump version 18.0
 
--- Started on 2025-11-23 21:14:40
+-- Started on 2025-11-24 21:36:28
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -589,7 +589,7 @@ CREATE TABLE inventario.producto (
     id_producto integer NOT NULL,
     nombre character varying(150) NOT NULL,
     descripcion text,
-    id_categoria integer NOT NULL,
+    id_categoria integer,
     id_color integer NOT NULL,
     id_talla integer NOT NULL,
     precio_venta numeric(10,2) CONSTRAINT producto_precio_not_null NOT NULL,
@@ -1078,6 +1078,9 @@ COPY core.cliente (id_cliente, nombre, apellido, cedula, telefono, correo, direc
 
 COPY core.color (id_color, nombre, activo) FROM stdin;
 4	Rojo	t
+5	Blanco	t
+6	Marron	t
+7	Verdes	t
 \.
 
 
@@ -1156,6 +1159,11 @@ COPY finanzas.tasa_cambio (id_tasa, id_moneda, fecha, tasa, activo) FROM stdin;
 --
 
 COPY inventario.compra (id_compra, id_proveedor, id_sucursal, id_usuario, id_moneda, numero_factura, fecha_compra, fecha_registro, subtotal, monto_impuesto, total, observaciones, estado, activo) FROM stdin;
+1	1	6	5	1	0254	2025-11-23	2025-11-23 23:08:53.116799	1500.00	240.00	1740.00		pendiente	t
+2	1	5	5	1	0450	2025-11-23	2025-11-23 23:12:25.204223	720.00	115.20	835.20	ninguna	pendiente	t
+4	1	6	5	2	0111	2025-11-24	2025-11-24 17:54:13.023619	2000.00	320.00	2320.00		pendiente	t
+5	1	8	5	1	0456	2025-11-24	2025-11-24 21:28:56.378523	3250.00	520.00	3770.00	aisdiasdiajsd	pendiente	t
+6	1	6	5	1	0192	2025-11-24	2025-11-24 21:35:41.085196	3000.00	480.00	3480.00	ninguna	pendiente	t
 \.
 
 
@@ -1166,6 +1174,12 @@ COPY inventario.compra (id_compra, id_proveedor, id_sucursal, id_usuario, id_mon
 --
 
 COPY inventario.detalle_compra (id_detalle_compra, id_compra, id_producto, cantidad, precio_unitario, subtotal) FROM stdin;
+1	1	6	50	30.00	1500.00
+2	2	7	24	30.00	720.00
+4	4	8	100	20.00	2000.00
+5	5	12	50	60.00	3000.00
+6	5	13	50	5.00	250.00
+7	6	15	50	60.00	3000.00
 \.
 
 
@@ -1177,6 +1191,12 @@ COPY inventario.detalle_compra (id_detalle_compra, id_compra, id_producto, canti
 
 COPY inventario.inventario (id_inventario, id_producto, id_sucursal, cantidad, minimo, activo) FROM stdin;
 3	5	5	24	10	t
+4	6	6	50	0	t
+5	7	5	48	0	t
+6	8	6	100	0	t
+7	12	8	50	0	t
+8	13	8	50	0	t
+9	15	6	50	0	t
 \.
 
 
@@ -1188,6 +1208,12 @@ COPY inventario.inventario (id_inventario, id_producto, id_sucursal, cantidad, m
 
 COPY inventario.producto (id_producto, nombre, descripcion, id_categoria, id_color, id_talla, precio_venta, id_proveedor, activo, codigo_barra, precio_compra) FROM stdin;
 5	Zapato Numero 1	\N	4	4	4	20.00	\N	t	zap-01	10.00
+6	Nike air force one	\N	5	5	4	60.00	1	t	zap-02	30.00
+7	Botas timberland	\N	5	6	4	45.00	1	t	timber-10	30.00
+8	Nike retro jordan i	\N	6	7	4	30.00	1	t	zap-04	20.00
+12	Nike retro jordan iii	\N	5	4	4	70.00	1	t	zap-30	60.00
+13	Chancletas dama	\N	6	4	4	10.00	1	t	chan-dam	5.00
+15	Nike retro jordan iv	\N	\N	7	4	70.00	1	t	zap-31	60.00
 \.
 
 
@@ -1283,7 +1309,7 @@ SELECT pg_catalog.setval('core.cliente_id_cliente_seq', 1, false);
 -- Name: color_id_color_seq; Type: SEQUENCE SET; Schema: core; Owner: postgres
 --
 
-SELECT pg_catalog.setval('core.color_id_color_seq', 4, true);
+SELECT pg_catalog.setval('core.color_id_color_seq', 7, true);
 
 
 --
@@ -1346,7 +1372,7 @@ SELECT pg_catalog.setval('finanzas.tasa_cambio_id_tasa_seq', 1, false);
 -- Name: compra_id_compra_seq; Type: SEQUENCE SET; Schema: inventario; Owner: postgres
 --
 
-SELECT pg_catalog.setval('inventario.compra_id_compra_seq', 1, false);
+SELECT pg_catalog.setval('inventario.compra_id_compra_seq', 6, true);
 
 
 --
@@ -1355,7 +1381,7 @@ SELECT pg_catalog.setval('inventario.compra_id_compra_seq', 1, false);
 -- Name: detalle_compra_id_detalle_compra_seq; Type: SEQUENCE SET; Schema: inventario; Owner: postgres
 --
 
-SELECT pg_catalog.setval('inventario.detalle_compra_id_detalle_compra_seq', 1, false);
+SELECT pg_catalog.setval('inventario.detalle_compra_id_detalle_compra_seq', 7, true);
 
 
 --
@@ -1364,7 +1390,7 @@ SELECT pg_catalog.setval('inventario.detalle_compra_id_detalle_compra_seq', 1, f
 -- Name: inventario_id_inventario_seq; Type: SEQUENCE SET; Schema: inventario; Owner: postgres
 --
 
-SELECT pg_catalog.setval('inventario.inventario_id_inventario_seq', 3, true);
+SELECT pg_catalog.setval('inventario.inventario_id_inventario_seq', 9, true);
 
 
 --
@@ -1373,7 +1399,7 @@ SELECT pg_catalog.setval('inventario.inventario_id_inventario_seq', 3, true);
 -- Name: producto_id_producto_seq; Type: SEQUENCE SET; Schema: inventario; Owner: postgres
 --
 
-SELECT pg_catalog.setval('inventario.producto_id_producto_seq', 5, true);
+SELECT pg_catalog.setval('inventario.producto_id_producto_seq', 15, true);
 
 
 --
@@ -1916,11 +1942,11 @@ ALTER TABLE ONLY ventas.venta
     ADD CONSTRAINT venta_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES seguridad_acceso.usuario(id_usuario) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
--- Completed on 2025-11-23 21:14:40
+-- Completed on 2025-11-24 21:36:28
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict HZw9HUekAH9jVeaxnvceSCi2707aZjVqD28yQgB7t3KxfjsAhuuOOEuQrpfbwgJ
+\unrestrict QEPogO5dp3t59HeohEzhZ4DuHMEAkyWCQH2hnMCHdPVN02XADHuTzfFJXU4bEA0
 

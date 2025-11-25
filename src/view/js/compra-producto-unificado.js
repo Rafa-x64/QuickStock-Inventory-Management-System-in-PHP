@@ -77,7 +77,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Reglas del Módulo de Producto (Las de color/talla aplican al campo activo)
         prod_codigo_barra: { regex: /^[A-Za-z0-9\-]{1,}$/, mensaje: "Código obligatorio." },
         prod_nombre: { regex: /^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ\s]{3,}$/, mensaje: "Nombre (mínimo 3)." },
-        prod_id_categoria: { min: 1, mensaje: "Debe seleccionar categoría", isSelect: true },
+        // 👇 CAMBIO CLAVE: Cambiamos 'min: 1' a 'min: 0' para permitir la opción con value=""
+        prod_id_categoria: { min: 0, mensaje: "Debe seleccionar categoría (o dejar vacío)", isSelect: true }, 
 
         // Reglas de Color y Talla (para SELECT y INPUT)
         prod_id_color: { min: 1, mensaje: "Debe seleccionar color", isSelect: true },
@@ -102,6 +103,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (valor.length === 0 && campo.required) {
             valido = false;
         } else if (valor.length === 0 && !campo.required) {
+            // Si no es requerido, y el valor es vacío, es válido.
             valido = true;
         } else {
             if (regla && regla.regex) {
@@ -231,7 +233,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 
                 <div class="col-md-4 d-flex flex-column py-2 position-relative">
                     <label for="prod_id_categoria_${index}" class="form-label Quick-title">Categoría</label>
-                    <select id="prod_id_categoria_${index}" name="productos[${index}][id_categoria]" class="Quick-form-input prod-campo-requerido" required>
+                    <select id="prod_id_categoria_${index}" name="productos[${index}][id_categoria]" class="Quick-form-input">
                         ${categoriaOptions}
                     </select>
                     <div class="invalid-tooltip">Debe seleccionar categoría.</div>
@@ -439,6 +441,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     const regla = reglasValidacion[idBase] || null;
 
+                    // Si es el campo de categoría y tiene value="", la validación pasa porque min: 0
+                    // Si el campo tiene una regla de validación y falla, se marca como inválido.
                     if (regla && !validarCampo(campo, regla)) {
                         todoValido = false;
                         if (!primerInvalido) primerInvalido = campo;

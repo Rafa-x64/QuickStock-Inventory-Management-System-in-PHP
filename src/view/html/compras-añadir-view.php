@@ -153,10 +153,9 @@
                         $respuesta['message'] = "❌ Error al registrar la compra: " . ($resultadoTransaccion['error'] ?? 'Error desconocido.');
                     }
                 } else {
-                    
                 }
 
-                echo '<script>alert("'. $respuesta['message'] .'")</script>';
+                echo '<script>alert("' . $respuesta['message'] . '")</script>';
                 echo '<script></script>';
 
                 ?>
