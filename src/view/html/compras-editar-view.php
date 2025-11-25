@@ -139,11 +139,16 @@ $id_compra = $_REQUEST["id_compra"] ?? null;
                 <?php
                 // Se asume que estos archivos existen en las rutas indicadas
                 require_once "model/inventario.compra.php";
-                require_once "controller/compras_editar_C.php"; // El nuevo controlador creado arriba
+                require_once "controller/compras_editar_C.php"; // El controlador de edición
 
                 $respuesta = ["success" => false, "message" => ""];
 
-                if ($_SERVER["REQUEST_METHOD"] === "POST") {
+                // **VERIFICACIÓN CLAVE:**
+                // La actualización solo se ejecuta si el método es POST Y si contiene
+                // algún dato representativo del formulario de edición (ej: 'fecha_compra').
+                // Esto previene que se ejecute con el POST vacío que solo trae el 'id_compra'.
+
+                if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['fecha_compra'])) {
 
                     $controladorEditar = new compras_editar_C();
                     $resultadoTransaccion = $controladorEditar->actualizarCompra();

@@ -59,6 +59,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     // *********************************************************
 
     let productoIndex = 0;
+    if (productosContainer.children.length === 0) {
+        agregarModuloProducto();
+    }
 
     // --- MÓDULO: Funciones de Utilidad y Validaciones ---
 
@@ -78,7 +81,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         prod_codigo_barra: { regex: /^[A-Za-z0-9\-]{1,}$/, mensaje: "Código obligatorio." },
         prod_nombre: { regex: /^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ\s]{3,}$/, mensaje: "Nombre (mínimo 3)." },
         // 👇 CAMBIO CLAVE: Cambiamos 'min: 1' a 'min: 0' para permitir la opción con value=""
-        prod_id_categoria: { min: 0, mensaje: "Debe seleccionar categoría (o dejar vacío)", isSelect: true }, 
+        prod_id_categoria: { min: 0, mensaje: "Debe seleccionar categoría (o dejar vacío)", isSelect: true },
 
         // Reglas de Color y Talla (para SELECT y INPUT)
         prod_id_color: { min: 1, mensaje: "Debe seleccionar color", isSelect: true },

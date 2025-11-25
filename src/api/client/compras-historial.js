@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="row g-1">
                     
                     <div class="col-12">
-                        <form action="compras-editar" method="POST" class="d-inline">
+                        <form action="compras-editar" method="GET" class="d-inline">
                             <input type="hidden" name="accion" value="editar">
                             <input type="hidden" name="id_compra" value="${compra.id_compra}">
                             <button type="submit" class="btn btn-warning btn-sm w-100">Editar</button>

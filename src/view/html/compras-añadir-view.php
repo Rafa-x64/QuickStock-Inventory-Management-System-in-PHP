@@ -134,13 +134,17 @@
                     </div>
                 </div>
                 <?php
+                // Asegúrate de que el path a tus archivos sea correcto
                 require_once "model/inventario.compra.php";
                 require_once "controller/compras_añadir_C.php";
 
 
                 $respuesta = ["success" => false, "message" => "Ocurrió un error inesperado."];
 
-                if ($_SERVER["REQUEST_METHOD"] === "POST") {
+                // *** VERIFICACIÓN CLAVE CORREGIDA ***
+                // 1. Debe ser un método POST (envío de formulario).
+                // 2. Debe tener el campo 'fecha_compra' (indica que el formulario real fue enviado, no un POST vacío).
+                if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['fecha_compra'])) {
 
                     $controladorCompra = new compras_añadir_C();
                     $resultadoTransaccion = $controladorCompra->crearCompra();
@@ -149,15 +153,19 @@
                         $id_compra = $resultadoTransaccion['id_compra'];
                         $respuesta['success'] = true;
                         $respuesta['message'] = "✅ Compra registrada exitosamente con ID: " . $id_compra;
+                        // Opcional: Redireccionar al historial o al detalle
                     } else {
                         $respuesta['message'] = "❌ Error al registrar la compra: " . ($resultadoTransaccion['error'] ?? 'Error desconocido.');
                     }
                 } else {
+                    // Si es GET, o POST sin datos del formulario, NO ejecutamos nada
+                    $respuesta['message'] = ""; // Mensaje vacío para evitar el alert al cargar la página
                 }
 
-                echo '<script>alert("' . $respuesta['message'] . '")</script>';
-                echo '<script></script>';
-
+                // Solo muestra el alert si hay un mensaje (después de un intento de POST)
+                if (!empty($respuesta['message'])) {
+                    echo '<script>alert("' . $respuesta['message'] . '")</script>';
+                }
                 ?>
             </div>
         </div>
