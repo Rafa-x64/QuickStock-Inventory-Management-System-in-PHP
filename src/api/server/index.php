@@ -107,6 +107,31 @@ switch ($accion) {
         $out = obtenerDetalleSucursal($peticion["id_sucursal"]);
         break;
 
+    case "obtener_empleados_responsables": // <-- NUEVA ACCIÓN
+        include_once __DIR__ . "/seguridad_acceso/usuario.php"; // <-- Incluir el nuevo archivo
+        $out = obtenerEmpleadosResponsables(); // <-- Llamar a la nueva función
+        break;
+
+    case "obtener_monedas":
+        include_once __DIR__ . "/finanzas/moneda.php";
+        $out = obtenerMonedas();
+        break;
+
+    case "obtener_historial_compras":
+        include_once __DIR__ . "/inventario/compra.php"; // <--- Nuevo archivo a crear
+        $out = obtenerHistorialCompras();
+        break;
+
+    case "obtener_detalle_compra":
+        include_once __DIR__ . "/inventario/compra.php"; // <--- Nuevo archivo a crear
+        $out = obtenerDetalleCompra($peticion["id_compra"]);
+        break;
+
+    case "obtener_compra_por_id":
+        include_once __DIR__ . "/inventario/compra.php"; // <--- Nuevo archivo a crear
+        $out = obtenerCompraPorId($peticion["id_compra"]);
+        break;
+
     //se procesa una peticion
     /*case "mostrar_suma":
         $out = mostrarSuma();

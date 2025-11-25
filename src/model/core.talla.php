@@ -31,4 +31,41 @@ class talla extends mainModel
         $row = pg_fetch_assoc($result);
         return intval($row['id_talla']);
     }
+
+    public static function buscarOCrearPorRango(string $rango): ?int
+    {
+        $conn = parent::conectar_base_datos();
+
+        // Limpiamos y convertimos a minúsculas para una búsqueda consistente
+        $rangoLimpio = trim(mb_strtolower($rango, 'UTF-8'));
+
+        if (empty($rangoLimpio)) {
+            return null;
+        }
+
+        // 1. Buscar (usando LOWER para búsqueda insensible a mayúsculas)
+        $sql_buscar = "SELECT id_talla FROM core.talla WHERE LOWER(rango_talla) = $1 LIMIT 1";
+        $result = pg_query_params($conn, $sql_buscar, [$rangoLimpio]);
+
+        if ($result && pg_num_rows($result) > 0) {
+            // La talla existe, retornamos su ID
+            return intval(pg_fetch_result($result, 0, 'id_talla'));
+        }
+
+        // 2. Crear si no existe
+        // Usamos mb_strtoupper o simplemente el rango limpio para la inserción, 
+        // dependiendo del estándar de formato que uses para los rangos de talla (e.g., S, M, L).
+        $rangoNormalizado = mb_strtoupper($rangoLimpio, 'UTF-8');
+
+        $sql_crear = "INSERT INTO core.talla (rango_talla, activo) VALUES ($1, true) RETURNING id_talla";
+        $result_crear = pg_query_params($conn, $sql_crear, [$rangoNormalizado]);
+
+        if ($result_crear && pg_num_rows($result_crear) > 0) {
+            // Creado con éxito, retornamos el nuevo ID
+            return intval(pg_fetch_result($result_crear, 0, 'id_talla'));
+        }
+
+        // Fallo al buscar y al crear
+        return null;
+    }
 }

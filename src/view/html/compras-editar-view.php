@@ -1,29 +1,29 @@
-<!--<style>
-    [class^="row"] {
-        border: 1px solid red;
-    }
+<?php
+// Recibir el ID de la compra a editar
+// Asumo que este archivo se incluye o es la vista principal, y el ID se recibe por GET o POST.
+// Si se está editando, típicamente se recibe por GET, por ejemplo: editar.php?id=123
+// Sin embargo, utilizaremos la variable $id_compra que mencionaste para la lógica de carga.
 
-    [class^="col"] {
-        border: 1px solid blue;
-    }
+// La variable $id_compra debería ser establecida antes de este bloque si la vista no lo hace.
+// Ejemplo: $id_compra = $_GET["id_compra"] ?? null; 
+// Para el ejemplo, asumo que se está cargando el ID. Si no hay ID, se comporta como un formulario vacío (aunque esto no es ideal para una vista de edición).
+$id_compra = $_REQUEST["id_compra"] ?? null;
+?>
 
-    [class^="container"] {
-        border: 1px solid white;
-    }
-</style>-->
 <div class="container-fluid" id="mainContent">
     <div class="row">
         <div class="col-12 p-3 p-md-5">
             <div class="row justify-content-center align-items-center">
 
                 <div class="col-12 text-center p-2 p-md-5 Quick-title">
-                    <h1 class="Quick-title">Registrar Nueva Compra</h1>
+                    <h1 class="Quick-title">Editar Compra #<?php echo htmlspecialchars($id_compra ?? 'N/A'); ?></h1>
                 </div>
 
                 <div class="Quick-widget col-12 col-lg-12 p-2 p-md-4 mt-3">
                     <div class="col-12 Quick-form p-3 p-md-5 rounded-2">
 
                         <form action="" method="POST" id="formCompraProducto" class="py-2 needs-validate" novalidate>
+                            <input type="hidden" name="id_compra" id="compra_id" value="<?php echo htmlspecialchars($id_compra ?? ''); ?>">
 
                             <div class="row">
                                 <div class="col-12">
@@ -102,7 +102,8 @@
                                     </button>
                                 </div>
                                 <hr>
-                                <div id="productosContainer" class="col-12 Quick-form"></div>
+                                <div id="productosContainer" class="col-12 Quick-form">
+                                </div>
                             </div>
 
 
@@ -124,8 +125,10 @@
 
                             <div class="row mt-4">
                                 <div class="col-12 d-flex justify-content-around">
-                                    <button type="submit" class="btn btn-success">Guardar Compra</button>
-                                    <button type="reset" class="btn btn-danger">Limpiar</button>
+                                    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+                                    <a href="compras-historial">
+                                        <button type="button" class="btn btn-danger">Cancelar Edición</button>
+                                    </a>
                                 </div>
                             </div>
 
@@ -134,42 +137,41 @@
                     </div>
                 </div>
                 <?php
-                // Asegúrate de que el path a tus archivos sea correcto
+                // Se asume que estos archivos existen en las rutas indicadas
                 require_once "model/inventario.compra.php";
-                require_once "controller/compras_añadir_C.php";
+                require_once "controller/compras_editar_C.php"; // El controlador de edición
 
+                $respuesta = ["success" => false, "message" => ""];
 
-                $respuesta = ["success" => false, "message" => "Ocurrió un error inesperado."];
+                // **VERIFICACIÓN CLAVE:**
+                // La actualización solo se ejecuta si el método es POST Y si contiene
+                // algún dato representativo del formulario de edición (ej: 'fecha_compra').
+                // Esto previene que se ejecute con el POST vacío que solo trae el 'id_compra'.
 
-                // *** VERIFICACIÓN CLAVE CORREGIDA ***
-                // 1. Debe ser un método POST (envío de formulario).
-                // 2. Debe tener el campo 'fecha_compra' (indica que el formulario real fue enviado, no un POST vacío).
                 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['fecha_compra'])) {
 
-                    $controladorCompra = new compras_añadir_C();
-                    $resultadoTransaccion = $controladorCompra->crearCompra();
+                    $controladorEditar = new compras_editar_C();
+                    $resultadoTransaccion = $controladorEditar->actualizarCompra();
 
                     if (isset($resultadoTransaccion['success']) && $resultadoTransaccion['success'] === true) {
-                        $id_compra = $resultadoTransaccion['id_compra'];
+                        $id_compra_act = $resultadoTransaccion['id_compra'];
                         $respuesta['success'] = true;
-                        $respuesta['message'] = "✅ Compra registrada exitosamente con ID: " . $id_compra;
-                        // Opcional: Redireccionar al historial o al detalle
-                    } else {
-                        $respuesta['message'] = "❌ Error al registrar la compra: " . ($resultadoTransaccion['error'] ?? 'Error desconocido.');
-                    }
-                } else {
-                    // Si es GET, o POST sin datos del formulario, NO ejecutamos nada
-                    $respuesta['message'] = ""; // Mensaje vacío para evitar el alert al cargar la página
-                }
+                        $respuesta['message'] = "✅ Compra #" . $id_compra_act . " actualizada exitosamente.";
 
-                // Solo muestra el alert si hay un mensaje (después de un intento de POST)
-                if (!empty($respuesta['message'])) {
-                    echo '<script>alert("' . $respuesta['message'] . '")</script>';
+                        // Opcional: Recargar la página o redireccionar
+                        // echo "<script>setTimeout(() => { window.location.href = 'index.php?ruta=compras'; }, 1500);</script>";
+                    } else {
+                        $respuesta['message'] = "❌ Error al actualizar: " . ($resultadoTransaccion['error'] ?? 'Error desconocido.');
+                    }
+
+                    // Mostrar alerta JS
+                    echo '<script>alert("' . $respuesta['message'] . '");</script>';
                 }
                 ?>
             </div>
         </div>
     </div>
 </div>
-<script type="module" src="api/client/compra-producto-unificado.js"></script>
-<script src="view/js/compra-producto-unificado.js"></script>
+
+<script type="module" src="api/client/compras-editar.js"></script>
+<script type="module" src="view/js/compras-editar.js"></script>

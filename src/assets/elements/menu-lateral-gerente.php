@@ -69,7 +69,6 @@
                             <div class="menu-submenu d-flex flex-column ps-2">
                                 <a href="compras-historial" class="ms-3">Historial de Compras</a>
                                 <a href="compras-añadir" class="ms-3">Registrar Nueva Compra</a>
-                                <a href="compras-detalle" class="ms-3">Detalle de Compra</a>
                             </div>
                         </details>
                     </div>
@@ -272,7 +271,6 @@
                     <div class="menu-submenu d-flex flex-column ps-5">
                         <a href="compras-historial" class="ms-3">Historial de Compras</a>
                         <a href="compras-añadir" class="ms-3">Registrar Nueva Compra</a>
-                        <a href="compras-detalle" class="ms-3">Detalle de Compra</a>
                     </div>
                 </details>
             </div>
