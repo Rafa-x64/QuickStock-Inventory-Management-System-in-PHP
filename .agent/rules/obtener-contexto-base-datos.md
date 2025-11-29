@@ -6,4 +6,4 @@ para que puedas realizar lo que te pido de manera mas eficiente deberas obtener 
 
 deberas entregarme el prompt y las respuestas basadas tanto en el MER como en la base de datos que esta en config/
 
-esta base de datos se actualiza regularmente asi que tendras que hacerlo diariamente antes de hacer el primer prompt
+esta base de datos se actualiza regularmente asi que tendras que hacerlo constantemente antes de hacer el primer prompt
