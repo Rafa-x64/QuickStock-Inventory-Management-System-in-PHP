@@ -1,4 +1,5 @@
 <?php
+
 class producto extends mainModel
 {
     public $id_producto;

@@ -26,5 +26,21 @@ export const ventasAPI = {
             accion: "procesar_venta",
             ...datosVenta
         });
+    },
+
+    obtenerCategorias: async () => {
+        return await api({ accion: "obtener_categorias" });
+    },
+
+    obtenerColores: async () => {
+        return await api({ accion: "obtener_colores" });
+    },
+
+    obtenerTallas: async () => {
+        return await api({ accion: "obtener_tallas" });
+    },
+
+    obtenerMetodosPago: async () => {
+        return await api({ accion: "obtener_metodos_pago" });
     }
 };

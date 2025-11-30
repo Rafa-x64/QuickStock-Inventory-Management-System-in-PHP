@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/../../index.functions.php";
+require_once __DIR__ . "/../index.functions.php";
 
 function obtenerTasasCambioActivas()
 {

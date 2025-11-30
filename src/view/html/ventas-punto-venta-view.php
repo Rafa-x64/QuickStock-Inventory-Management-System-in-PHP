@@ -1,7 +1,15 @@
 <?php
 // Obtener datos de sesión para sucursal
 $id_sucursal_sesion = $_SESSION['sesion_usuario']['id_sucursal'] ?? 5;
-$nombre_sucursal_sesion = $_SESSION['sesion_usuario']['sucursal']['nombre'] ?? "Sucursal Principal"; // Fallback name
+$nombre_sucursal_sesion = $_SESSION['sesion_usuario']['sucursal']['nombre'] ?? null;
+
+// Si no hay nombre en sesión y es la ID 5, asignar nombre por defecto
+if (!$nombre_sucursal_sesion && $id_sucursal_sesion == 5) {
+    $nombre_sucursal_sesion = "Global Sport (Principal)";
+} elseif (!$nombre_sucursal_sesion) {
+    $nombre_sucursal_sesion = "Sucursal ID: " . $id_sucursal_sesion;
+}
+
 $fecha_actual = date('Y-m-d\TH:i');
 ?>
 <div class="container-fluid" id="mainContent">
@@ -183,13 +191,7 @@ $fecha_actual = date('Y-m-d\TH:i');
                                 <div class="col-md-6">
                                     <label class="form-label">Método de Pago</label>
                                     <select id="idMetodoPago" class="form-select" required>
-                                        <option value="">Seleccione...</option>
-                                        <option value="1">Efectivo</option>
-                                        <option value="2">Débito</option>
-                                        <option value="3">Crédito</option>
-                                        <option value="4">Transferencia</option>
-                                        <option value="5">Zelle</option>
-                                        <option value="6">PayPal</option>
+                                        <option value="">Cargando...</option>
                                     </select>
                                 </div>
 

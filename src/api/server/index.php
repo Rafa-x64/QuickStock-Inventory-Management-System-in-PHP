@@ -42,7 +42,7 @@ switch ($accion) {
 
     case "obtener_todos_los_empleados":
         include_once __DIR__ . "/seguridad_acceso/usuario.php";
-        $out = obtenerEmpleados($peticion["sucursal"], $peticion["rol"], $peticion["estado"]);
+        $out = obtenerEmpleados($peticion["sucursal"], $peticion["rol"] ?? null, $peticion["estado"]);
         break;
 
     case "obtener_un_usuario":

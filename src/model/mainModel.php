@@ -1,6 +1,6 @@
 <?php
 
-include_once("./config/SERVER.php");
+include_once __DIR__ . "/../config/SERVER.php";
 
 class mainModel
 {
