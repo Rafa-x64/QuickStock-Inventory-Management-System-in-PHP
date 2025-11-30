@@ -5,7 +5,9 @@ function obtenerTodosLosProductos(
     $categoria = null,
     $proveedor = null,
     $sucursal = null,
-    $estado = null
+    $estado = null,
+    $color = null,
+    $talla = null
 ) {
     // Asegúrate de que esta función está definida para conectar a tu DB
     $conn = conectar_base_datos();
@@ -18,6 +20,8 @@ function obtenerTodosLosProductos(
     $categoria = $categoria ? (int)$categoria : null;
     $proveedor = $proveedor ? (int)$proveedor : null;
     $sucursal  = $sucursal ? (int)$sucursal : null;
+    $color     = $color ? (int)$color : null;
+    $talla     = $talla ? (int)$talla : null;
 
     // Manejo del estado: convertir el string JS ("true"/"false") a booleano PHP (true/false) o null
     $estado_filtrar = null;
@@ -57,6 +61,20 @@ function obtenerTodosLosProductos(
     if ($proveedor) {
         $clauses[] = "p.id_proveedor = $" . $i;
         $params[] = $proveedor;
+        $i++;
+    }
+
+    // Color (ID exacto)
+    if ($color) {
+        $clauses[] = "p.id_color = $" . $i;
+        $params[] = $color;
+        $i++;
+    }
+
+    // Talla (ID exacto)
+    if ($talla) {
+        $clauses[] = "p.id_talla = $" . $i;
+        $params[] = $talla;
         $i++;
     }
 
@@ -304,4 +322,31 @@ function obtenerDetalleProducto($id_producto)
             "sucursales_bajo_stock" => $sucursales_bajo_stock,
         ]
     ];
+}
+
+function obtenerProductoPorCodigoBarra($codigo)
+{
+    $conn = conectar_base_datos();
+    $sql = "
+        SELECT 
+            p.id_producto,
+            p.nombre,
+            p.codigo_barra,
+            p.precio_venta,
+            p.activo,
+            t.rango_talla as talla,
+            c.nombre as color
+        FROM inventario.producto p
+        LEFT JOIN core.talla t ON t.id_talla = p.id_talla
+        LEFT JOIN core.color c ON c.id_color = p.id_color
+        WHERE (p.codigo_barra = $1 OR CAST(p.id_producto AS TEXT) = $1) AND p.activo = true
+    ";
+    pg_prepare($conn, "get_prod_codigo", $sql);
+    $result = pg_execute($conn, "get_prod_codigo", [$codigo]);
+
+    if ($result && pg_num_rows($result) > 0) {
+        return ["status" => true, "producto" => pg_fetch_assoc($result)];
+    } else {
+        return ["status" => false, "mensaje" => "Producto no encontrado"];
+    }
 }

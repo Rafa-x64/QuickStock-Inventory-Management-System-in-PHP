@@ -78,7 +78,9 @@ switch ($accion) {
             $peticion["categoria"] ?? null,
             $peticion["proveedor"] ?? null,
             $peticion["sucursal"] ?? null,
-            $peticion["estado"] ?? null
+            $peticion["estado"] ?? null,
+            $peticion["color"] ?? null,
+            $peticion["talla"] ?? null
         );
         break;
 
@@ -140,6 +142,30 @@ switch ($accion) {
     case "obtener_metodo_pago_detalle":
         include_once __DIR__ . "/finanzas/metodo_pago.php";
         $out = obtenerMetodoPagoPorId($peticion["id_metodo_pago"]);
+        break;
+
+    // --- PUNTOS DE VENTA (POS) ---
+
+    case "obtener_cliente_por_cedula":
+        include_once __DIR__ . "/core/cliente.php"; // Asegurarse que este archivo tenga la función
+        // Si no existe la función específica, usar una genérica o crearla.
+        // Asumiremos que existe o se creará en core/cliente.php
+        $out = obtenerClientePorCedula($peticion["cedula"]);
+        break;
+
+    case "obtener_producto_por_codigo":
+        include_once __DIR__ . "/inventario/producto.php";
+        $out = obtenerProductoPorCodigoBarra($peticion["codigo"]);
+        break;
+
+    case "obtener_tasas_cambio":
+        include_once __DIR__ . "/finanzas/tasa_cambio.php"; // Asumiendo existencia
+        $out = obtenerTasasCambioActivas();
+        break;
+
+    case "procesar_venta":
+        include_once __DIR__ . "/../../controller/ventas_punto_venta_C.php";
+        $out = ventas_punto_venta_C::procesarVenta($peticion);
         break;
 
     //se procesa una peticion
