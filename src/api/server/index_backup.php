@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 //se inici ala sesion para obtener datos de usuario
 session_start();
 //se procesaa la peticion por medio de json_decode
@@ -113,9 +113,9 @@ switch ($accion) {
         $out = obtenerDetalleSucursal($peticion["id_sucursal"]);
         break;
 
-    case "obtener_empleados_responsables":
-        include_once __DIR__ . "/seguridad_acceso/usuario.php";
-        $out = obtenerEmpleadosResponsables();
+    case "obtener_empleados_responsables": // <-- NUEVA ACCI├ôN
+        include_once __DIR__ . "/seguridad_acceso/usuario.php"; // <-- Incluir el nuevo archivo
+        $out = obtenerEmpleadosResponsables(); // <-- Llamar a la nueva funci├│n
         break;
 
     case "obtener_monedas":
@@ -124,17 +124,17 @@ switch ($accion) {
         break;
 
     case "obtener_historial_compras":
-        include_once __DIR__ . "/inventario/compra.php";
+        include_once __DIR__ . "/inventario/compra.php"; // <--- Nuevo archivo a crear
         $out = obtenerHistorialCompras();
         break;
 
     case "obtener_detalle_compra":
-        include_once __DIR__ . "/inventario/compra.php";
+        include_once __DIR__ . "/inventario/compra.php"; // <--- Nuevo archivo a crear
         $out = obtenerDetalleCompra($peticion["id_compra"]);
         break;
 
     case "obtener_compra_por_id":
-        include_once __DIR__ . "/inventario/compra.php";
+        include_once __DIR__ . "/inventario/compra.php"; // <--- Nuevo archivo a crear
         $out = obtenerCompraPorId($peticion["id_compra"]);
         break;
 
@@ -148,8 +148,12 @@ switch ($accion) {
         $out = obtenerMetodoPagoPorId($peticion["id_metodo_pago"]);
         break;
 
+    // --- PUNTOS DE VENTA (POS) ---
+
     case "obtener_cliente_por_cedula":
-        include_once __DIR__ . "/core/cliente.php";
+        include_once __DIR__ . "/core/cliente.php"; // Asegurarse que este archivo tenga la funci├│n
+        // Si no existe la funci├│n espec├¡fica, usar una gen├®rica o crearla.
+        // Asumiremos que existe o se crear├í en core/cliente.php
         $out = obtenerClientePorCedula($peticion["cedula"]);
         break;
 
@@ -159,7 +163,7 @@ switch ($accion) {
         break;
 
     case "obtener_tasas_cambio":
-        include_once __DIR__ . "/finanzas/tasa_cambio.php";
+        include_once __DIR__ . "/finanzas/tasa_cambio.php"; // Asumiendo existencia
         $out = obtenerTasasCambioActivas();
         break;
 
@@ -185,37 +189,6 @@ switch ($accion) {
     case "obtener_detalle_venta":
         include_once __DIR__ . "/ventas/venta.php";
         $out = obtenerDetalleVentaPorId($peticion["id_venta"]);
-        break;
-
-    case "obtener_productos_populares":
-        include_once __DIR__ . "/ventas/venta.php";
-        $out = obtenerProductosPopulares(
-            $peticion["limite"] ?? 10,
-            $peticion["fecha_desde"] ?? null,
-            $peticion["fecha_hasta"] ?? null
-        );
-        break;
-
-    case "obtener_categorias_populares":
-        include_once __DIR__ . "/ventas/venta.php";
-        $out = obtenerCategoriasPopulares(
-            $peticion["limite"] ?? 10,
-            $peticion["fecha_desde"] ?? null,
-            $peticion["fecha_hasta"] ?? null
-        );
-        break;
-
-    case "obtener_ventas_por_sucursal":
-        include_once __DIR__ . "/ventas/venta.php";
-        $out = obtenerVentasPorSucursal(
-            $peticion["fecha_desde"] ?? null,
-            $peticion["fecha_hasta"] ?? null
-        );
-        break;
-
-    case "obtener_tendencia_mensual":
-        include_once __DIR__ . "/ventas/venta.php";
-        $out = obtenerTendenciaMensual($peticion["meses"] ?? 12);
         break;
 
     default:
