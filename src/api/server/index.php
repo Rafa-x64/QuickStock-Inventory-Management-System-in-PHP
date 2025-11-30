@@ -42,7 +42,11 @@ switch ($accion) {
 
     case "obtener_todos_los_empleados":
         include_once __DIR__ . "/seguridad_acceso/usuario.php";
-        $out = obtenerEmpleados($peticion["sucursal"], $peticion["rol"] ?? null, $peticion["estado"]);
+        $out = obtenerEmpleados(
+            $peticion["sucursal"] ?? null,
+            $peticion["rol"] ?? null,
+            $peticion["estado"] ?? null
+        );
         break;
 
     case "obtener_un_usuario":
@@ -168,10 +172,24 @@ switch ($accion) {
         $out = ventas_punto_venta_C::procesarVenta($peticion);
         break;
 
-    //se procesa una peticion
-    /*case "mostrar_suma":
-        $out = mostrarSuma();
-        break;*/
+    case "obtener_ventas_filtradas":
+        include_once __DIR__ . "/ventas/venta.php";
+        $out = obtenerVentasFiltradas(
+            $peticion["fecha_desde"] ?? null,
+            $peticion["fecha_hasta"] ?? null,
+            $peticion["id_usuario"] ?? null,
+            $peticion["monto_min"] ?? null,
+            $peticion["monto_max"] ?? null,
+            $peticion["id_sucursal"] ?? null,
+            $peticion["id_metodo_pago"] ?? null,
+            $peticion["id_moneda"] ?? null
+        );
+        break;
+
+    case "obtener_detalle_venta":
+        include_once __DIR__ . "/ventas/venta.php";
+        $out = obtenerDetalleVentaPorId($peticion["id_venta"]);
+        break;
 
     default:
         $out = ["error" => "Accion no reconocida"];

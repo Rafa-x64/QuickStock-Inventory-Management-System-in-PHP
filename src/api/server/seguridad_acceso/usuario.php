@@ -14,32 +14,31 @@ function obtenerNombreApellido()
     return ["nombre" => $nombre[0], "apellido" => $apellido[0]];
 }
 
-function obtenerEmpleados($sucursal, $rol, $estado)
+function obtenerEmpleados()
 {
-    // --- Normalizar sucursal y rol (enteros o NULL) ---
-    $sucursal = ($sucursal === "" || $sucursal === null) ? null : (int)$sucursal;
-    $rol      = ($rol === "" || $rol === null) ? null : (int)$rol;
+    $conn = conectar_base_datos();
 
-    // --- Normalizar estado para pasarlo como texto 'true'|'false'|null ---
-    // El endpoint JS puede enviar: "activo", "inactivo", "todos" o ""
-    if ($estado === null || $estado === "" || strtolower($estado) === "todos") {
-        $estadoParam = null;
-    } elseif (strtolower($estado) === "activo") {
+    $peticion = json_decode(file_get_contents("php://input"), true);
+
+    $sucursal_sesion = $_SESSION['sesion_usuario']['id_sucursal'] ?? 5;
+    $sucursal = $peticion["sucursal"] ?? $sucursal_sesion;
+    $rol = $peticion["rol"] ?? null;
+
+    if ($sucursal === "") $sucursal = null;
+    if ($rol === "") $rol = null;
+
+    $estado = $peticion["estado"] ?? null;
+    $estadoParam = null;
+    if ($estado === "activo" || $estado === "1" || $estado === 1) {
         $estadoParam = 'true';
-    } elseif (strtolower($estado) === "inactivo") {
+    } elseif ($estado === "inactivo" || $estado === "0" || $estado === 0) {
         $estadoParam = 'false';
-    } else {
-        // valor inesperado -> no aplicar filtro
-        $estadoParam = null;
     }
 
-    // --- Conectar ---
-    $conn = conectar_base_datos();
     if (!$conn) {
         return ["error" => "Error al conectar con la base de datos"];
     }
 
-    // --- Consulta segura: usamos $3::TEXT IS NULL para evitar NULL::BOOLEAN ---
     $sql = "
         SELECT 
             U.id_usuario,
@@ -70,11 +69,9 @@ function obtenerEmpleados($sucursal, $rol, $estado)
         ORDER BY U.id_usuario ASC
     ";
 
-    // --- Ejecutar con parámetros (nota: $estadoParam es NULL o 'true'/'false') ---
     $res = pg_query_params($conn, $sql, [$sucursal, $rol, $estadoParam]);
 
     if (!$res) {
-        // devolver error con detalle (útil para debug). Quita 'detalle' si no quieres exponerlo.
         return [
             "error" => "Error ejecutando consulta",
             "detalle" => pg_last_error($conn)
@@ -82,7 +79,7 @@ function obtenerEmpleados($sucursal, $rol, $estado)
     }
 
     $filas = pg_fetch_all($res);
-    if (!$filas) $filas = []; // siempre devolver array
+    if (!$filas) $filas = [];
 
     return ["filas" => $filas];
 }
@@ -137,18 +134,15 @@ function obtenerUnUsuario($email)
     return ["empleado" => $fila];
 }
 
-function obtenerEmpleadosResponsables(array $rolesPermitidos = [1, 2, 6]) // <-- CAMBIO CLAVE AQUÍ
+function obtenerEmpleadosResponsables(array $rolesPermitidos = [1, 2, 6])
 {
-    // Asegúrate de que los IDs de roles son enteros
     $rolesStr = implode(', ', array_map('intval', $rolesPermitidos));
 
-    // --- Conectar ---
     $conn = conectar_base_datos();
     if (!$conn) {
         return ["error" => "Error al conectar con la base de datos"];
     }
 
-    // --- Consulta: solo usuarios activos y con roles permitidos ---
     $sql = "
         SELECT 
             U.id_usuario,
@@ -176,6 +170,5 @@ function obtenerEmpleadosResponsables(array $rolesPermitidos = [1, 2, 6]) // <--
     $empleados = pg_fetch_all($res);
     if (!$empleados) $empleados = [];
 
-    // La clave 'empleados' es necesaria para que la función JS 'cargarSelect' funcione correctamente.
     return ["empleados" => $empleados];
 }
