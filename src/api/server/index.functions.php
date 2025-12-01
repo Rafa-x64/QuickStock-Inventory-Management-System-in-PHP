@@ -2,6 +2,7 @@
 
 function conectar_base_datos()
 {
+    date_default_timezone_set('America/Caracas');
     $con = pg_connect("host= localhost port=5432 dbname=QuickStock user=postgres password=postgres");
 
     if (!$con) {
@@ -13,6 +14,7 @@ function conectar_base_datos()
 }
 
 //obligatorio retorno de array para interpretar con js
-function obtenerNombreSucursal(){
+function obtenerNombreSucursal()
+{
     return ["nombre_sucursal" => $_SESSION["sesion_usuario"]["sucursal"]["nombre_sucursal"]];
 }

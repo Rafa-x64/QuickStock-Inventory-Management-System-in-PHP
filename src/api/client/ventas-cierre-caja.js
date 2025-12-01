@@ -5,8 +5,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnImprimir = document.getElementById("btn_imprimir");
     const btnBuscar = document.getElementById("btn_buscar");
 
-    // Establecer fecha de hoy por defecto
-    const hoy = new Date().toISOString().split('T')[0];
+    // Establecer fecha de hoy por defecto (Local Time)
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hoy = `${year}-${month}-${day}`;
+
     if (fechaInput) {
         fechaInput.value = hoy;
         fechaInput.max = hoy;
