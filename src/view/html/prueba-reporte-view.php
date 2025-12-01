@@ -2,6 +2,25 @@
 $tipo_reporte = $_POST["tipo_reporte"] ?? "";
 $fecha_inicio = $_POST["fecha_inicio"] ?? date('Y-m-01');
 $fecha_fin = $_POST["fecha_fin"] ?? date('Y-m-d');
+$accion = $_POST['accion'] ?? ''; // <-- Asegurarse de capturar la acción
+
+echo __DIR__;
+// =========================================================
+// === INICIO DE LA NUEVA LÓGICA DE CONTROL (PDF HANDLER) ===
+// =========================================================
+if ($_SERVER["REQUEST_METHOD"] == "POST" && $accion === 'imprimir_pdf') {
+    // 1. Incluimos el controlador (la ruta 'controller/reportes_C.php' debe ser correcta)
+    include_once "controller/reportes_C.php";
+
+    // 2. Llama a la función. Dentro de ella, se genera el PDF y se hace 'exit'.
+    reportes_C::generarReporte($_POST);
+
+    // Previene que se renderice el HTML de la vista si por alguna razón el 'exit' en el controlador falla.
+    exit;
+}
+// =========================================================
+// === FIN DE LA NUEVA LÓGICA DE CONTROL ===
+// =========================================================
 ?>
 
 <div class="container-fluid" id="mainContent">
@@ -17,7 +36,10 @@ $fecha_fin = $_POST["fecha_fin"] ?? date('Y-m-d');
 
             <div class="row justify-content-center">
                 <div class="col-12 col-md-10 col-lg-8 Quick-card p-4 rounded shadow-sm">
-                    <form action="" method="POST" class="row g-3 needs-validation" novalidate>
+                    <form action="" method="POST" class="row g-3 needs-validation" id="reportForm" novalidate>
+
+                        <!-- Input oculto para la acción -->
+                        <input type="hidden" name="accion" id="accion" value="generar">
 
                         <!-- Tipo de Reporte -->
                         <div class="col-12 col-md-4">
@@ -43,10 +65,13 @@ $fecha_fin = $_POST["fecha_fin"] ?? date('Y-m-d');
                             <input type="date" name="fecha_fin" id="fecha_fin" class="form-control Quick-input" value="<?php echo $fecha_fin; ?>" required>
                         </div>
 
-                        <!-- Botón Generar -->
-                        <div class="col-12 text-center mt-4">
-                            <button type="submit" class="btn btn-primary px-5 py-2 fw-bold">
+                        <!-- Botones -->
+                        <div class="col-12 text-center mt-4 d-flex justify-content-center gap-3">
+                            <button type="submit" class="btn btn-primary px-4 py-2 fw-bold" onclick="setAccion('generar')">
                                 <i class="bi bi-file-earmark-text me-2"></i>Generar Reporte
+                            </button>
+                            <button type="submit" class="btn btn-danger px-4 py-2 fw-bold" onclick="setAccion('imprimir_pdf')">
+                                <i class="bi bi-file-pdf me-2"></i>Imprimir PDF
                             </button>
                         </div>
                     </form>
@@ -57,9 +82,12 @@ $fecha_fin = $_POST["fecha_fin"] ?? date('Y-m-d');
             <div class="row mt-5">
                 <div class="col-12">
                     <?php
-                    if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($tipo_reporte)) {
+                    // Solo se ejecuta si es POST, hay un tipo de reporte, Y la acción es 'generar'
+                    if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($tipo_reporte) && $accion === 'generar') {
+                        // Se incluye de nuevo, pero esto es seguro con include_once.
                         include_once "controller/reportes_C.php";
                         echo '<div class="fade-in">';
+                        // Llama al controlador para obtener el HTML de la tabla
                         echo reportes_C::generarReporte($_POST);
                         echo '</div>';
                     }
@@ -72,7 +100,10 @@ $fecha_fin = $_POST["fecha_fin"] ?? date('Y-m-d');
 </div>
 
 <script>
-    // Pequeño script para mejorar la UX de fechas (validación simple)
+    function setAccion(accion) {
+        document.getElementById('accion').value = accion;
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         const fechaInicio = document.getElementById('fecha_inicio');
         const fechaFin = document.getElementById('fecha_fin');
