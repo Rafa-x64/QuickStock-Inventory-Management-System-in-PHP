@@ -10,7 +10,6 @@ Para ver la **Estructura Completa de Tareas y Pendientes**, visita nuestro [Tabl
 
 ---
 
-
 ## Inicio rápido
 
 Este repositorio corresponde al sistema QuickStock, una aplicación web modular desarrollada en PHP bajo el patrón MVC. Su estructura está diseñada para facilitar la mantenibilidad, escalabilidad y claridad técnica en entornos de desarrollo profesional.
@@ -19,18 +18,52 @@ Para conocer el flujo de trabajo, convenciones internas y recomendaciones de imp
 
 ---
 
+## Características Principales
+
+QuickStock ofrece funcionalidades completas para la gestión de inventario y ventas:
+
+### 📊 Módulo de Reportes
+
+- **Generación de Reportes Dinámicos**: Ventas, Inventario, Rotación de Productos y Financiero
+- **Exportación a PDF**: Reportes profesionales con mPDF 8.2
+- **Filtrado Avanzado**: Por rango de fechas y sucursal
+- **Visualización HTML**: Vista previa en pantalla antes de exportar
+
+### 🏪 Gestión de Inventario
+
+- Control de stock por sucursal
+- Categorización de productos
+- Alertas de stock mínimo
+- Historial de movimientos
+
+### 💰 Punto de Venta
+
+- Registro de ventas rápido
+- Múltiples métodos de pago
+- Gestión de clientes
+- Facturación automática
+
+### 👥 Gestión de Personal
+
+- Control de empleados por sucursal
+- Roles y permisos
+- Historial de actividades
+
+---
+
 ## Tecnologías Principales
 
 El proyecto está construido con un stack moderno y enfocado en la seguridad y la modularidad.
 
-| Componente    | Versión / Propósito                   |
-| :------------ | :------------------------------------ |
-| **PHP**       | 8.0+ (POO, modularidad)               |
-| **Composer**  | Gestión de dependencias y autoloading |
-| **Bootstrap** | 5 (Estilos y diseño responsivo)       |
-| **PDO**       | Acceso seguro a Bases de Datos        |
-| **Apache**    | Reescritura de URLs con `.htaccess`   |
-| **OpenSSL**   | Encriptación de datos sensibles       |
+| Componente     | Versión / Propósito                   |
+| :------------- | :------------------------------------ |
+| **PHP**        | 8.0+ (POO, modularidad)               |
+| **PostgreSQL** | 12+ (Base de datos relacional)        |
+| **Composer**   | Gestión de dependencias y autoloading |
+| **Bootstrap**  | 5 (Estilos y diseño responsivo)       |
+| **mPDF**       | 8.2+ (Generación de PDFs)             |
+| **Apache**     | Reescritura de URLs con `.htaccess`   |
+| **OpenSSL**    | Encriptación de datos sensibles       |
 
 ---
 
@@ -49,6 +82,7 @@ cd DEV/PHP
 ```
 
 ### 2. Clonar el repositorio
+
 Clona el proyecto en la carpeta creada:
 
 ```bash
@@ -59,16 +93,19 @@ git remote add origin https://LINK_DEL_REPOSITORIO
 git switch master
 git pull origin master
 ```
+
 ### 3. Instalar dependencias
+
 Ejecuta Composer para instalar las librerías necesarias:
 
-> 💡 Presiona ctrl + ñ para abrir el terminal integrado o abre la terminal en la carpeta raiz del proyecto 
+> 💡 Presiona ctrl + ñ para abrir el terminal integrado o abre la terminal en la carpeta raiz del proyecto
 
 ```bash
 composer install
 ```
 
 ### 4. Verificar configuración de Apache
+
 Asegúrate de que el módulo mod_rewrite esté habilitado y que el archivo .htaccess esté siendo interpretado correctamente. Esto es necesario para la reescritura de URLs.
 
 ### 5. Configurar base de datos (PostgreSQL)
@@ -96,31 +133,32 @@ define('DB_CONNECTION', pg_connect("host=localhost port=5432 dbname=nombre_base_
 > 💡 Por lo general el usuario por defecto es postgres y en caso de no haber configurado una contraseña se omite el campo 'password=' del DSN
 
 #### c. Validar compatibilidad
-Verifica que los modelos y funciones que interactúan con la base de datos estén adaptados para PostgreSQL. Si originalmente fueron escritos para MySQL (por ejemplo, usando mysqli_* o PDO con mysql:), será necesario refactorizar las llamadas para usar funciones compatibles con pg_*.
+
+Verifica que los modelos y funciones que interactúan con la base de datos estén adaptados para PostgreSQL. Si originalmente fueron escritos para MySQL (por ejemplo, usando mysqli*\* o PDO con mysql:), será necesario refactorizar las llamadas para usar funciones compatibles con pg*\*.
 
 #### d. Revisión adicional
+
 Asegúrate de que los tipos de datos en el script SQL sean compatibles con PostgreSQL.
 
 Revisa el uso de comillas, funciones específicas (NOW(), AUTO_INCREMENT, etc.) y sintaxis de claves primarias/foráneas.
-
 
 ## Estructura del Proyecto (MVC)
 
 El núcleo del sistema sigue el patrón **Modelo-Vista-Controlador (MVC)**, garantizando la separación de responsabilidades:
 
-| Carpeta         | Rol dentro del MVC     | Descripción                                                                 |
-| :-------------- | :--------------------- | :-------------------------------------------------------------------------- |
-| `controller/`   | **Controlador (C)**    | Gestiona el flujo de la aplicación e invoca las vistas según la URL.        |
-| `model/`        | **Modelo (M)**         | Lógica de negocio, conexión a la base de datos, encriptación y validaciones.|
-| `view/`         | **Vista (V)**          | Archivos de presentación: HTML, CSS, JS y plantilla base.                   |
-| `assets/`       | **Recursos visuales**  | Bootstrap, componentes, imágenes, iconos y elementos PHP reutilizables.     |
-| `shared/`       | **Lógica compartida**  | Traits PHP reutilizables entre modelos y controladores.                     |
-| `config/`       | **Configuración**      | Constantes globales, credenciales y script de base de datos.                |
-| `docs/`         | **Documentación**      | Manuales técnicos, changelog, estructura y diagramas del sistema.           |
+| Carpeta       | Rol dentro del MVC    | Descripción                                                                  |
+| :------------ | :-------------------- | :--------------------------------------------------------------------------- |
+| `controller/` | **Controlador (C)**   | Gestiona el flujo de la aplicación e invoca las vistas según la URL.         |
+| `model/`      | **Modelo (M)**        | Lógica de negocio, conexión a la base de datos, encriptación y validaciones. |
+| `view/`       | **Vista (V)**         | Archivos de presentación: HTML, CSS, JS y plantilla base.                    |
+| `assets/`     | **Recursos visuales** | Bootstrap, componentes, imágenes, iconos y elementos PHP reutilizables.      |
+| `shared/`     | **Lógica compartida** | Traits PHP reutilizables entre modelos y controladores.                      |
+| `config/`     | **Configuración**     | Constantes globales, credenciales y script de base de datos.                 |
+| `docs/`       | **Documentación**     | Manuales técnicos, changelog, estructura y diagramas del sistema.            |
 
 ### Referencia a estructura del proyecto
 
->[Estructura del proyecto](src/docs/estructura_proyecto.md)
+> [Estructura del proyecto](src/docs/estructura_proyecto.md)
 
 ---
 
@@ -128,7 +166,7 @@ El núcleo del sistema sigue el patrón **Modelo-Vista-Controlador (MVC)**, gara
 
 **¡Las contribuciones son bienvenidas!** Para colaborar en el desarrollo:
 
-1.  Clona el repositorio y crea una rama a partir de `master`: 
+1.  Clona el repositorio y crea una rama a partir de `master`:
 
 ```bash
 git checkout -b feature/nombre-funcionalidad
@@ -137,7 +175,8 @@ git checkout -b feature/nombre-funcionalidad
 2.  Sigue las **Convenciones de Desarrollo**.
 3.  Asegúrate de que tus cambios pasen las pruebas.
 4.  Realiza un `commit` descriptivo y abre un **Pull Request (PR)**.
-``` bash
+
+```bash
 git add .
 git commit -m "commit descriptivo"
 ```
@@ -150,7 +189,7 @@ git branch -D feature/nombre-funcionalidad
 
 ### Referencia a Guia de contribucion
 
->[Contributing.md](src/docs/Contributing.md)
+> [Contributing.md](src/docs/Contributing.md)
 
 ---
 
@@ -158,9 +197,9 @@ git branch -D feature/nombre-funcionalidad
 
 La seguridad es una prioridad. Por favor, asegúrate de:
 
-* Usar siempre **consultas preparadas (PDO)** para interactuar con la base de datos.
-* **Hashear contraseñas** con `password_hash`.
-* **No modificar** archivos críticos como `config/SERVER` o `.htaccess`.
+- Usar siempre **consultas preparadas (PDO)** para interactuar con la base de datos.
+- **Hashear contraseñas** con `password_hash`.
+- **No modificar** archivos críticos como `config/SERVER` o `.htaccess`.
 
 ---
 
