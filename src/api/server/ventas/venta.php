@@ -362,3 +362,103 @@ function obtenerTendenciaMensual($meses = 12)
     $tendencia = pg_fetch_all($result) ?: [];
     return ["tendencia" => $tendencia];
 }
+
+function obtenerCierreCaja($fecha = null)
+{
+    $conn = conectar_base_datos();
+    $sucursal_sesion = $_SESSION['sesion_usuario']['id_sucursal'] ?? 5; // Default to 5 if not set
+    $fecha_filtro = $fecha ?? date('Y-m-d');
+
+    // 1. Resumen General de Ventas (Conteo y Totales Base)
+    $sql_resumen = "SELECT 
+                        COUNT(*) FILTER (WHERE v.activo = 't') as total_ventas,
+                        COUNT(*) FILTER (WHERE v.activo = 'f') as ventas_anuladas,
+                        COALESCE(SUM(total) FILTER (WHERE v.activo = 't'), 0) as total_esperado_base,
+                        MIN(fecha) FILTER (WHERE v.activo = 't') as primera_venta,
+                        MAX(fecha) FILTER (WHERE v.activo = 't') as ultima_venta
+                    FROM ventas.venta v
+                    LEFT JOIN seguridad_acceso.usuario u ON v.id_usuario = u.id_usuario
+                    WHERE DATE(v.fecha) = $1 AND u.id_sucursal = $2";
+
+    $query_resumen = "cierre_resumen_" . uniqid();
+    pg_prepare($conn, $query_resumen, $sql_resumen);
+    $res_resumen = pg_execute($conn, $query_resumen, [$fecha_filtro, $sucursal_sesion]);
+    $resumen = pg_fetch_assoc($res_resumen);
+
+    // 2. Totales por Moneda (Dinero Real Recaudado)
+    $sql_monedas = "SELECT 
+                        m.nombre as moneda,
+                        m.codigo,
+                        COALESCE(SUM(pv.monto), 0) as total_recaudado
+                    FROM ventas.pago_venta pv
+                    JOIN ventas.venta v ON pv.id_venta = v.id_venta
+                    JOIN finanzas.moneda m ON pv.id_moneda = m.id_moneda
+                    LEFT JOIN seguridad_acceso.usuario u ON v.id_usuario = u.id_usuario
+                    WHERE DATE(v.fecha) = $1 
+                      AND u.id_sucursal = $2
+                      AND v.activo = 't' 
+                      AND pv.activo = 't'
+                    GROUP BY m.id_moneda, m.nombre, m.codigo";
+
+    $query_monedas = "cierre_monedas_" . uniqid();
+    pg_prepare($conn, $query_monedas, $sql_monedas);
+    $res_monedas = pg_execute($conn, $query_monedas, [$fecha_filtro, $sucursal_sesion]);
+    $totales_moneda = pg_fetch_all($res_monedas) ?: [];
+
+    // 3. Desglose por Método de Pago y Moneda
+    $sql_metodos = "SELECT 
+                        mp.nombre as metodo_pago,
+                        m.codigo as moneda,
+                        COALESCE(SUM(pv.monto), 0) as monto,
+                        COUNT(pv.id_pago) as transacciones
+                    FROM ventas.pago_venta pv
+                    JOIN ventas.venta v ON pv.id_venta = v.id_venta
+                    JOIN finanzas.metodo_pago mp ON pv.id_metodo_pago = mp.id_metodo_pago
+                    JOIN finanzas.moneda m ON pv.id_moneda = m.id_moneda
+                    LEFT JOIN seguridad_acceso.usuario u ON v.id_usuario = u.id_usuario
+                    WHERE DATE(v.fecha) = $1 
+                      AND u.id_sucursal = $2
+                      AND v.activo = 't' 
+                      AND pv.activo = 't'
+                    GROUP BY mp.id_metodo_pago, mp.nombre, m.id_moneda, m.codigo
+                    ORDER BY mp.nombre, m.codigo";
+
+    $query_metodos = "cierre_metodos_" . uniqid();
+    pg_prepare($conn, $query_metodos, $sql_metodos);
+    $res_metodos = pg_execute($conn, $query_metodos, [$fecha_filtro, $sucursal_sesion]);
+    $desglose_pagos = pg_fetch_all($res_metodos) ?: [];
+
+    // 4. Ventas por Hora (Tendencia)
+    $sql_horas = "SELECT 
+                    EXTRACT(HOUR FROM v.fecha) as hora,
+                    COUNT(*) as cantidad_ventas,
+                    SUM(v.total) as total_base
+                  FROM ventas.venta v
+                  LEFT JOIN seguridad_acceso.usuario u ON v.id_usuario = u.id_usuario
+                  WHERE DATE(v.fecha) = $1 
+                    AND u.id_sucursal = $2
+                    AND v.activo = 't'
+                  GROUP BY EXTRACT(HOUR FROM v.fecha)
+                  ORDER BY hora ASC";
+
+    $query_horas = "cierre_horas_" . uniqid();
+    pg_prepare($conn, $query_horas, $sql_horas);
+    $res_horas = pg_execute($conn, $query_horas, [$fecha_filtro, $sucursal_sesion]);
+    $ventas_hora = pg_fetch_all($res_horas) ?: [];
+
+    // 5. Información de la Sucursal y Usuario (Contexto)
+    $sql_contexto = "SELECT nombre FROM core.sucursal WHERE id_sucursal = $1";
+    $query_contexto = "cierre_contexto_" . uniqid();
+    pg_prepare($conn, $query_contexto, $sql_contexto);
+    $res_contexto = pg_execute($conn, $query_contexto, [$sucursal_sesion]);
+    $sucursal_info = pg_fetch_assoc($res_contexto);
+
+    return [
+        "fecha_cierre" => $fecha_filtro,
+        "sucursal" => $sucursal_info['nombre'] ?? 'Desconocida',
+        "resumen" => $resumen,
+        "totales_moneda" => $totales_moneda,
+        "desglose_pagos" => $desglose_pagos,
+        "ventas_hora" => $ventas_hora
+    ];
+}

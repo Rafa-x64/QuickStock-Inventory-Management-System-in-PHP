@@ -276,7 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 clienteActual = res.cliente;
                 clienteNombre.value = clienteActual.nombre || "";
                 clienteApellido.value = clienteActual.apellido || "";
-                clienteEmail.value = clienteActual.email || "";
+                clienteEmail.value = clienteActual.correo || "";
                 clienteTelefono.value = clienteActual.telefono || "";
                 clienteDireccion.value = clienteActual.direccion || "";
                 

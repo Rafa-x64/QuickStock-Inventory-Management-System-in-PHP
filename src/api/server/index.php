@@ -218,6 +218,11 @@ switch ($accion) {
         $out = obtenerTendenciaMensual($peticion["meses"] ?? 12);
         break;
 
+    case "obtener_cierre_caja":
+        include_once __DIR__ . "/ventas/venta.php";
+        $out = obtenerCierreCaja($peticion["fecha"] ?? null);
+        break;
+
     default:
         $out = ["error" => "Accion no reconocida"];
 }
