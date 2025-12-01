@@ -1,7 +1,7 @@
 <div class="container-fluid" id="mainContent">
     <div class="row d-flex flex-column justify-content-center align-items-center p-3 p-md-5">
         <div class="col-12 Quick-title pb-4 px-5">
-            <h1>Estadísticas de Ventas</h1>
+            <h1>Estadís ticas de Ventas</h1>
             <p class="text-secondary">Resumen visual de productos más vendidos y desempeño general</p>
         </div>
 
@@ -40,10 +40,11 @@
 
         <!-- VALOR TOTAL DE VENTAS -->
         <div class="col-12 col-md-8 Quick-widget p-4 mb-5 text-center">
-            <h4 class="Quick-title mb-3">Valor Total de Ventas</h4>
-            <h2 id="valorTotalVentas" class="fw-bold text-success">0 Bs.</h2>
+            <h4 class="Quick-title mb-3">Valor Total deVentas</h4>
+            <h2 id="valorTotalVentas" class="fw-bold text-success">$0.00</h2>
         </div>
     </div>
 </div>
 
-<script src="view/js/ventas-productos-pupulares.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="module" src="api/client/ventas-productos-populares.js"></script>

@@ -1,3 +1,17 @@
+<?php
+// Obtener datos de sesión para sucursal
+$id_sucursal_sesion = $_SESSION['sesion_usuario']['id_sucursal'] ?? 5;
+$nombre_sucursal_sesion = $_SESSION['sesion_usuario']['sucursal']['nombre'] ?? null;
+
+// Si no hay nombre en sesión y es la ID 5, asignar nombre por defecto
+if (!$nombre_sucursal_sesion && $id_sucursal_sesion == 5) {
+    $nombre_sucursal_sesion = "Global Sport (Principal)";
+} elseif (!$nombre_sucursal_sesion) {
+    $nombre_sucursal_sesion = "Sucursal ID: " . $id_sucursal_sesion;
+}
+
+$fecha_actual = date('Y-m-d\TH:i');
+?>
 <div class="container-fluid" id="mainContent">
     <div class="row d-flex flex-column justify-content-center align-items-center">
         <div class="col-12 p-3 p-lg-5">
@@ -72,32 +86,21 @@
 
                                 <div class="col-md-6">
                                     <label class="form-label">Sucursal</label>
-                                    <input type="text" id="idSucursal" class="form-control" value="Sucursal Valencia Centro" readonly>
+                                    <!-- Hidden ID for JS -->
+                                    <input type="hidden" id="idSucursalHidden" value="<?php echo $id_sucursal_sesion; ?>">
+                                    <input type="text" id="nombreSucursalDisplay" class="form-control" value="<?php echo $nombre_sucursal_sesion; ?>" readonly>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label">Vendedor</label>
                                     <select id="idUsuario" class="form-select" required>
-                                        <option value="">Seleccione...</option>
-                                        <option value="1">Luis Castillo</option>
-                                        <option value="2">María León</option>
-                                        <option value="3">Pedro Sánchez</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">Caja / Turno</label>
-                                    <select id="idCajaTurno" class="form-select" required>
-                                        <option value="">Seleccione...</option>
-                                        <option value="1">Caja 1 - Apertura</option>
-                                        <option value="2">Caja 1 - Tarde</option>
-                                        <option value="3">Caja 2 - Mañana</option>
+                                        <option value="">Cargando vendedores...</option>
                                     </select>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label">Fecha y Hora</label>
-                                    <input type="datetime-local" id="fechaHora" class="form-control" required>
+                                    <input type="datetime-local" id="fechaHora" class="form-control" value="<?php echo $fecha_actual; ?>" readonly>
                                 </div>
 
                                 <div class="col-md-6">
@@ -118,14 +121,50 @@
                             <h5>Detalle de Productos</h5>
                             <hr>
 
+                            <!-- Sección de Búsqueda de Productos -->
+                            <div class="card mb-3 border-primary">
+                                <div class="card-body bg-light">
+                                    <h6 class="card-title">Agregar Producto</h6>
+                                    <div class="row g-2 align-items-end">
+                                        <div class="col-md-3">
+                                            <label class="form-label small">Código de Barras</label>
+                                            <input type="text" id="prod_codigo_barra" class="form-control form-control-sm" placeholder="Escanear o escribir...">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label small">Categoría</label>
+                                            <select id="prod_categoria" class="form-select form-select-sm">
+                                                <option value="">Todas</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label small">Color</label>
+                                            <select id="prod_color" class="form-select form-select-sm">
+                                                <option value="">Todos</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label small">Talla</label>
+                                            <select id="prod_talla" class="form-select form-select-sm">
+                                                <option value="">Todas</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-primary btn-sm w-100" id="btnBuscarAgregar">
+                                                <i class="bi bi-plus-lg"></i> Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="table-responsive quick-table">
                                 <table class="table table-striped align-middle" id="detalleVentaTable">
                                     <thead>
                                         <tr>
-                                            <th>Variante / Código de barras / SKU</th>
+                                            <th>Producto / SKU</th>
+                                            <th>Detalles</th>
                                             <th>Cantidad</th>
                                             <th>Precio Unitario</th>
-                                            <th>Descuento (%)</th>
                                             <th>Subtotal</th>
                                             <th></th>
                                         </tr>
@@ -140,8 +179,6 @@
                                     </tfoot>
                                 </table>
                             </div>
-
-                            <button type="button" class="btn btn-sm btn-outline-success" id="addArticuloBtn">Agregar Variante</button>
                         </div>
 
                         <!-- PASO 3: PAGO -->
@@ -154,13 +191,7 @@
                                 <div class="col-md-6">
                                     <label class="form-label">Método de Pago</label>
                                     <select id="idMetodoPago" class="form-select" required>
-                                        <option value="">Seleccione...</option>
-                                        <option value="1">Efectivo</option>
-                                        <option value="2">Débito</option>
-                                        <option value="3">Crédito</option>
-                                        <option value="4">Transferencia</option>
-                                        <option value="5">Zelle</option>
-                                        <option value="6">PayPal</option>
+                                        <option value="">Cargando...</option>
                                     </select>
                                 </div>
 
@@ -217,4 +248,4 @@
     </div>
 </div>
 
-<script src="view/js/punto-venta.js"></script>
+<script type="module" src="view/js/ventas-punto-venta.js"></script>
