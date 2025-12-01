@@ -147,21 +147,10 @@
                     </div>
                 </li>
                 <li class="list-group-item pt-2">
-                    <div class="col-12 p-0 m-0 menu-item">
-                        <details class="menu-details">
-                            <summary class="d-flex flex-row align-items-center Quick-white-link">
-                                <i class="bi bi-file-earmark-text fs-6"></i>
-                                <p class="texto-menu m-0 ms-2">Contabilidad y Reportes</p>
-                            </summary>
-                            <div class="menu-submenu d-flex flex-column ps-2">
-                                <a href="#" class="ms-3">Reportes de Rotacion</a>
-                                <a href="#" class="ms-3">Reporte de Ventas</a>
-                                <a href="#" class="ms-3">Reporte de Inventario</a>
-                                <a href="#" class="ms-3">Reporte de Financiero</a>
-                                <a href="#" class="ms-3">Reporte de Auditoria</a>
-                            </div>
-                        </details>
-                    </div>
+                    <a href="prueba-reporte" class="d-flex flex-row align-items-center text-decoration-none Quick-white-link">
+                        <i class="bi bi-file-earmark-text fs-5"></i>
+                        <p class="m-0 ms-2">Contabilidad y Reportes</p>
+                    </a>
                 </li>
                 <li class="list-group-item pt-2">
                     <div class="col-12 p-0 m-0 menu-item">
@@ -335,19 +324,10 @@
             </div>
 
             <div class="col-12 p-0 mt-2 menu-item">
-                <details class="menu-details">
-                    <summary class="d-flex flex-row align-items-center Quick-white-link">
-                        <i class="bi bi-file-earmark-text fs-5"></i>
-                        <p class="texto-menu">Contabilidad y Reportes</p>
-                    </summary>
-                    <div class="menu-submenu d-flex flex-column ps-5">
-                        <a href="#" class="ms-3">Reportes de Rotacion</a>
-                        <a href="#" class="ms-3">Reporte de Ventas</a>
-                        <a href="#" class="ms-3">Reporte de Inventario</a>
-                        <a href="#" class="ms-3">Reporte de Financiero</a>
-                        <a href="#" class="ms-3">Reporte de Auditoria</a>
-                    </div>
-                </details>
+                <a href="prueba-reporte" class="d-flex flex-row align-items-center Quick-white-link menu-details-link">
+                    <i class="bi bi-file-earmark-text fs-5"></i>
+                    <p class="texto-menu">Contabilidad y reportes</p>
+                </a>
             </div>
 
             <div class="col-12 p-0 mt-2 menu-item">

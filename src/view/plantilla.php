@@ -96,6 +96,13 @@ if ($vista === "inicio-sesion-usuario-view.php" || $vista === "registro-usuario-
     exit();
 }
 
+// 🔥 VERIFICAR SI ES UNA SOLICITUD DE PDF ANTES DE ENVIAR HTML
+if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST['accion'] ?? '') === 'imprimir_pdf') {
+    include_once("controller/reportes_C.php");
+    reportes_C::generarReporte($_POST);
+    exit();
+}
+
 // 🔥 SOLO EJECUTAR ESTO SI EXISTE SESIÓN
 if (isset($_SESSION["sesion_usuario"])) {
 

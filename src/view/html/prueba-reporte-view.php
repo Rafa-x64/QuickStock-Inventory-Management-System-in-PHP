@@ -3,14 +3,6 @@ $tipo_reporte = $_POST["tipo_reporte"] ?? "";
 $fecha_inicio = $_POST["fecha_inicio"] ?? date('Y-m-01');
 $fecha_fin = $_POST["fecha_fin"] ?? date('Y-m-d');
 $accion = $_POST['accion'] ?? '';
-
-if ($_SERVER["REQUEST_METHOD"] == "POST" && $accion === 'imprimir_pdf') {
-    include_once "controller/reportes_C.php";
-    reportes_C::generarReporte($_POST);
-
-    exit;
-}
-
 ?>
 
 <div class="container-fluid" id="mainContent">
@@ -109,7 +101,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $accion === 'imprimir_pdf') {
 </script>
 
 <style>
-
     .fade-in {
         animation: fadeIn 0.5s ease-in;
     }
