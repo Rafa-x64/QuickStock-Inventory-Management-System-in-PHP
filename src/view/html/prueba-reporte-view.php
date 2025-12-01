@@ -2,25 +2,15 @@
 $tipo_reporte = $_POST["tipo_reporte"] ?? "";
 $fecha_inicio = $_POST["fecha_inicio"] ?? date('Y-m-01');
 $fecha_fin = $_POST["fecha_fin"] ?? date('Y-m-d');
-$accion = $_POST['accion'] ?? ''; // <-- Asegurarse de capturar la acción
+$accion = $_POST['accion'] ?? '';
 
-echo __DIR__;
-// =========================================================
-// === INICIO DE LA NUEVA LÓGICA DE CONTROL (PDF HANDLER) ===
-// =========================================================
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $accion === 'imprimir_pdf') {
-    // 1. Incluimos el controlador (la ruta 'controller/reportes_C.php' debe ser correcta)
     include_once "controller/reportes_C.php";
-
-    // 2. Llama a la función. Dentro de ella, se genera el PDF y se hace 'exit'.
     reportes_C::generarReporte($_POST);
 
-    // Previene que se renderice el HTML de la vista si por alguna razón el 'exit' en el controlador falla.
     exit;
 }
-// =========================================================
-// === FIN DE LA NUEVA LÓGICA DE CONTROL ===
-// =========================================================
+
 ?>
 
 <div class="container-fluid" id="mainContent">
@@ -28,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $accion === 'imprimir_pdf') {
         <div class="col-12 p-3 p-lg-5">
 
             <div class="row mb-4">
-                <div class="col-12 text-center Quick-title">
+                <div class="col-12 Quick-title">
                     <h1 class="m-0">Generación de Reportes</h1>
                     <p class="text-muted">Seleccione los parámetros para generar su reporte</p>
                 </div>
@@ -82,12 +72,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $accion === 'imprimir_pdf') {
             <div class="row mt-5">
                 <div class="col-12">
                     <?php
-                    // Solo se ejecuta si es POST, hay un tipo de reporte, Y la acción es 'generar'
                     if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($tipo_reporte) && $accion === 'generar') {
-                        // Se incluye de nuevo, pero esto es seguro con include_once.
                         include_once "controller/reportes_C.php";
                         echo '<div class="fade-in">';
-                        // Llama al controlador para obtener el HTML de la tabla
                         echo reportes_C::generarReporte($_POST);
                         echo '</div>';
                     }
@@ -122,15 +109,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $accion === 'imprimir_pdf') {
 </script>
 
 <style>
-    .Quick-card {
-        background-color: #fff;
-        border: 1px solid #e0e0e0;
-    }
-
-    .Quick-title h1 {
-        color: #333;
-        font-weight: 700;
-    }
 
     .fade-in {
         animation: fadeIn 0.5s ease-in;

@@ -66,7 +66,8 @@ $paginas_existentes = [
     "sucursales-editar-view.php",
     "compras-editar-view.php",
     "ventas-editar-metodo-pago-view.php",
-    "ventas-detalle-factura-view.php"
+    "ventas-detalle-factura-view.php",
+    "prueba-reporte-view.php"
 ];
 
 // Redirección si la vista NO es pública y no hay sesión
