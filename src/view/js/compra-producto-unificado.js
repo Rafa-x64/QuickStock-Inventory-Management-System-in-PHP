@@ -59,9 +59,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     // *********************************************************
 
     let productoIndex = 0;
-    if (productosContainer.children.length === 0) {
-        agregarModuloProducto();
-    }
 
     // --- MÓDULO: Funciones de Utilidad y Validaciones ---
 
@@ -69,8 +66,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const reglasValidacion = {
         // Reglas de la Compra Principal
-        // ❌ MODIFICACIÓN 1: Eliminada la regla de validación de fecha.
-        // compra_fecha_compra: { min: new Date('2020-01-01').getTime(), mensaje: "Fecha inválida." }, 
         compra_id_proveedor: { min: 1, mensaje: "Debe seleccionar proveedor.", isSelect: true },
         compra_id_sucursal: { min: 1, mensaje: "Debe seleccionar sucursal.", isSelect: true },
         compra_id_usuario: { min: 1, mensaje: "Debe seleccionar empleado.", isSelect: true },
@@ -80,7 +75,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Reglas del Módulo de Producto (Las de color/talla aplican al campo activo)
         prod_codigo_barra: { regex: /^[A-Za-z0-9\-]{1,}$/, mensaje: "Código obligatorio." },
         prod_nombre: { regex: /^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ\s]{3,}$/, mensaje: "Nombre (mínimo 3)." },
-        // 👇 CAMBIO CLAVE: Cambiamos 'min: 1' a 'min: 0' para permitir la opción con value=""
         prod_id_categoria: { min: 0, mensaje: "Debe seleccionar categoría (o dejar vacío)", isSelect: true },
 
         // Reglas de Color y Talla (para SELECT y INPUT)
@@ -95,7 +89,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     const validarCampo = (campo, regla) => {
-        if (campo.disabled || campo.readOnly) { // 📝 Nota: Se añade campo.readOnly aquí por consistencia, aunque la regla ya se eliminó
+        if (campo.disabled || campo.readOnly) {
             campo.classList.remove("is-invalid", "is-valid");
             return true;
         }
@@ -106,7 +100,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (valor.length === 0 && campo.required) {
             valido = false;
         } else if (valor.length === 0 && !campo.required) {
-            // Si no es requerido, y el valor es vacío, es válido.
             valido = true;
         } else {
             if (regla && regla.regex) {
@@ -138,16 +131,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
 
-    // --- MÓDULO: Lógica de Alternancia Producto Dinámico (Reubicada aquí) ---
+    // --- MÓDULO: Lógica de Alternancia Producto Dinámico ---
 
-    /**
-     * Alterna la visualización y estado (disabled/required/name) entre un select y un input.
-     * Mantiene esta lógica en 'validaciones.js' ya que depende fuertemente de 'validarCampo'
-     * y 'reglasValidacion'.
-     * @param {HTMLElement} module - El contenedor del módulo de producto.
-     * @param {string} field - 'color' o 'talla'.
-     * @param {string} mode - 'select' o 'new'.
-     */
     function toggleProductoInputSelect(module, field, mode) {
         const isColor = field === 'color';
         const index = module.dataset.index;
@@ -164,7 +149,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const inputRegla = reglasValidacion[inputIdBase];
 
         if (mode === 'select') {
-            // Lógica para SELECCIONAR EXISTENTE
             selectContainer.style.display = 'block';
             inputContainer.style.display = 'none';
 
@@ -182,7 +166,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             validarCampo(selectElement, selectRegla);
 
         } else if (mode === 'new') {
-            // Lógica para AÑADIR NUEVO
             selectContainer.style.display = 'none';
             inputContainer.style.display = 'block';
 
@@ -204,11 +187,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // --- MÓDULO: Inyección y Lógica del Producto Dinámico ---
 
-    /**
-     * Genera el HTML del formulario de registro de producto, 
-     * inyectando las opciones de Select cargadas.
-     * (Usa la función 'crearOpcionesHTML' definida en este mismo archivo).
-     */
     function generarModuloProductoHTML(index, baseData) {
         const categoriaOptions = crearOpcionesHTML(baseData.categorias, 'id_categoria', 'nombre', 'Seleccione categoría');
         const colorOptions = crearOpcionesHTML(baseData.colores, 'id_color', 'nombre', 'Seleccione color');
@@ -305,9 +283,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         `;
     }
 
-    /**
-     * Inyecta y configura un nuevo módulo de producto.
-     */
     function agregarModuloProducto() {
         const index = productoIndex++;
         productosContainer.insertAdjacentHTML('beforeend', generarModuloProductoHTML(index, datosBaseProducto));
@@ -387,23 +362,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const fechaCompraEl = document.getElementById("compra_fecha_compra");
     if (fechaCompraEl) {
-        // 🚀 MODIFICACIÓN 2: Se añade el atributo 'readonly' al input de fecha.
         fechaCompraEl.readOnly = true;
 
-        // Inicializar con la fecha de hoy
         const now = new Date();
         const yyyy = now.getFullYear();
-        // getMonth() devuelve 0-11. Sumamos 1 y rellenamos con cero a la izquierda si es necesario.
         const mm = String(now.getMonth() + 1).padStart(2, '0');
         const dd = String(now.getDate()).padStart(2, '0');
         fechaCompraEl.value = `${yyyy}-${mm}-${dd}`;
-
-        // 📝 Nota: Se eliminó la validación, por lo que no es necesario adjuntar el listener de validación aquí.
     }
 
     if (btnAgregarProducto) btnAgregarProducto.addEventListener('click', agregarModuloProducto);
 
-    // Adjuntar validación a los campos principales de la compra (excluyendo la fecha, que ya no tiene regla)
+    // Adjuntar validación a los campos principales de la compra
     Object.keys(reglasValidacion).filter(id => id.startsWith('compra_')).forEach(id => {
         const campo = document.getElementById(id);
         if (campo) {
@@ -411,7 +381,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    // 4. Listener para el envío del formulario de Compra
+    // Listener para el envío del formulario de Compra
     if (formCompra) formCompra.addEventListener("submit", e => {
         e.preventDefault();
 
@@ -430,8 +400,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Validar Módulos de Producto
         const productosModulos = productosContainer.querySelectorAll('.Quick-form-product');
         if (productosModulos.length === 0) {
-            // Mantenemos este alert solo si la lista está vacía, para informar la validación mínima.
-            // Si desea eliminar *todo* alert, debe eliminar esta línea:
             alert("Debe agregar al menos un producto a la compra.");
             todoValido = false;
         } else {
@@ -444,8 +412,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     const regla = reglasValidacion[idBase] || null;
 
-                    // Si es el campo de categoría y tiene value="", la validación pasa porque min: 0
-                    // Si el campo tiene una regla de validación y falla, se marca como inválido.
                     if (regla && !validarCampo(campo, regla)) {
                         todoValido = false;
                         if (!primerInvalido) primerInvalido = campo;
@@ -461,8 +427,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        // ⭐ ¡SOLUCIÓN A TU REQUERIMIENTO! ⭐
-        // Después de la validación exitosa, enviamos el formulario de manera estándar.
         formCompra.submit();
     });
 
@@ -471,7 +435,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         formCompra.reset();
 
         if (fechaCompraEl) {
-            // Inicializar fecha de nuevo al hacer reset
             const now = new Date();
             const yyyy = now.getFullYear();
             const mm = String(now.getMonth() + 1).padStart(2, '0');
@@ -485,4 +448,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         formCompra.querySelectorAll('.is-invalid, .is-valid').forEach(el => el.classList.remove('is-invalid', 'is-valid'));
     });
+
+    // *** IMPORTANTE: Agregar el primer módulo de producto AL FINAL de la inicialización ***
+    // Esto evita el error "Cannot access 'reglasValidacion' before initialization"
+    if (productosContainer.children.length === 0) {
+        agregarModuloProducto();
+    }
 });

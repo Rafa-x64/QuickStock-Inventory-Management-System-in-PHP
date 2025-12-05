@@ -324,9 +324,11 @@ function obtenerDetalleProducto($id_producto)
     ];
 }
 
-function obtenerProductoPorCodigoBarra($codigo)
+function obtenerProductoPorCodigoBarra($codigo, $id_sucursal = null)
 {
     $conn = conectar_base_datos();
+    
+    // 1. Buscar el producto por código de barra o ID
     $sql = "
         SELECT 
             p.id_producto,
@@ -335,18 +337,47 @@ function obtenerProductoPorCodigoBarra($codigo)
             p.precio_venta,
             p.activo,
             t.rango_talla as talla,
-            c.nombre as color
+            t.id_talla,
+            c.nombre as color,
+            c.id_color,
+            cat.nombre as categoria,
+            cat.id_categoria
         FROM inventario.producto p
         LEFT JOIN core.talla t ON t.id_talla = p.id_talla
         LEFT JOIN core.color c ON c.id_color = p.id_color
+        LEFT JOIN core.categoria cat ON cat.id_categoria = p.id_categoria
         WHERE (p.codigo_barra = $1 OR CAST(p.id_producto AS TEXT) = $1) AND p.activo = true
     ";
-    pg_prepare($conn, "get_prod_codigo", $sql);
-    $result = pg_execute($conn, "get_prod_codigo", [$codigo]);
+    
+    $stmtName = "get_prod_codigo_" . uniqid();
+    pg_prepare($conn, $stmtName, $sql);
+    $result = pg_execute($conn, $stmtName, [$codigo]);
 
-    if ($result && pg_num_rows($result) > 0) {
-        return ["status" => true, "producto" => pg_fetch_assoc($result)];
-    } else {
-        return ["status" => false, "mensaje" => "Producto no encontrado"];
+    if (!$result || pg_num_rows($result) === 0) {
+        return ["status" => false, "mensaje" => "Producto no encontrado en el sistema."];
     }
+
+    $producto = pg_fetch_assoc($result);
+
+    // 2. Si se proporciona sucursal, verificar existencia en inventario
+    if ($id_sucursal) {
+        $sqlInv = "SELECT cantidad FROM inventario.inventario WHERE id_producto = $1 AND id_sucursal = $2";
+        $stmtInv = "check_inv_suc_" . uniqid();
+        pg_prepare($conn, $stmtInv, $sqlInv);
+        $resInv = pg_execute($conn, $stmtInv, [$producto['id_producto'], $id_sucursal]);
+
+        if (!$resInv || pg_num_rows($resInv) === 0) {
+            return [
+                "status" => false, 
+                "mensaje" => "El producto existe pero NO está registrado en esta sucursal.",
+                "producto_basico" => $producto // Opcional: devolver datos básicos si se quiere mostrar qué es
+            ];
+        }
+        
+        // Opcional: Verificar stock > 0 si se desea restringir venta sin stock aquí
+        // $inv = pg_fetch_assoc($resInv);
+        // if ($inv['cantidad'] <= 0) { ... }
+    }
+
+    return ["status" => true, "producto" => $producto];
 }

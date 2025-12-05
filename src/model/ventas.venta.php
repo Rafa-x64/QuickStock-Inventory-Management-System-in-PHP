@@ -2,14 +2,6 @@
 
 class venta extends mainModel
 {
-    /**
-     * Crea una venta completa de manera transaccional (ACID).
-     * 
-     * @param array $datosVenta Array con datos de la venta (id_cliente, id_usuario, id_sucursal, total, cliente_nuevo)
-     * @param array $detalles Array de arrays con detalles (id_producto, cantidad, precio_unitario, subtotal)
-     * @param array $pagos Array de arrays con pagos (id_metodo_pago, monto, id_moneda, tasa)
-     * @return array Retorna array con status (true/false), mensaje o error, y datos resultantes.
-     */
     public static function crearVentaCompleta($datosVenta, $detalles, $pagos)
     {
         $conn = parent::conectar_base_datos();
@@ -27,6 +19,11 @@ class venta extends mainModel
             if (!empty($datosVenta['cliente_nuevo'])) {
                 $cli = $datosVenta['cliente_nuevo'];
                 $cedula = trim($cli['cedula']);
+
+                // Sanitizar cédula: si es solo números, añadir prefijo "V-"
+                if (ctype_digit($cedula)) {
+                    $cedula = "V-" . $cedula;
+                }
 
                 if (empty($cedula) || empty($cli['nombre'])) {
                     throw new Exception("Datos del cliente incompletos: Cédula y Nombre son obligatorios.");
@@ -143,8 +140,8 @@ class venta extends mainModel
             // =================================================================================
             // 4. REGISTRO DE PAGOS
             // =================================================================================
-            $queryPago = "INSERT INTO ventas.pago_venta (id_venta, id_metodo_pago, monto, id_moneda, tasa, activo) 
-                          VALUES ($1, $2, $3, $4, $5, 't')";
+            $queryPago = "INSERT INTO ventas.pago_venta (id_venta, id_metodo_pago, monto, id_moneda, tasa, referencia, activo) 
+                          VALUES ($1, $2, $3, $4, $5, $6, 't')";
             pg_prepare($conn, "insert_pago_item", $queryPago);
 
             foreach ($pagos as $pago) {
@@ -153,7 +150,8 @@ class venta extends mainModel
                     $pago['id_metodo_pago'],
                     $pago['monto'],
                     $pago['id_moneda'],
-                    $pago['tasa']
+                    $pago['tasa'],
+                    $pago['referencia'] ?? null
                 ]);
 
                 if (!$resPago) {
