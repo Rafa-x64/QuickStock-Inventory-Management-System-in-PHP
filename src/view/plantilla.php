@@ -43,6 +43,7 @@ $paginas_existentes = [
     "empleados-añadir-rol-view.php",
     "empleados-lista-roles-view.php",
     "empleados-detalle-rol-view.php",
+    "empleados-editar-rol-view.php",
     "monedas-tasas-activas-view.php",
     "monedas-añadir-tasas-view.php",
     "monedas-historial-view.php",
