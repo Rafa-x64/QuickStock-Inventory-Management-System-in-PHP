@@ -36,6 +36,7 @@ $paginas_existentes = [
     "proveedores-listado-view.php",
     "proveedores-añadir-view.php",
     "proveedores-detalle-view.php",
+    "proveedores-editar-view.php",
     "empleados-listado-view.php",
     "empleados-añadir-view.php",
     "empleados-detalle-view.php",

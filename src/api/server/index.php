@@ -298,6 +298,21 @@ switch ($accion) {
         $out = obtenerClientePorId($peticion["id_cliente"]);
         break;
 
+    // ========== PROVEEDORES ==========
+    case "obtener_todos_los_proveedores":
+        include_once __DIR__ . "/core/proveedor.php";
+        $out = obtenerTodosLosProveedores(
+            $peticion["nombre"] ?? null,
+            $peticion["correo"] ?? null,
+            $peticion["estado"] ?? null
+        );
+        break;
+
+    case "obtener_proveedor_por_id":
+        include_once __DIR__ . "/core/proveedor.php";
+        $out = obtenerProveedorPorId($peticion["id_proveedor"]);
+        break;
+
     default:
         $out = ["error" => "Accion no reconocida"];
 }
