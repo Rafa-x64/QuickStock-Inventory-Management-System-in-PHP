@@ -9,6 +9,11 @@ class ventas_punto_venta_C extends mainModel
     {
         // 1. Validar datos básicos
         $idCliente = isset($request['id_cliente']) ? trim($request['id_cliente']) : null;
+
+        // Si id_cliente no es un número válido, lo dejamos como null (cliente nuevo)
+        if ($idCliente !== null && !ctype_digit($idCliente)) {
+            $idCliente = null;
+        }
         $idUsuario = isset($request['id_usuario']) ? trim($request['id_usuario']) : null;
         $idSucursal = isset($request['id_sucursal']) ? trim($request['id_sucursal']) : null;
         $detalles = $request['detalles'] ?? [];

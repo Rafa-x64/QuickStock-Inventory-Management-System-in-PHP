@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 fila.innerHTML = `
                     <td>${pag.metodo_pago || '-'}</td>
                     <td>${pag.moneda || '-'} (${pag.simbolo || ''})</td>
-                    <td>$${parseFloat(pag.monto || 0).toFixed(2)}</td>
+                    <td>${parseFloat(pag.monto || 0).toFixed(2)} ${pag.simbolo || ''}</td>
                     <td>${parseFloat(pag.tasa || 1).toFixed(4)}</td>
                     <td>${pag.referencia || '-'}</td>
                 `;

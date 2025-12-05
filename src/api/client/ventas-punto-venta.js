@@ -8,10 +8,11 @@ export const ventasAPI = {
         });
     },
 
-    obtenerProductoPorCodigo: async (codigo) => {
+    obtenerProductoPorCodigo: async (codigo, idSucursal) => {
         return await api({
             accion: "obtener_producto_por_codigo",
-            codigo: codigo
+            codigo: codigo,
+            id_sucursal: idSucursal || null
         });
     },
 

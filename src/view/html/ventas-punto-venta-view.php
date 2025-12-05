@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Obtener datos de sesión para sucursal
 $id_sucursal_sesion = $_SESSION['sesion_usuario']['id_sucursal'] ?? 5;
 $nombre_sucursal_sesion = $_SESSION['sesion_usuario']['sucursal']['nombre'] ?? null;
@@ -132,9 +132,7 @@ $fecha_actual = date('Y-m-d\TH:i');
                                         </div>
                                         <div class="col-md-3">
                                             <label class="form-label small">Categoría</label>
-                                            <select id="prod_categoria" class="form-select form-select-sm">
-                                                <option value="">Todas</option>
-                                            </select>
+                                            <input type="text" id="prod_categoria" class="form-control form-control-sm" readonly placeholder="Categoría del producto">
                                         </div>
                                         <div class="col-md-2">
                                             <label class="form-label small">Color</label>

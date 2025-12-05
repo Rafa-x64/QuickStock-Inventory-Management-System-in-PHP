@@ -155,7 +155,7 @@ switch ($accion) {
 
     case "obtener_producto_por_codigo":
         include_once __DIR__ . "/inventario/producto.php";
-        $out = obtenerProductoPorCodigoBarra($peticion["codigo"]);
+        $out = obtenerProductoPorCodigoBarra($peticion["codigo"], $peticion["id_sucursal"] ?? null);
         break;
 
     case "obtener_tasas_cambio":
@@ -221,6 +221,65 @@ switch ($accion) {
     case "obtener_cierre_caja":
         include_once __DIR__ . "/ventas/venta.php";
         $out = obtenerCierreCaja($peticion["fecha"] ?? null);
+        break;
+
+    // ========== DASHBOARD GERENTE ==========
+    case "dashboard_resumen_financiero":
+        include_once __DIR__ . "/dashboard/gerente.php";
+        $id_sucursal = $_SESSION["sesion_usuario"]["sucursal"]["id_sucursal"] ?? null;
+        $out = obtenerResumenFinanciero($id_sucursal);
+        break;
+
+    case "dashboard_ventas_hoy":
+        include_once __DIR__ . "/dashboard/gerente.php";
+        $id_sucursal = $_SESSION["sesion_usuario"]["sucursal"]["id_sucursal"] ?? null;
+        $out = obtenerVentasHoy($id_sucursal);
+        break;
+
+    case "dashboard_producto_mas_vendido_hoy":
+        include_once __DIR__ . "/dashboard/gerente.php";
+        $id_sucursal = $_SESSION["sesion_usuario"]["sucursal"]["id_sucursal"] ?? null;
+        $out = obtenerProductoMasVendidoHoy($id_sucursal);
+        break;
+
+    case "dashboard_producto_mas_vendido_semana":
+        include_once __DIR__ . "/dashboard/gerente.php";
+        $id_sucursal = $_SESSION["sesion_usuario"]["sucursal"]["id_sucursal"] ?? null;
+        $out = obtenerProductoMasVendidoSemana($id_sucursal);
+        break;
+
+    case "dashboard_top5_productos":
+        include_once __DIR__ . "/dashboard/gerente.php";
+        $id_sucursal = $_SESSION["sesion_usuario"]["sucursal"]["id_sucursal"] ?? null;
+        $out = obtenerTop5Productos($id_sucursal);
+        break;
+
+    case "dashboard_stock_bajo":
+        include_once __DIR__ . "/dashboard/gerente.php";
+        $id_sucursal = $_SESSION["sesion_usuario"]["sucursal"]["id_sucursal"] ?? null;
+        $out = obtenerProductosStockBajo($id_sucursal);
+        break;
+
+    case "dashboard_categorias":
+        include_once __DIR__ . "/dashboard/gerente.php";
+        $out = obtenerCategoriasConPadre();
+        break;
+
+    case "dashboard_total_productos":
+        include_once __DIR__ . "/dashboard/gerente.php";
+        $out = obtenerTotalProductosActivos();
+        break;
+
+    case "dashboard_sin_stock":
+        include_once __DIR__ . "/dashboard/gerente.php";
+        $id_sucursal = $_SESSION["sesion_usuario"]["sucursal"]["id_sucursal"] ?? null;
+        $out = obtenerProductosSinStock($id_sucursal);
+        break;
+
+    case "dashboard_nombre_sucursal":
+        include_once __DIR__ . "/dashboard/gerente.php";
+        $id_sucursal = $_SESSION["sesion_usuario"]["sucursal"]["id_sucursal"] ?? null;
+        $out = obtenerNombreSucursalDashboard($id_sucursal);
         break;
 
     default:
