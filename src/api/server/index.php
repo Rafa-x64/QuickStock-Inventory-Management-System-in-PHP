@@ -282,6 +282,22 @@ switch ($accion) {
         $out = obtenerNombreSucursalDashboard($id_sucursal);
         break;
 
+    // ========== CLIENTES ==========
+    case "obtener_todos_los_clientes":
+        include_once __DIR__ . "/core/cliente.php";
+        $out = obtenerTodosLosClientes(
+            $peticion["nombre"] ?? null,
+            $peticion["apellido"] ?? null,
+            $peticion["cedula"] ?? null,
+            $peticion["estado"] ?? null
+        );
+        break;
+
+    case "obtener_cliente_por_id":
+        include_once __DIR__ . "/core/cliente.php";
+        $out = obtenerClientePorId($peticion["id_cliente"]);
+        break;
+
     default:
         $out = ["error" => "Accion no reconocida"];
 }
