@@ -142,7 +142,7 @@
                     </div>
                 </li>
                 <li class="list-group-item pt-2">
-                    <a href="configurar-cuenta" class="d-flex flex-row align-items-center text-decoration-none Quick-white-link">
+                    <a href="configuracion-cuenta" class="d-flex flex-row align-items-center text-decoration-none Quick-white-link">
                         <i class="bi bi-person-gear fs-5"></i>
                         <p class="m-0 ms-2">Configurar Cuenta</p>
                     </a>
@@ -328,7 +328,7 @@
             </div>
 
             <div class="col-12 p-0 mt-2 menu-item">
-                <a href="configurar-cuenta" class="d-flex flex-row align-items-center Quick-white-link menu-details-link">
+                <a href="configuracion-cuenta" class="d-flex flex-row align-items-center Quick-white-link menu-details-link">
                     <i class="bi bi-person-gear fs-5"></i>
                     <p class="texto-menu">Configurar Cuenta</p>
                 </a>

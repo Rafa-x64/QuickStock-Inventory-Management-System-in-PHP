@@ -99,7 +99,7 @@
                                 <p class="texto-menu m-0 ms-2">Clientes</p>
                             </summary>
                             <div class="menu-submenu d-flex flex-column ps-2">
-                                <a href="clientes-ver-listado-clientes" class="ms-3">Ver listado de Clientes</a>                                
+                                <a href="clientes-ver-listado-clientes" class="ms-3">Ver listado de Clientes</a>
                             </div>
                         </details>
                     </div>
@@ -130,7 +130,6 @@
                                 <a href="empleados-añadir" class="ms-3">Añadir Empleado</a>
                                 <a href="empleados-añadir-rol" class="ms-3">Añadir Rol</a>
                                 <a href="empleados-lista-roles" class="ms-3">Lista de Roles</a>
-                                <a href="empleados-detalle-rol" class="ms-3">Detalle Rol</a>
                             </div>
                         </details>
                     </div>
@@ -159,7 +158,7 @@
                     </div>
                 </li>
                 <li class="list-group-item pt-2">
-                    <a href="configurar-cuenta" class="d-flex flex-row align-items-center text-decoration-none Quick-white-link">
+                    <a href="configuracion-cuenta" class="d-flex flex-row align-items-center text-decoration-none Quick-white-link">
                         <i class="bi bi-person-gear fs-5"></i>
                         <p class="m-0 ms-2">Configurar Cuenta</p>
                     </a>
@@ -305,7 +304,6 @@
                         <a href="empleados-añadir" class="ms-3">Añadir Empleado</a>
                         <a href="empleados-añadir-rol" class="ms-3">Añadir Rol</a>
                         <a href="empleados-lista-roles" class="ms-3">Lista de Roles</a>
-                        <a href="empleados-detalle-rol" class="ms-3">Detalle Rol</a>
                     </div>
                 </details>
             </div>
@@ -334,7 +332,7 @@
             </div>
 
             <div class="col-12 p-0 mt-2 menu-item">
-                <a href="configurar-cuenta" class="d-flex flex-row align-items-center Quick-white-link menu-details-link">
+                <a href="configuracion-cuenta" class="d-flex flex-row align-items-center Quick-white-link menu-details-link">
                     <i class="bi bi-person-gear fs-5"></i>
                     <p class="texto-menu">Configurar Cuenta</p>
                 </a>
