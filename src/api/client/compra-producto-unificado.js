@@ -127,8 +127,21 @@ async function cargarDatosProductoBase() {
 // 1. Inicialización de la carga de selects estáticos
 document.addEventListener("DOMContentLoaded", cargarSelectsCompraPrincipal);
 
-// 2. EXPOSICIÓN GLOBAL: Hacemos la función clave accesible si es necesario en otro script
+// 2. EXPOSICIÓN GLOBAL
 window.cargarDatosProductoBase = cargarDatosProductoBase;
+window.obtenerProductoPorCodigo = async (codigo) => {
+    try {
+        const res = await api({ 
+            accion: "obtener_producto_por_codigo", 
+            codigo: codigo
+            // NO enviamos id_sucursal para que busque en el catálogo global (para compras)
+        });
+        return res;
+    } catch (e) {
+        console.error("Error buscando producto:", e);
+        return null;
+    }
+};
 
 
 // ---------------------------------------------------------------------------------
