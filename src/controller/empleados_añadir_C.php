@@ -37,7 +37,7 @@ class empleados_añadir_C extends mainModel
         $email = strtolower(trim($formulario["email_empleado"]));
         $contraseña = parent::hashear_contraseña($formulario["contrasena_empleado"]);
         $direccion = !empty($formulario["direccion_empleado"]) ? ucwords(strtolower(trim($formulario["direccion_empleado"]))) : null;
-        $id_sucursal = $formulario["id_sucursal"];
+        $id_sucursal = !empty($formulario["id_sucursal"]) ? $formulario["id_sucursal"] : null;
         $fecha_registro = $formulario["fecha_registro"];
 
         //validaciones

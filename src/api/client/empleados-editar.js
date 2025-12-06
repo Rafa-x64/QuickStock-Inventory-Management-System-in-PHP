@@ -43,7 +43,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // 3️⃣ Llenar roles (select) y seleccionar el rol actual
         api({ accion: "obtener_roles" }).then(rRoles => {
-            rRoles.filas.forEach(rol => {
+            const roles = rRoles.rol || rRoles.filas || [];
+            roles.forEach(rol => {
                 const op = document.createElement("option");
                 op.value = rol.id_rol;
                 op.textContent = rol.nombre_rol;
@@ -56,6 +57,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // 4️⃣ Llenar sucursales (select) y seleccionar la actual
         api({ accion: "obtener_sucursales" }).then(rSuc => {
+            
+            // Opción "Ninguna"
+            const opcionNinguna = document.createElement("option");
+            opcionNinguna.value = "";
+            opcionNinguna.textContent = "Ninguna (Solo para Administradores)";
+            sucursalSelect.appendChild(opcionNinguna);
+
+            if (!emp.id_sucursal) opcionNinguna.selected = true;
+
             rSuc.filas.forEach(s => {
                 const op = document.createElement("option");
                 op.value = s.id_sucursal;
@@ -65,7 +75,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 sucursalSelect.appendChild(op);
             });
+
+             // Validar estado inicial del required al cargar
+             validarRolAdmin();
         });
+
+
+        // Función y Evento para validar Rol Admin
+        function validarRolAdmin() {
+            if (rolSelect.selectedIndex === -1) return;
+            const textoRol = rolSelect.options[rolSelect.selectedIndex].textContent.toLowerCase();
+            
+            if (textoRol.includes("administrador")) {
+                sucursalSelect.removeAttribute("required");
+            } else {
+                sucursalSelect.setAttribute("required", "true");
+            }
+        }
+
+        rolSelect.addEventListener("change", validarRolAdmin);
 
     }).catch(err => {
         console.error("Error cargando usuario:", err);

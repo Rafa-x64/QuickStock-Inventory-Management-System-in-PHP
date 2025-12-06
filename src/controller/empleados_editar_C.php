@@ -14,7 +14,7 @@ class empleados_editar_C extends mainModel
             "id_rol",
             "email_empleado",
             // "direccion_empleado", // Opcional
-            "id_sucursal",
+            // "id_sucursal", // Opcional si es Admin
             "estado_empleado",
             "id_email"
         ];
@@ -56,7 +56,7 @@ class empleados_editar_C extends mainModel
             "id_rol"    => (int)$formulario["id_rol"],
             "emailNuevo" => strtolower(trim($formulario["email_empleado"])),
             "direccion" => !empty($formulario["direccion_empleado"]) ? ucwords(strtolower(trim($formulario["direccion_empleado"]))) : null,
-            "id_sucursal" => (int)$formulario["id_sucursal"],
+            "id_sucursal" => !empty($formulario["id_sucursal"]) ? (int)$formulario["id_sucursal"] : null,
             "estado"    => trim($formulario["estado_empleado"]),
             "emailViejo" => trim($formulario["id_email"])
         ];

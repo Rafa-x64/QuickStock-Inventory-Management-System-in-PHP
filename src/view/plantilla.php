@@ -10,6 +10,7 @@ $paginas_publicas = [
 
 $paginas_existentes = [
     "dashboard-gerente-view.php",
+    "dashboard-empleado-view.php",
     "inventario-ver-productos-view.php",
     "inventario-añadir-producto-view.php",
     "inventario-gestionar-categorias-view.php",
@@ -121,6 +122,13 @@ if (isset($_SESSION["sesion_usuario"])) {
         exit();
     }
 
+    if ($rol == "Administrador" && in_array($vista, $paginas_existentes)) {
+        include_once("assets/elements/menu-lateral-administrador.php");
+        include_once("view/html/" . $vista);
+        include_once("assets/elements/scripts.php");
+        exit();
+    }
+
     if ($rol == "Cajero" && in_array($vista, $paginas_existentes)) {
         include_once("assets/elements/menu-lateral-cajero.php");
         include_once("view/html/" . $vista);
@@ -128,8 +136,15 @@ if (isset($_SESSION["sesion_usuario"])) {
         exit();
     }
 
-    if ($rol == "Administrador" && in_array($vista, $paginas_existentes)) {
-        include_once("assets/elements/menu-lateral-administrador.php");
+    if ($rol == "Encargado" && in_array($vista, $paginas_existentes)) {
+        include_once("assets/elements/menu-lateral-encargado.php");
+        include_once("view/html/" . $vista);
+        include_once("assets/elements/scripts.php");
+        exit();
+    }
+
+    if (($rol == "Vendedor" || $rol == "Depositario") && in_array($vista, $paginas_existentes)) {
+        include_once("assets/elements/menu-lateral-vendedor.php");
         include_once("view/html/" . $vista);
         include_once("assets/elements/scripts.php");
         exit();
