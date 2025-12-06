@@ -22,6 +22,32 @@
                     </div>
                 </div>
             </div>
+
+            <!-- TABLA STOCK BAJO -->
+            <div class="row Quick-widget mb-4 p-3 rounded-3">
+                <div class="col-12">
+                    <h4 class="Quick-title mb-3 text-danger">⚠️ Alerta de Stock Bajo</h4>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Producto</th>
+                                    <th>Stock Actual</th>
+                                    <th>Mínimo</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla_stock_bajo">
+                                <tr>
+                                    <td colspan="6" class="text-center">Cargando...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- DISTRIBUCIÓN POR CATEGORÍA -->
@@ -43,4 +69,4 @@
     </div>
 </div>
 
-<script src="view/js/inventario-stock-bajo.js"></script>
+<script type="module" src="view/js/inventario-stock-bajo.js"></script>
