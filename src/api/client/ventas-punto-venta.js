@@ -18,7 +18,7 @@ export const ventasAPI = {
 
     obtenerTasasCambio: async () => {
         return await api({
-            accion: "obtener_tasas_cambio"
+            accion: "obtener_resumen_tasas"
         });
     },
 

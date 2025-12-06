@@ -15,6 +15,20 @@ header('Content-Type: application/json');
 
 //se procesan las peticiones
 try {
+    // --- LAZY CRON: Actualización Diaria (Solo corre 1 vez/día después de 4:02 PM) ---
+    // Esto asegura que las tasas se mantengan frescas sin configurar crontab en el SO
+    try {
+        if ($accion !== 'verificar_actualizacion_diaria') { // Evitar recursión si se llamara explícitamente
+            include_once __DIR__ . "/../../model/finanzas.tasa.php";
+            include_once __DIR__ . "/../../model/finanzas.moneda.php";
+            // La función verifica la hora y si ya se corrió hoy antes de hacer nada pesado
+            TasaCambio::verificarActualizacionDiaria();
+        }
+    } catch (Throwable $cronErr) {
+        error_log("Warn: Lazy Cron Tasas falló: " . $cronErr->getMessage());
+    }
+    // ----------------------------------------------------------------------------------
+
     switch ($accion) {
 
         case "existe_gerente":
@@ -168,6 +182,33 @@ try {
             include_once __DIR__ . "/finanzas/tasa_cambio.php";
             $out = obtenerTasasCambioActivas();
             break;
+
+        // ========== NUEVOS ENDPOINTS FINANZAS/MONEDAS ==========
+        case "registrar_tasa":
+            include_once __DIR__ . "/../../model/finanzas.tasa.php";
+            include_once __DIR__ . "/../../model/finanzas.moneda.php";
+            $res = TasaCambio::registrarTasa($peticion["id_moneda"], $peticion["valor"], 'MANUAL');
+            $out = ["status" => $res ? true : false, "mensaje" => $res ? "Tasa actualizada" : "Error al actualizar"];
+            break;
+
+        case "sincronizar_tasas_api":
+            include_once __DIR__ . "/../../model/finanzas.tasa.php";
+            include_once __DIR__ . "/../../model/finanzas.moneda.php";
+            $out = TasaCambio::sincronizarTasasApi();
+            break;
+
+        case "obtener_historial_tasas":
+            include_once __DIR__ . "/../../model/finanzas.tasa.php";
+            include_once __DIR__ . "/../../model/finanzas.moneda.php";
+            $out = ["historial" => TasaCambio::obtenerHistorial()];
+            break;
+
+        case "verificar_actualizacion_diaria":
+            include_once __DIR__ . "/../../model/finanzas.tasa.php";
+            include_once __DIR__ . "/../../model/finanzas.moneda.php";
+            $out = TasaCambio::verificarActualizacionDiaria();
+            break;
+
 
         case "procesar_venta":
             include_once __DIR__ . "/../../controller/ventas_punto_venta_C.php";
@@ -360,6 +401,46 @@ try {
                 $peticion["motivo"] ?? null,
                 $peticion["comentario"] ?? null
             );
+            break;
+
+        // ========== FINANZAS / MONEDAS Y TASAS ==========
+        case "obtener_resumen_tasas":
+            include_once __DIR__ . "/finanzas/tasa.php";
+            $out = obtener_resumen_tasas();
+            break;
+
+        case "sincronizar_api":
+            include_once __DIR__ . "/finanzas/tasa.php";
+            $out = sincronizar_api();
+            break;
+
+        case "guardar_tasa_manual":
+            include_once __DIR__ . "/finanzas/tasa.php";
+            $out = guardar_tasa_manual(
+                $peticion["id_moneda"] ?? null,
+                $peticion["tasa"] ?? null
+            );
+            break;
+
+        case "obtener_historial_tasas":
+            include_once __DIR__ . "/finanzas/tasa.php";
+            $out = obtener_historial();
+            break;
+
+        // ========== FINANZAS / GESTION MONEDAS ==========
+        case "obtener_todas_monedas":
+            include_once __DIR__ . "/finanzas/moneda.php";
+            $out = obtenerTodasMonedas();
+            break;
+
+        case "crear_moneda":
+            include_once __DIR__ . "/finanzas/moneda.php";
+            $out = crearMoneda($peticion);
+            break;
+
+        case "editar_moneda_estado":
+            include_once __DIR__ . "/finanzas/moneda.php";
+            $out = editarMoneda($peticion);
             break;
 
         default:
