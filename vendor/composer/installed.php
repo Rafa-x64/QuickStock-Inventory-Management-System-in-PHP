@@ -3,7 +3,7 @@
         'name' => 'rafaelalvarez/proyecto',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '603c75d8c262fbf89539aff6666c5a6ce7d7bdbb',
+        'reference' => '1a420ffacb579f6a429cede30651bc62b755af00',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -55,6 +55,15 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'phpmailer/phpmailer' => array(
+            'pretty_version' => 'v7.0.1',
+            'version' => '7.0.1.0',
+            'reference' => '360ae911ce62e25e11249f6140fa58939f556ebe',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../phpmailer/phpmailer',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'psr/http-message' => array(
             'pretty_version' => '2.0',
             'version' => '2.0.0.0',
@@ -76,7 +85,7 @@
         'rafaelalvarez/proyecto' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '603c75d8c262fbf89539aff6666c5a6ce7d7bdbb',
+            'reference' => '1a420ffacb579f6a429cede30651bc62b755af00',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
