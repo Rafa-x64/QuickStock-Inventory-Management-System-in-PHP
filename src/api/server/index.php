@@ -94,6 +94,16 @@ try {
             $out = obtenerTallas();
             break;
 
+        case "obtener_color_por_id":
+            include_once __DIR__ . "/core/color.php";
+            $out = seleccionarColorPorId($peticion["id_color"]);
+            break;
+
+        case "obtener_talla_por_id":
+            include_once __DIR__ . "/core/talla.php";
+            $out = seleccionarTallaPorId($peticion["id_talla"]);
+            break;
+
         case "obtener_todos_los_productos":
             include_once __DIR__ . "/inventario/producto.php";
             $out = obtenerTodosLosProductos(
@@ -140,7 +150,7 @@ try {
 
         case "obtener_monedas":
             include_once __DIR__ . "/finanzas/moneda.php";
-            $out = obtenerMonedas();
+            $out = obtenerTodasMonedas();
             break;
 
         case "obtener_historial_compras":

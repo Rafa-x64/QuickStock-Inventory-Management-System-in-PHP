@@ -53,8 +53,6 @@ class talla extends mainModel
         }
 
         // 2. Crear si no existe
-        // Usamos mb_strtoupper o simplemente el rango limpio para la inserción, 
-        // dependiendo del estándar de formato que uses para los rangos de talla (e.g., S, M, L).
         $rangoNormalizado = mb_strtoupper($rangoLimpio, 'UTF-8');
 
         $sql_crear = "INSERT INTO core.talla (rango_talla, activo) VALUES ($1, true) RETURNING id_talla";
@@ -67,5 +65,37 @@ class talla extends mainModel
 
         // Fallo al buscar y al crear
         return null;
+    }
+
+    public function editar(): bool
+    {
+        $conn = parent::conectar_base_datos();
+
+        $activoDb = $this->activo ? 't' : 'f';
+
+        $sql = "UPDATE core.talla SET rango_talla = $1, activo = $2 WHERE id_talla = $3";
+        $params = [$this->rango_talla, $activoDb, $this->id_talla];
+
+        $stmt = pg_prepare($conn, "actualizar_talla_" . time(), $sql);
+        $result = pg_execute($conn, "actualizar_talla_" . time(), $params);
+
+        return $result !== false && pg_affected_rows($result) > 0;
+    }
+
+    public static function eliminar(int $id_talla): bool
+    {
+        $conn = parent::conectar_base_datos();
+
+        if ($id_talla <= 0) {
+            return false;
+        }
+
+        $sql = "UPDATE core.talla SET activo = 'f' WHERE id_talla = $1";
+        $params = [$id_talla];
+
+        $stmt = pg_prepare($conn, "desactivar_talla_" . time(), $sql);
+        $result = pg_execute($conn, "desactivar_talla_" . time(), $params);
+
+        return $result !== false && pg_affected_rows($result) > 0;
     }
 }

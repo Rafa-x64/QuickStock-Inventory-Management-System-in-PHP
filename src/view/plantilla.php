@@ -13,6 +13,8 @@ $paginas_existentes = [
     "inventario-ver-productos-view.php",
     "inventario-añadir-producto-view.php",
     "inventario-gestionar-categorias-view.php",
+    "inventario-gestionar-colores-view.php",
+    "inventario-gestionar-tallas-view.php",
     "inventario-ajustes-manuales-stock-view.php",
     "inventario-stock-bajo-view.php",
     "listado-compras-view.php",

@@ -66,4 +66,38 @@ class color extends mainModel
         // Fallo al buscar y al crear
         return null;
     }
+
+    public function editar(): bool
+    {
+        $conn = parent::conectar_base_datos();
+
+        // Convertir boolean a 't' o 'f' para PostgreSQL si es necesario, aunque pg_execute suele manejarlo.
+        // Aseguramos que sea boolean primitivo.
+        $activoDb = $this->activo ? 't' : 'f';
+
+        $sql = "UPDATE core.color SET nombre = $1, activo = $2 WHERE id_color = $3";
+        $params = [$this->nombre, $activoDb, $this->id_color];
+
+        $stmt = pg_prepare($conn, "actualizar_color_" . time(), $sql);
+        $result = pg_execute($conn, "actualizar_color_" . time(), $params);
+
+        return $result !== false && pg_affected_rows($result) > 0;
+    }
+
+    public static function eliminar(int $id_color): bool
+    {
+        $conn = parent::conectar_base_datos();
+
+        if ($id_color <= 0) {
+            return false;
+        }
+
+        $sql = "UPDATE core.color SET activo = 'f' WHERE id_color = $1";
+        $params = [$id_color];
+
+        $stmt = pg_prepare($conn, "desactivar_color_" . time(), $sql);
+        $result = pg_execute($conn, "desactivar_color_" . time(), $params);
+
+        return $result !== false && pg_affected_rows($result) > 0;
+    }
 }
