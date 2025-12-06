@@ -24,7 +24,7 @@ const $compraTotal = document.getElementById('compra_total');
 async function cargarDatosPrincipales(datosCompra, selectedIDs) {
     // 1. Cargar selects de forma asíncrona y preseleccionar
     await Promise.all([
-        cargarSelect("compra_id_proveedor", "obtener_proveedores", "proveedores", "id_proveedor", "nombre", "Seleccione un proveedor...", selectedIDs.id_proveedor),
+        cargarSelect("compra_id_proveedor", "obtener_proveedores", "proveedor", "id_proveedor", "nombre", "Seleccione un proveedor...", selectedIDs.id_proveedor),
         cargarSelect("compra_id_sucursal", "obtener_sucursales", "filas", "id_sucursal", "nombre", "Seleccione una sucursal...", selectedIDs.id_sucursal),
         cargarSelect("compra_id_moneda", "obtener_monedas", "monedas", "id_moneda", "codigo", "Seleccione una moneda...", selectedIDs.id_moneda),
         cargarSelect("compra_id_usuario", "obtener_empleados_responsables", "empleados", "id_usuario", "nombre_completo", "Seleccione un empleado...", selectedIDs.id_usuario),

@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         telefono_sucursal: {
             // Formatos: 04xx-xxx-xx-xx O +58 4xx-xxx-xx-xx. Permite espacios, guiones y sin guiones.
-            regex: /^(\+58\s?)?(0?4(12|14|16|24|26))(\s?-?\d{3})(\s?-?\d{2}){2}$/,
+            regex: /^(\+58\s?)?(0?4(12|14|16|24|26|17|27))(\s?-?\d{3})(\s?-?\d{2}){2}$/,
             mensaje: "Teléfono inválido. Debe empezar con 04 o +58 4. Ej: 0412-1234567"
         },
         fecha_registro: {

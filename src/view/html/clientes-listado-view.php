@@ -1,112 +1,112 @@
+<?php
+$accion = $_POST["accion"] ?? null;
+$id_cliente = $_POST["id_cliente"] ?? null;
+
+// Procesar eliminación si se envía
+if ($_SERVER["REQUEST_METHOD"] === "POST" && $accion === "eliminar" && $id_cliente) {
+    include_once "controller/clientes_eliminar_C.php";
+    $resultado = clientes_eliminar_C::eliminarCliente($id_cliente);
+
+    if (!empty($resultado["success"])) {
+        echo '<script>alert("Cliente eliminado correctamente");</script>';
+    } else {
+        $msg = $resultado["error"] ?? "Error desconocido";
+        echo '<script>alert("Error al eliminar: ' . $msg . '");</script>';
+    }
+}
+?>
+<style>
+    .was-validated .form-control:invalid~.invalid-tooltip,
+    .form-control.is-invalid~.invalid-tooltip {
+        display: block;
+    }
+
+    .col-md-6,
+    .col-md-4,
+    .col-md-3,
+    .col-md-12 {
+        position: relative;
+    }
+</style>
 <div class="container-fluid" id="mainContent">
     <div class="row">
-        <div class="col-12 p-5">
-            <div class="row d-flex flex-row justify-content-center align-items-center">
-                <div class="col-6 p-5 Quick-title">
-                    <h1>Lista de Clientes</h1>
-                </div>
+        <div class="col-12 p-3 p-lg-5">
 
-                <div class="col-6 p-5 d-flex flex-row justify-content-end align-items-center">
-                    <form action="">
-                        <input type="search" placeholder="Buscar Cliente por ID" class="Quick-input" id="clientes-buscar">
-                        <button type="submit" class="btn btn-secondary">
-                            <i class="bi bi-search fs-6"></i>
-                        </button>
-                    </form>
+            <!-- Encabezado -->
+            <div class="row d-flex flex-row justify-content-between align-items-center mb-4">
+                <div class="col-12 col-md-6 p-3 Quick-title">
+                    <h1 class="m-0">Lista de Clientes</h1>
                 </div>
+            </div>
 
-                <div class="row p-0 m-0 d-flex flex-row justify-content-center align-items-center Quick-widget">
-                    <div class="col-12 Quick-table pt-5 mb-3">
-                        <table class="w-100">
+            <!-- Filtros -->
+            <div class="row p-0 m-0 mb-4">
+                <div class="col-12 Quick-widget p-4">
+                    <div class="row g-3 align-items-end">
+
+                        <div class="col-12 col-md-3">
+                            <label for="nombre-filtro" class="form-label Quick-title">Nombre</label>
+                            <input type="text" id="nombre-filtro" class="form-control" placeholder="Buscar por nombre...">
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <label for="apellido-filtro" class="form-label Quick-title">Apellido</label>
+                            <input type="text" id="apellido-filtro" class="form-control" placeholder="Buscar por apellido...">
+                        </div>
+
+                        <div class="col-12 col-md-2">
+                            <label for="cedula-filtro" class="form-label Quick-title">Cédula</label>
+                            <input type="text" id="cedula-filtro" class="form-control" placeholder="Ej: V-12.345.678">
+                        </div>
+
+                        <div class="col-12 col-md-2">
+                            <label for="estado-filtro" class="form-label Quick-title">Estado</label>
+                            <select id="estado-filtro" class="form-select">
+                                <option value="todos">Todos</option>
+                                <option value="activo">Activo</option>
+                                <option value="inactivo">Inactivo</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-2 d-flex align-items-end">
+                            <button type="button" id="reestablecer-filtros" class="btn btn-secondary w-100">
+                                <i class="bi bi-arrow-counterclockwise"></i> Reestablecer
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de Clientes -->
+            <div class="row p-0 m-0 d-flex flex-row justify-content-center align-items-center Quick-widget">
+                <div class="col-12 Quick-table pt-4 mb-3">
+                    <div class="table-responsive">
+                        <table class="w-100" id="lista_clientes">
                             <thead>
                                 <tr>
-                                    <th>ID Cliente</th>
-                                    <th>Tipo Documento</th>
-                                    <th>N° Documento</th>
-                                    <th>Nombre/Razón Social</th>
-                                    <th>Tipo Cliente</th>
-                                    <th>Dirección</th>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Apellido</th>
+                                    <th>Cédula</th>
                                     <th>Teléfono</th>
-                                    <th>Email</th>
+                                    <th>Correo</th>
+                                    <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>CL-1001</td>
-                                    <td>V</td>
-                                    <td>12.345.678</td>
-                                    <td>Luis Alvarez</td>
-                                    <td><span class="badge bg-primary">Natural</span></td>
-                                    <td>Urb Sucre, calle 2</td>
-                                    <td>0426-899-1514</td>
-                                    <td>luisalvarez@gmail.com</td>
-                                    <td>
-                                        <a href="#" class="btn btn-sm btn-info text-white">Ver Detalle</a>
-                                        <a href="#" class="btn btn-sm btn-warning">Editar</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>CL-1002</td>
-                                    <td>V</td>
-                                    <td>17.654.321</td>
-                                    <td>María González</td>
-                                    <td><span class="badge bg-primary">Natural</span></td>
-                                    <td>Av Leones, Fundalara</td>
-                                    <td>0412-567-8901</td>
-                                    <td>maria.gonzalez@gmail.com</td>
-                                    <td>
-                                        <a href="#" class="btn btn-sm btn-info text-white">Ver Detalle</a>
-                                        <a href="#" class="btn btn-sm btn-warning">Editar</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>CL-1003</td>
-                                    <td>J</td>
-                                    <td>987654321</td>
-                                    <td>Tecnología Avanzada C.A.</td>
-                                    <td><span class="badge bg-warning text-dark">Jurídico</span></td>
-                                    <td>Plaza Altagracia</td>
-                                    <td>0414-189-7451</td>
-                                    <td>contacto@tecnologia-avanzada.com</td>
-                                    <td>
-                                        <a href="#" class="btn btn-sm btn-info text-white">Ver Detalle</a>
-                                        <a href="#" class="btn btn-sm btn-warning">Editar</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>CL-1004</td>
-                                    <td>V</td>
-                                    <td>19.223.344</td>
-                                    <td>Andrea Martinez</td>
-                                    <td><span class="badge bg-primary">Natural</span></td>
-                                    <td>Urbanizacion fundalara, calle anacoco</td>
-                                    <td>0414-352-8514</td>
-                                    <td>Andreamartinezz@gmail.com</td>
-                                    <td>
-                                        <a href="#" class="btn btn-sm btn-info text-white">Ver Detalle</a>
-                                        <a href="#" class="btn btn-sm btn-warning">Editar</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>CL-1005</td>
-                                    <td>J</td>
-                                    <td>1234567890</td>
-                                    <td>Distribuidora Comercial Plus</td>
-                                    <td><span class="badge bg-warning text-dark">Jurídico</span></td>
-                                    <td>Zona Industrial Norte</td>
-                                    <td>0416-789-1234</td>
-                                    <td>ventas@comercialplus.com</td>
-                                    <td>
-                                        <a href="#" class="btn btn-sm btn-info text-white">Ver Detalle</a>
-                                        <a href="#" class="btn btn-sm btn-warning">Editar</a>
-                                    </td>
+                                    <td colspan="8" class="text-center">Cargando clientes...</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
+
+<script type="module" src="api/client/clientes-listado.js"></script>

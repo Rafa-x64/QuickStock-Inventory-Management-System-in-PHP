@@ -12,7 +12,7 @@ class inventario_añadir_producto_C extends mainModel
             $nombre         = ucwords(trim($formulario['nombre']));
             $descripcion    = trim($formulario['descripcion']);
             $precio_compra  = floatval($formulario['precio_compra']);
-            $precio         = floatval($formulario['precio']);    
+            $precio         = floatval($formulario['precio']);
 
             $id_proveedor   = isset($formulario['id_proveedor']) && intval($formulario['id_proveedor']) > 0 ? intval($formulario['id_proveedor']) : null;
             $id_sucursal    = intval($formulario['id_sucursal']);
@@ -30,7 +30,7 @@ class inventario_añadir_producto_C extends mainModel
 
             if (empty($codigo_barra)) return "Código de barras obligatorio";
             if (empty($nombre)) return "Nombre obligatorio";
-            if (empty($descripcion)) return "Descripción obligatoria";
+            // if (empty($descripcion)) return "Descripción obligatoria"; // Opcional
             if ($precio_compra < 0.01) return "Precio de compra mínimo 0.01"; // <-- VALIDACIÓN NUEVA
             if ($precio < 0.01) return "Precio de venta mínimo 0.01"; // Ajustado a 0.01 para ser consistente con compra y vista
             if ($cantidad < 0) return "Stock inicial no puede ser negativo";
@@ -71,11 +71,11 @@ class inventario_añadir_producto_C extends mainModel
                 $id_categoria,
                 $id_color,
                 $id_talla,
-                $precio,          
+                $precio,
                 $id_proveedor,
                 true,
                 $codigo_barra,
-                $precio_compra    
+                $precio_compra
             );
 
             $id_producto = $producto->crear();

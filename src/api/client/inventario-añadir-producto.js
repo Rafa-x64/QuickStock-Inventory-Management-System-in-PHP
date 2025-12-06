@@ -87,27 +87,6 @@ document.addEventListener("DOMContentLoaded", () => {
         categoriaSelect.required = true;
 
 
-        categoriaSelect.innerHTML = `<option value="">Seleccione categoría</option>`;
-        res.categorias.forEach(categoria => {
-            categoriaSelect.innerHTML += `<option value="${categoria.id_categoria}">${categoria.nombre}</option>`;
-        });
-    });
-
-    // 3. Cargar Proveedores
-    api({ accion: "obtener_proveedores" }).then(res => {
-        if (!res.proveedores || res.proveedores.length === 0) {
-            proveedorSelect.innerHTML = `<option value="">Seleccione proveedor (Opcional)</option>`;
-            return;
-        }
-
-        proveedorSelect.innerHTML = `<option value="">Seleccione proveedor</option>`;
-        res.proveedores.forEach(p => {
-            proveedorSelect.innerHTML += `<option value="${p.id_proveedor}">${p.nombre}</option>`;
-        });
-    });
-
-    // 4. Cargar Colores (Usando toggleInputSelect para inicializar)
-    api({ accion: "obtener_colores" }).then(res => {
         colorSelect.innerHTML = `<option value="">Seleccione color</option>`;
         const hayColores = res.colores && res.colores.length > 0;
 

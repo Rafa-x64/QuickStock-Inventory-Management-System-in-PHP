@@ -152,7 +152,7 @@ function cargarOpcionesSelects() {
 
     cargarOpciones("filtro_sucursal", "obtener_sucursales", "id_sucursal", "nombre", "filas");
     cargarOpciones("filtro_categoria", "obtener_categorias", "id_categoria", "nombre", "categorias");
-    cargarOpciones("filtro_proveedor", "obtener_proveedores", "id_proveedor", "nombre", "proveedores");
+    cargarOpciones("filtro_proveedor", "obtener_proveedores", "id_proveedor", "nombre", "proveedor");
 }
 
 // 🚀 CUANDO CARGA LA PÁGINA

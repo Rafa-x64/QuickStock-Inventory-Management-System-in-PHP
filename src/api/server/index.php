@@ -282,6 +282,51 @@ switch ($accion) {
         $out = obtenerNombreSucursalDashboard($id_sucursal);
         break;
 
+    // ========== CLIENTES ==========
+    case "obtener_todos_los_clientes":
+        include_once __DIR__ . "/core/cliente.php";
+        $out = obtenerTodosLosClientes(
+            $peticion["nombre"] ?? null,
+            $peticion["apellido"] ?? null,
+            $peticion["cedula"] ?? null,
+            $peticion["estado"] ?? null
+        );
+        break;
+
+    case "obtener_cliente_por_id":
+        include_once __DIR__ . "/core/cliente.php";
+        $out = obtenerClientePorId($peticion["id_cliente"]);
+        break;
+
+    // ========== PROVEEDORES ==========
+    case "obtener_todos_los_proveedores":
+        include_once __DIR__ . "/core/proveedor.php";
+        $out = obtenerTodosLosProveedores(
+            $peticion["nombre"] ?? null,
+            $peticion["correo"] ?? null,
+            $peticion["estado"] ?? null
+        );
+        break;
+
+    case "obtener_proveedor_por_id":
+        include_once __DIR__ . "/core/proveedor.php";
+        $out = obtenerProveedorPorId($peticion["id_proveedor"]);
+        break;
+
+    // ========== ROLES ==========
+    case "obtener_todos_los_roles":
+        include_once __DIR__ . "/seguridad_acceso/rol.php";
+        $out = obtenerTodosLosRoles(
+            $peticion["nombre"] ?? null,
+            $peticion["estado"] ?? null
+        );
+        break;
+
+    case "obtener_rol_por_id":
+        include_once __DIR__ . "/seguridad_acceso/rol.php";
+        $out = obtenerRolPorId($peticion["id_rol"]);
+        break;
+
     default:
         $out = ["error" => "Accion no reconocida"];
 }

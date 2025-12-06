@@ -10,13 +10,16 @@
         position: relative;
     }
 </style>
+<?php
+$accion = $_POST["accion"] ?? null;
+$id_proveedor = $_POST["id_proveedor"] ?? null;
+?>
 <div class="container-fluid" id="mainContent">
     <div class="row d-flex flex-column justify-content-center align-items-center">
         <div class="col-12 p-3 p-lg-5">
             <div class="row d-flex flex-row justify-content-center align-items-center">
-
                 <div class="col-12 p-5 Quick-title">
-                    <h1 class="m-0 p-0">Añadir Nuevo Proveedor</h1>
+                    <h1 class="m-0 p-0">Editar Proveedor</h1>
                 </div>
 
                 <div class="Quick-widget col-12 col-md-10 p-0 p-2">
@@ -24,7 +27,9 @@
                         <form action="" method="POST" class="form py-3 needs-validation" novalidate>
 
                             <div class="row d-flex flex-row justify-content-center align-items-center">
-                                <input type="hidden" name="__crear" value="1">
+                                <input type="hidden" name="__editar" value="1">
+                                <input type="hidden" name="accion" id="id_accion" value="<?php echo $accion ?>">
+                                <input type="hidden" name="id_proveedor" id="id_proveedor" value="<?php echo $id_proveedor ?>">
 
                                 <!-- NOMBRE -->
                                 <div class="col-md-12 d-flex flex-column py-3">
@@ -47,6 +52,15 @@
                                     <div class="invalid-tooltip"></div>
                                 </div>
 
+                                <!-- ESTADO -->
+                                <div class="col-md-6 d-flex flex-column py-3">
+                                    <label for="estado_proveedor" class="form-label Quick-title">Estado</label>
+                                    <select name="estado_proveedor" id="estado_proveedor" class="Quick-select form-select">
+                                        <option value="true">Activo</option>
+                                        <option value="false">Inactivo</option>
+                                    </select>
+                                </div>
+
                                 <!-- DIRECCION -->
                                 <div class="col-md-12 d-flex flex-column py-3">
                                     <label for="direccion_proveedor" class="form-label Quick-title">Dirección</label>
@@ -58,14 +72,7 @@
                                 <div class="col-12 d-flex flex-column flex-md-row justify-content-center align-items-center py-3">
                                     <div class="row w-100 d-flex justify-content-center gap-3">
                                         <div class="col-md-3 d-flex justify-content-center">
-                                            <button type="submit" class="btn btn-success w-100">
-                                                <i class="bi bi-check-circle me-2"></i>Guardar Proveedor
-                                            </button>
-                                        </div>
-                                        <div class="col-md-3 d-flex justify-content-center">
-                                            <button type="reset" class="btn btn-danger w-100">
-                                                <i class="bi bi-x-circle me-2"></i>Limpiar
-                                            </button>
+                                            <button type="submit" class="btn btn-success w-100">Guardar Cambios</button>
                                         </div>
                                         <div class="col-md-3 d-flex justify-content-center">
                                             <a href="proveedores-listado" class="btn btn-secondary w-100">Cancelar</a>
@@ -86,20 +93,21 @@
 <?php
 if (
     $_SERVER["REQUEST_METHOD"] === "POST" &&
-    isset($_POST["__crear"]) && $_POST["__crear"] === "1"
+    isset($_POST["__editar"]) && $_POST["__editar"] === "1"
 ) {
-    include_once "controller/proveedores_añadir_C.php";
-    $resp = proveedores_añadir_C::agregarProveedor($_POST);
+    include_once "controller/proveedores_editar_C.php";
+    $resp = proveedores_editar_C::editarProveedor($_POST);
 
     if (!empty($resp["success"])) {
-        echo "<script>alert('Proveedor registrado exitosamente');</script>";
+        echo "<script>alert('Proveedor editado exitosamente');</script>";
         echo "<script>window.location.href = 'proveedores-listado';</script>";
         exit();
     } else {
         $msg = $resp["error"] ?? "Error desconocido";
-        echo "<script>alert('Error al registrar el proveedor: $msg');</script>";
+        echo "<script>alert('Error al editar el proveedor: $msg');</script>";
     }
 }
 ?>
 
+<script type="module" src="api/client/proveedores-editar.js"></script>
 <script src="view/js/proveedores-form.js"></script>
