@@ -1,5 +1,5 @@
 <?php
-require_once "c:/xampp/htdocs/DEV/PHP/QuickStock/src/api/server/index.functions.php";
+require_once __DIR__ . "/index.functions.php";
 
 $conn = conectar_base_datos();
 

@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/src/model/mainModel.php";
+require_once __DIR__ . "/../../model/mainModel.php";
 
 class SchemaUpdater extends mainModel
 {
