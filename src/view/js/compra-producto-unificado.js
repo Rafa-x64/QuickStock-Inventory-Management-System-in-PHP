@@ -301,6 +301,26 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (campo.classList.contains('prod-recalcular')) {
                 campo.addEventListener('input', calcularTotales);
             }
+
+            // [NUEVO] Listener para Buscar Producto por Código de Barras
+            if (campo.id.startsWith('prod_codigo_barra_')) {
+                campo.addEventListener('blur', async () => {
+                    const val = campo.value.trim();
+                    if (val.length < 3) return; // Mínimo 3 caracteres para buscar
+
+                    if (typeof window.obtenerProductoPorCodigo === 'function') {
+                        // Mostrar pequeño indicador de carga (opcional)
+                        campo.style.cursor = 'wait';
+                        
+                        const res = await window.obtenerProductoPorCodigo(val);
+                        campo.style.cursor = 'text';
+
+                        if (res && res.status && res.producto) {
+                            rellenarDatosProducto(newModule, res.producto);
+                        }
+                    }
+                });
+            }
         });
 
         // 2. Adjuntar listeners de ALTERNANCIA para Color y Talla
@@ -324,8 +344,44 @@ document.addEventListener("DOMContentLoaded", async () => {
             calcularTotales();
         });
 
-        // 4. Recalcular totales al añadir un módulo
+    }
+
+    function rellenarDatosProducto(module, producto) {
+        const index = module.dataset.index;
+
+        // 1. Rellenar Campos Básicos
+        module.querySelector(`#prod_nombre_${index}`).value = producto.nombre || '';
+        module.querySelector(`#prod_id_categoria_${index}`).value = producto.id_categoria || '';
+        module.querySelector(`#prod_precio_compra_${index}`).value = producto.precio_compra || '0.00';
+        module.querySelector(`#prod_precio_venta_${index}`).value = producto.precio_venta || '0.00';
+
+        // 2. Manejar Color (Si existe ID, cambiamos a modo SELECT y seleccionamos)
+        if (producto.id_color) {
+            // Cambiar a modo SELECT si está en modo NEW
+            toggleProductoInputSelect(module, 'color', 'select');
+            const selectColor = module.querySelector(`#prod_id_color_${index}`);
+            selectColor.value = producto.id_color;
+            // Disparar evento change para validaciones si es necesario
+            selectColor.dispatchEvent(new Event('change'));
+        }
+
+        // 3. Manejar Talla (Si existe ID, cambiamos a modo SELECT y seleccionamos)
+        if (producto.id_talla) {
+            // Cambiar a modo SELECT si está en modo NEW
+            toggleProductoInputSelect(module, 'talla', 'select');
+            const selectTalla = module.querySelector(`#prod_id_talla_${index}`);
+            selectTalla.value = producto.id_talla;
+            selectTalla.dispatchEvent(new Event('change'));
+        }
+
+        // Recalcular totales con el nuevo precio de compra
         calcularTotales();
+        
+        // Validar visualmente los campos rellenados
+        module.querySelectorAll('.Quick-form-input').forEach(input => {
+             // Simular evento input para quitar errores si los hubiera
+             input.dispatchEvent(new Event('input')); 
+        });
     }
 
     // --- MÓDULO: Lógica de Cálculos de Totales ---
@@ -416,7 +472,27 @@ document.addEventListener("DOMContentLoaded", async () => {
                         todoValido = false;
                         if (!primerInvalido) primerInvalido = campo;
                     }
+
                 });
+
+                // [NUEVO] Validación de Precios (Venta >= Compra)
+                const precioCompraInput = module.querySelector(`[id^="prod_precio_compra_"]`);
+                const precioVentaInput = module.querySelector(`[id^="prod_precio_venta_"]`);
+                
+                if (precioCompraInput && precioVentaInput) {
+                    const pCompra = parseFloat(precioCompraInput.value) || 0;
+                    const pVenta = parseFloat(precioVentaInput.value) || 0;
+
+                    if (pVenta < pCompra) {
+                        todoValido = false;
+                        // Mostrar error visual manual o alerta
+                        precioVentaInput.classList.add('is-invalid');
+                        const tooltip = precioVentaInput.nextElementSibling;
+                        if(tooltip) tooltip.textContent = "El precio de venta no puede ser menor al de compra.";
+                        
+                        if (!primerInvalido) primerInvalido = precioVentaInput;
+                    }
+                }
             });
         }
 
