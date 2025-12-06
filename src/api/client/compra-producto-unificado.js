@@ -47,11 +47,11 @@ async function cargarSelect(selectId, apiAction, dataKey, idField, displayField,
 
 async function cargarSelectsCompraPrincipal() {
     // 1. Proveedores (compra_id_proveedor)
-    // Clave de retorno de la API: "proveedores", ID en la BD: "id_proveedor"
+    // Clave de retorno de la API: "proveedor", ID en la BD: "id_proveedor"
     await cargarSelect(
         "compra_id_proveedor",
         "obtener_proveedores",
-        "proveedores", // <-- Confirmado por tu PHP
+        "proveedor", // <-- Confirmado por tu PHP
         "id_proveedor", // <-- Confirmado por tu DB
         "nombre",
         "Seleccione un proveedor..."

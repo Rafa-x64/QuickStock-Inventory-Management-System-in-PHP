@@ -12,13 +12,13 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         cedula_empleado: {
             // V-12.345.678
-            regex: /^[Vv]-\d{1,3}(\.\d{3}){2}$/,
-            msg: "Formato válido: V-12.345.678"
+            regex: /^[VEve]-\d{1,3}(\.\d{3}){1,2}$/,
+            msg: "Formato válido: V-12.345.678 o E-12.345.678"
         },
         telefono_empleado: {
             // 0412-555-12-12 o +58 412-555-12-12
-            regex: /^(0(412|414|424|416|426|417|427)-\d{3}-\d{2}-\d{2}|\+58\s(412|414|424|416|426|417|427)-\d{3}-\d{2}-\d{2})$/,
-            msg: "Formato: 0412-555-12-12 o +58 412-555-12-12"
+            regex: /^(\+58\s?)?(0?4(12|14|16|24|26|17|27))(\s?-?\d{3})(\s?-?\d{2}){2}$/,
+            msg: "Formato: +58 412-555-10-41 o 0412-555-10-41"
         },
         email_empleado: {
             regex: /^[^@\s]+@[^@\s]+\.(com|gmail\.com|outlook\.com|yahoo\.com)$/,
@@ -32,9 +32,12 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
 
+    const camposOpcionales = ["direccion_empleado"];
+
     // Función validadora
     const validarCampo = (input, regla) => {
         const tooltip = input.nextElementSibling;
+        const esOpcional = camposOpcionales.includes(input.id);
 
         if (!input) return true;
 
@@ -42,6 +45,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Vacío
         if (valor === "") {
+            if (esOpcional) {
+                input.classList.remove("is-invalid");
+                input.classList.remove("is-valid");
+                tooltip.textContent = "";
+                return true;
+            }
             input.classList.add("is-invalid");
             tooltip.textContent = "Este campo no puede estar vacío.";
             return false;

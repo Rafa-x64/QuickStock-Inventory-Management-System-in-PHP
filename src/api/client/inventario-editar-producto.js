@@ -113,20 +113,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     const op = document.createElement("option");
                     op.value = cat.id_categoria;
                     op.textContent = cat.nombre;
-                    if (cat.id_categoria == p.id_categoria) op.selected = true;
-                    categoriaSelect.appendChild(op);
-                });
-            });
-
-            // Proveedores (sin alternancia)
-            api({ accion: "obtener_proveedores" }).then(rProv => {
-                const proveedores = rProv.proveedores || [];
-                proveedores.forEach(prov => {
-                    const op = document.createElement("option");
-                    op.value = prov.id_proveedor;
-                    op.textContent = prov.nombre;
-                    if (prov.id_proveedor == p.id_proveedor) op.selected = true;
-                    proveedorSelect.appendChild(op);
                 });
             });
 

@@ -18,10 +18,9 @@ class roles_editar_C extends mainModel
         }
 
         $id_rol = (int)$formulario["id_rol"];
-        $nombre_rol = ucwords(trim($formulario["nombre_rol"]));
-        $descripcion = isset($formulario["descripcion_rol"]) && trim($formulario["descripcion_rol"]) !== ""
-            ? trim($formulario["descripcion_rol"])
-            : null;
+        $nombre_rol = ucwords(strtolower(trim($formulario["nombre_rol"])));
+        // Descripción opcional
+        $descripcion = !empty($formulario['descripcion_rol']) ? ucfirst(trim($formulario['descripcion_rol'])) : null;
         $activo = $formulario["estado_rol"] === "true" || $formulario["estado_rol"] === "1" || $formulario["estado_rol"] === true;
 
         // Verificar si el rol existe

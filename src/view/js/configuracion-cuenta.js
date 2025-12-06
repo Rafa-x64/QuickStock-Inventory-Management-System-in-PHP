@@ -13,8 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
             msg: "Solo letras y espacios. Mínimo 2 caracteres."
         },
         telefono: {
-            regex: /^[0-9\-\+\s]{10,20}$/,
-            msg: "Formato inválido. Ej: 0412-1234567"
+            regex: /^(\+58\s?)?(0?4(12|14|16|24|26|17|27))(\s?-?\d{3})(\s?-?\d{2}){2}$/,
+            msg: "Formato: +58 412-555-10-41 o 0412-555-10-41"
         },
         email: {
             regex: /^[^@\s]+@[^@\s]+\.[^@\s]+$/,
@@ -87,16 +87,38 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    const camposOpcionales = ["direccion"];
+
     function validarCampo(input, regla) {
         const valor = input.value.trim();
+        const esOpcional = camposOpcionales.includes(input.id);
         let esValido = true;
 
+        if (valor === "") {
+            if (esOpcional) {
+                input.classList.remove("is-invalid");
+                input.classList.remove("is-valid");
+                const feedback = input.nextElementSibling;
+                if (feedback && feedback.classList.contains("invalid-tooltip")) {
+                    feedback.textContent = "";
+                }
+                return true;
+            }
+            // Si no es opcional y está vacío, falla
+        }
+
         if (regla.regex && !regla.regex.test(valor)) {
-            esValido = false;
+            // Si es opcional y está vacío ya retornó true arriba.
+            // Si llegamos aquí es porque tiene valor (o no es opcional y está vacío, que fallará regex usualmente o deberíamos validar vacío explícito)
+            if (valor !== "") {
+                 esValido = false;
+            } else if (!esOpcional) {
+                 esValido = false;
+            }
         }
 
         if (regla.custom && !regla.custom(valor)) {
-            esValido = false;
+             esValido = false;
         }
 
         if (esValido) {

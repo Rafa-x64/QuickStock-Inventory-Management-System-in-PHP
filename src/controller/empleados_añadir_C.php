@@ -7,14 +7,36 @@ class empleados_añadir_C extends mainModel
     {
 
         //sanitiza los campos
-        $nombre = ucwords($formulario["nombre_empleado"]);//convierte la primera letra de cada palabra en mayuscula
-        $apellido = ucwords($formulario["apellido_empleado"]);
-        $cedula = ucfirst($formulario["cedula_empleado"]);//convierte la primera letra de la palabra a mayuscula
-        $telefono = $formulario["telefono_empleado"];
+        //sanitiza los campos
+        $nombre = ucwords(strtolower(trim($formulario["nombre_empleado"])));
+        $apellido = ucwords(strtolower(trim($formulario["apellido_empleado"])));
+
+        // Formatear Cédula
+        $c = trim($formulario["cedula_empleado"]);
+        $clean_c = preg_replace('/[^a-zA-Z0-9]/', '', $c);
+        if (preg_match('/^([VEve])(\d+)$/', $clean_c, $matches)) {
+            $cedula = strtoupper($matches[1]) . "-" . number_format((int)$matches[2], 0, '', '.');
+        } else {
+            $cedula = strtoupper($c);
+        }
+
+        // Formatear Teléfono
+        $t = preg_replace('/\D/', '', $formulario["telefono_empleado"]);
+        if (strpos($t, '0') === 0) {
+            $t = '58' . substr($t, 1);
+        } elseif (strpos($t, '58') !== 0) {
+            $t = '58' . $t;
+        }
+        if (strlen($t) >= 12) {
+            $telefono = "+" . substr($t, 0, 2) . " " . substr($t, 2, 3) . "-" . substr($t, 5, 3) . "-" . substr($t, 8, 2) . "-" . substr($t, 10);
+        } else {
+            $telefono = "+" . $t;
+        }
+
         $id_rol = $formulario["id_rol"];
-        $email = $formulario["email_empleado"];
-        $contraseña = parent::hashear_contraseña($formulario["contrasena_empleado"]);//metodo del main model para hashear
-        $direccion = ucwords($formulario["direccion_empleado"]);
+        $email = strtolower(trim($formulario["email_empleado"]));
+        $contraseña = parent::hashear_contraseña($formulario["contrasena_empleado"]);
+        $direccion = !empty($formulario["direccion_empleado"]) ? ucwords(strtolower(trim($formulario["direccion_empleado"]))) : null;
         $id_sucursal = $formulario["id_sucursal"];
         $fecha_registro = $formulario["fecha_registro"];
 

@@ -1,21 +1,32 @@
 <?php
 include_once "model/core.sucursal.php";
-class sucursales_editar_C extends mainModel {
+class sucursales_editar_C extends mainModel
+{
 
     public static function editarSucursal($formulario)
     {
         // 1. Limpieza y Normalización de Datos
         $id_sucursal = (int)trim($formulario['id_sucursal'] ?? 0);
         $rif = strtoupper(trim($formulario['rif_sucursal'] ?? ''));
-        $nombre = ucwords(trim($formulario['nombre_sucursal'] ?? ''));
-        $direccion = trim($formulario['direccion_sucursal'] ?? '');
+        $nombre = ucwords(strtolower(trim($formulario['nombre_sucursal'] ?? '')));
         $activo = trim($formulario['activo'] ?? 'false');
 
-        // La fecha de registro no se usa en la actualización UPDATE
-        $telefono = trim($formulario['telefono_sucursal']);
+        // Formatear Teléfono
+        $t = preg_replace('/\D/', '', $formulario['telefono_sucursal']);
+        if (strpos($t, '0') === 0) {
+            $t = '58' . substr($t, 1);
+        } elseif (strpos($t, '58') !== 0) {
+            $t = '58' . $t;
+        }
+        if (strlen($t) >= 12) {
+            $telefono = "+" . substr($t, 0, 2) . " " . substr($t, 2, 3) . "-" . substr($t, 5, 3) . "-" . substr($t, 8, 2) . "-" . substr($t, 10);
+        } else {
+            $telefono = "+" . $t;
+        }
 
+        $direccion = trim($formulario['direccion_sucursal'] ?? '');
         if (!empty($direccion)) {
-            $direccion = ucwords($direccion);
+            $direccion = ucwords(strtolower($direccion));
         } else {
             $direccion = null;
         }
@@ -43,4 +54,3 @@ class sucursales_editar_C extends mainModel {
         return $resultado;
     }
 }
-?>

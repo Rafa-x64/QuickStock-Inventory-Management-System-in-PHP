@@ -13,10 +13,9 @@ class roles_añadir_C extends mainModel
             }
         }
 
-        $nombre_rol = ucwords(trim($formulario["nombre_rol"]));
-        $descripcion = isset($formulario["descripcion_rol"]) && trim($formulario["descripcion_rol"]) !== ""
-            ? trim($formulario["descripcion_rol"])
-            : null;
+        $nombre_rol = ucwords(strtolower(trim($formulario["nombre_rol"])));
+        // Descripción opcional
+        $descripcion = !empty($formulario['descripcion_rol']) ? ucfirst(trim($formulario['descripcion_rol'])) : null;
 
         // Verificar duplicado de nombre
         if (rol::existeRolPorNombre($nombre_rol)) {

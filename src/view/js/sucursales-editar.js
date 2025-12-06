@@ -28,7 +28,7 @@ const reglas = {
         mensaje: "RIF inválido. Formato correcto: J-12345678-9 (J, V, E, G)"
     },
     [CAMPO_TELEFONO]: {
-        regex: /^(\+58\s?)?(0?4(12|14|16|24|26))(\s?-?\d{3})(\s?-?\d{2}){2}$/,
+        regex: /^(\+58\s?)?(0?4(12|14|16|24|26|17|27))(\s?-?\d{3})(\s?-?\d{2}){2}$/,
         mensaje: "Teléfono inválido. Debe empezar con 04 o +58 4. Ej: 0412-1234567"
     }
 };

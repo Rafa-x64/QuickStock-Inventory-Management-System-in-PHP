@@ -10,12 +10,12 @@ document.addEventListener("DOMContentLoaded", () => {
             msg: "Solo letras. Mínimo 2 caracteres."
         },
         cedula_cliente: {
-            regex: /^[VvEe]-\d{1,3}(\.\d{3}){2}$/,
+            regex: /^[VEve]-\d{1,3}(\.\d{3}){1,2}$/,
             msg: "Formato válido: V-12.345.678 o E-12.345.678"
         },
         telefono_cliente: {
-            regex: /^(0(412|414|424|416|426|417|427)-\d{3}-\d{2}-\d{2}|\+58\s(412|414|424|416|426|417|427)-\d{3}-\d{2}-\d{2})$/,
-            msg: "Formato: 0412-555-12-12 o +58 412-555-12-12"
+            regex: /^(\+58\s?)?(0?4(12|14|16|24|26|17|27))(\s?-?\d{3})(\s?-?\d{2}){2}$/,
+            msg: "Formato: +58 412-123-45-67 o 0412-123-45-67"
         },
         correo_cliente: {
             regex: /^[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}$/,

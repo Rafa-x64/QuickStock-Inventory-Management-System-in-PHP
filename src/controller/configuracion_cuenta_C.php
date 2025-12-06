@@ -12,18 +12,31 @@ class configuracion_cuenta_C extends mainModel
 
         $id_usuario = $_SESSION['sesion_usuario']['usuario']['id_usuario'];
 
-        $requeridos = ["nombre", "apellido", "email", "telefono", "direccion"];
+        $requeridos = ["nombre", "apellido", "email", "telefono"];
         foreach ($requeridos as $campo) {
             if (!isset($formulario[$campo]) || trim($formulario[$campo]) === "") {
                 return ["error" => "Campo faltante: $campo"];
             }
         }
 
-        $nombre = ucwords(trim($formulario["nombre"]));
-        $apellido = ucwords(trim($formulario["apellido"]));
-        $email = trim($formulario["email"]);
-        $telefono = trim($formulario["telefono"]);
-        $direccion = trim($formulario["direccion"]);
+        $nombre = ucwords(strtolower(trim($formulario["nombre"])));
+        $apellido = ucwords(strtolower(trim($formulario["apellido"])));
+        $email = strtolower(trim($formulario["email"]));
+
+        // Formatear Teléfono
+        $t = preg_replace('/\D/', '', $formulario["telefono"]);
+        if (strpos($t, '0') === 0) {
+            $t = '58' . substr($t, 1);
+        } elseif (strpos($t, '58') !== 0) {
+            $t = '58' . $t;
+        }
+        if (strlen($t) >= 12) {
+            $telefono = "+" . substr($t, 0, 2) . " " . substr($t, 2, 3) . "-" . substr($t, 5, 3) . "-" . substr($t, 8, 2) . "-" . substr($t, 10);
+        } else {
+            $telefono = "+" . $t;
+        }
+
+        $direccion = !empty($formulario["direccion"]) ? ucwords(strtolower(trim($formulario["direccion"]))) : null;
 
         // TODO: Validar si el email ya existe en otro usuario (pendiente implementar en modelo si es necesario)
         // Por ahora asumimos que el modelo o la BD lanzará error si hay duplicado unique
