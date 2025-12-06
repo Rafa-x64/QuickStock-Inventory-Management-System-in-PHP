@@ -95,7 +95,11 @@ document.addEventListener("DOMContentLoaded", () => {
             // Rellenar campos simples
             codigoInput.value = p.codigo_barra ?? "";
             nombreInput.value = p.nombre ?? "";
-            document.getElementById("activo").value = String(p.activo);
+            
+            // Normalizar estado activo ("t" -> "true", "f" -> "false", true -> "true", etc.)
+            const isActive = (p.activo === 't' || p.activo === true || p.activo === 'true' || p.activo === 1 || p.activo === '1');
+            document.getElementById("activo").value = isActive ? "true" : "false";
+
             descripcionInput.value = p.descripcion ?? "";
             precioInput.value = p.precio ?? 0;
             precioCompraInput.value = p.precio_compra ?? 1.00; // <--- ASIGNACIÓN DE PRECIO DE COMPRA

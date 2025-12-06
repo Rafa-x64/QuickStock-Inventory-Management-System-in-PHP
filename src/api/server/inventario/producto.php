@@ -206,7 +206,9 @@ function obtenerUnProducto($id_producto)
     if (!$producto) return null;
 
     if (isset($producto['activo'])) {
-        $producto['activo'] = filter_var($producto['activo'], FILTER_VALIDATE_BOOLEAN);
+        // Correccion: PostgreSQL devuelve 't'/'f', filter_var no reconoce 't' como true por defecto.
+        $val = $producto['activo'];
+        $producto['activo'] = ($val === 't' || $val === 'true' || $val === '1' || $val === 1 || $val === true);
     }
 
     $queryInventario = "
@@ -327,7 +329,7 @@ function obtenerDetalleProducto($id_producto)
 function obtenerProductoPorCodigoBarra($codigo, $id_sucursal = null)
 {
     $conn = conectar_base_datos();
-    
+
     // 1. Buscar el producto por código de barra o ID
     $sql = "
         SELECT 
@@ -348,7 +350,7 @@ function obtenerProductoPorCodigoBarra($codigo, $id_sucursal = null)
         LEFT JOIN core.categoria cat ON cat.id_categoria = p.id_categoria
         WHERE (p.codigo_barra = $1 OR CAST(p.id_producto AS TEXT) = $1) AND p.activo = true
     ";
-    
+
     $stmtName = "get_prod_codigo_" . uniqid();
     pg_prepare($conn, $stmtName, $sql);
     $result = pg_execute($conn, $stmtName, [$codigo]);
@@ -368,12 +370,12 @@ function obtenerProductoPorCodigoBarra($codigo, $id_sucursal = null)
 
         if (!$resInv || pg_num_rows($resInv) === 0) {
             return [
-                "status" => false, 
+                "status" => false,
                 "mensaje" => "El producto existe pero NO está registrado en esta sucursal.",
                 "producto_basico" => $producto // Opcional: devolver datos básicos si se quiere mostrar qué es
             ];
         }
-        
+
         // Opcional: Verificar stock > 0 si se desea restringir venta sin stock aquí
         // $inv = pg_fetch_assoc($resInv);
         // if ($inv['cantidad'] <= 0) { ... }

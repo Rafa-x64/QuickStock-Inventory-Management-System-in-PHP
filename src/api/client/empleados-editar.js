@@ -45,6 +45,9 @@ document.addEventListener("DOMContentLoaded", () => {
         api({ accion: "obtener_roles" }).then(rRoles => {
             const roles = rRoles.rol || rRoles.filas || [];
             roles.forEach(rol => {
+                // Excluir Gerente (ID 1)
+                if (rol.id_rol == 1) return;
+
                 const op = document.createElement("option");
                 op.value = rol.id_rol;
                 op.textContent = rol.nombre_rol;
