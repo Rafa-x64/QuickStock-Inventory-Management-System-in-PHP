@@ -19,9 +19,10 @@
   - [9. Cómo crear un Modelo, una Vista y un Controlador (MVC local)](#9-cómo-crear-un-modelo-una-vista-y-un-controlador-mvc-local)
   - [10. Modificar/Importar la base de datos (pgAdmin4)](#10-modificarimportar-la-base-de-datos-pgadmin4)
   - [11. Módulo de Reportes y Generación de PDF](#11-módulo-de-reportes-y-generación-de-pdf)
-  - [12. Dependencias y Gestión con Composer](#12-dependencias-y-gestión-con-composer)
-  - [13. Buenas prácticas y checklist de despliegue](#13-buenas-prácticas-y-checklist-de-despliegue)
-  - [14. Anexos: ejemplos de código y comandos útiles](#14-anexos-ejemplos-de-código-y-comandos-útiles)
+  - [12. Gestión de Roles y Accesos (RBAC)](#12-gestión-de-roles-y-accesos-rbac)
+  - [13. Dependencias y Gestión con Composer](#13-dependencias-y-gestión-con-composer)
+  - [14. Buenas prácticas y checklist de despliegue](#14-buenas-prácticas-y-checklist-de-despliegue)
+  - [15. Anexos: ejemplos de código y comandos útiles](#15-anexos-ejemplos-de-código-y-comandos-útiles)
 
 ---
 
@@ -165,7 +166,6 @@ api({ accion: "obtener_productos", categoria: "zapatos" })
 
 > **📌 Nota**: La arquitectura dual (MVC + API) permite flexibilidad: usa MVC para páginas completas y API para operaciones dinámicas.
 
-
 ---
 
 ## 3. Entorno de desarrollo
@@ -202,7 +202,6 @@ psql -U postgres -d QuickStock -f "C:/xampp/htdocs/DEV/PHP/QuickStock/src/config
 
 **📂 Ver estructura completa**: [estructura_proyecto.md](estructura_proyecto.md)
 
-
 ---
 
 ## 5. Flujo completo: vistas, controlador y plantilla
@@ -226,7 +225,7 @@ Descripción paso a paso del flujo principal cuando se carga una página:
 
 Ejemplo simplificado de `vista_controller` (pseudo-PHP):
 
-```php
+````php
 // controller/vista_controller.php
 class vista_controller {
 	public function cargarVista(){
@@ -443,7 +442,7 @@ document.addEventListener("DOMContentLoaded", () => {
   inicializarFiltros(); // Configurar los listeners
   cargarProductos(); // Cargar la lista inicial de productos
 });
-```
+````
 
 Ejemplo de `api/server/index.php` (simplificado):
 
@@ -825,7 +824,60 @@ case 'mi_nuevo_reporte':
 
 ---
 
-## 12. Dependencias y Gestión con Composer
+---
+
+## 12. Gestión de Roles y Accesos (RBAC)
+
+QuickStock implementa un sistema de control de acceso basado en roles (RBAC) que adapta la interfaz y las funcionalidades según el perfil del usuario autenticado.
+
+### 12.1 Roles Definidos
+
+El sistema cuenta con 6 roles predefinidos en la base de datos (`seguridad_acceso.rol`):
+
+| Rol            | ID | Descripción / Acceso Principal                                                                 |
+| -------------- | -- | ---------------------------------------------------------------------------------------------- |
+| **Gerente**    | 1  | Acceso total. Dashboard completo con widgets financieros. Gestión global (todas las sucursales). |
+| **Admin**      | 2  | Gestión administrativa. Puede no tener sucursal asignada. Acceso restringido a ciertas finanzas. |
+| **Encargado**  | 3  | Gestión operativa de sucursal. Inventario, ventas y reportes básicos.                          |
+| **Cajero**     | 4  | Enfocado en Punto de Venta (POS) y Cierre de Caja. Sin acceso a gestión de usuarios o global.  |
+| **Vendedor**   | 5  | Acceso mínimo: Dashboard de empleado y configuración de cuenta.                                |
+| **Depositario**| 6  | Acceso mínimo: Dashboard de empleado y configuración de cuenta (similar a Vendedor).           |
+
+### 12.2 Menús Laterales Dinámicos
+
+La navegación se adapta mediante la inclusión dinámica de archivos de menú en `plantilla.php` basándose en `$_SESSION['sesion_usuario']['rol']`.
+
+- `assets/elements/menu-lateral.php` (Gerente)
+- `assets/elements/menu-lateral-administrador.php`
+- `assets/elements/menu-lateral-cajero.php`
+- `assets/elements/menu-lateral-encargado.php`
+- `assets/elements/menu-lateral-vendedor.php` (Vendedores y Depositarios)
+
+### 12.3 Dashboards Diferenciados
+
+Se han separado las vistas del dashboard para evitar exponer información sensible (financiera) a roles operativos.
+
+1.  **Dashboard Gerente (`dashboard-gerente-view.php`)**:
+    *   Muestra widgets de Ganancias, Ventas Totales, Transacciones.
+    *   Gráficos complejos de rendimiento.
+    *   Utilizado por: Gerente, Administrador.
+
+2.  **Dashboard Empleado (`dashboard-empleado-view.php`)**:
+    *   Versión simplificada.
+    *   Muestra: Productos con stock bajo, Notificaciones, Tareas pendientes.
+    *   Utilizado por: Encargado, Cajero, Vendedor, Depositario.
+
+### 12.4 Asignación de Sucursales
+
+- **Gerentes**: Tienen acceso global. Su `id_sucursal` en sesión suele ser nulo o ignorado para consultas globales.
+- **Administradores**: Pueden ser asignados a una sucursal específica o tener `id_sucursal = NULL` (Sucursal "Ninguna") para roles regionales o de auditoría.
+- **Roles Operativos (Cajero, etc.)**: **Deben** estar asociados a una sucursal física. La validación se realiza tanto en frontend como en backend (aunque el backend permite nulos por diseño, la lógica de negocio lo restringe).
+
+> **⚠️ Nota de Seguridad**: Actualmente, la restricción de crear empleados sin sucursal (para no-admins) reside principalmente en la validación del frontend (`empleados-añadir.js`). Se recomienda reforzar esta validación en el controlador en futuras versiones.
+
+---
+
+## 13. Dependencias y Gestión con Composer
 
 ### 12.1 Dependencias Actuales
 
@@ -1160,7 +1212,7 @@ curl -X POST "http://localhost/DEV/PHP/QuickStock/src/api/server/index.php" \
 
 - Ejemplo de respuesta consistente (JSON):
 
-```json
+````json
 ---
 
 ## 15. Conclusión y Próximos Pasos
@@ -1169,12 +1221,12 @@ curl -X POST "http://localhost/DEV/PHP/QuickStock/src/api/server/index.php" \
 
 Has completado la lectura del **Manual de Desarrollador de QuickStock**. A lo largo de este documento, hemos cubierto:
 
-✅ **Arquitectura Dual**: MVC para navegación completa + Client-Server para operaciones asíncronas  
-✅ **Flujo de Datos**: Desde la URL hasta la base de datos y viceversa  
-✅ **Módulo de Reportes**: Generación HTML y exportación a PDF con mPDF  
-✅ **Gestión de Dependencias**: Composer y actualización de librerías  
-✅ **Patrones y Convenciones**: Nomenclatura, estructura de archivos, validaciones  
-✅ **Buenas Prácticas**: Seguridad, mantenibilidad, escalabilidad  
+✅ **Arquitectura Dual**: MVC para navegación completa + Client-Server para operaciones asíncronas
+✅ **Flujo de Datos**: Desde la URL hasta la base de datos y viceversa
+✅ **Módulo de Reportes**: Generación HTML y exportación a PDF con mPDF
+✅ **Gestión de Dependencias**: Composer y actualización de librerías
+✅ **Patrones y Convenciones**: Nomenclatura, estructura de archivos, validaciones
+✅ **Buenas Prácticas**: Seguridad, mantenibilidad, escalabilidad
 
 ### 15.2 Checklist del Desarrollador
 
@@ -1235,9 +1287,10 @@ git add .                     # Agregar todos los cambios
 git commit -m "mensaje"       # Commit con mensaje
 git push origin master        # Subir cambios
 git pull origin master        # Descargar cambios
-```
+````
 
 **Composer**:
+
 ```bash
 composer install              # Instalar dependencias
 composer update               # Actualizar dependencias
@@ -1246,6 +1299,7 @@ composer audit                # Verificar vulnerabilidades
 ```
 
 **PostgreSQL**:
+
 ```bash
 psql -U postgres -d QuickStock -f config/quickstock.sql  # Importar BD
 psql -U postgres -d QuickStock                           # Conectar a BD
@@ -1256,38 +1310,41 @@ psql -U postgres -d QuickStock                           # Conectar a BD
 ### 16.2 Estructura de Respuestas API
 
 **Respuesta exitosa**:
+
 ```json
 {
-    "status": "success",
-    "data": [
-        {"id": 1, "nombre": "Producto 1"},
-        {"id": 2, "nombre": "Producto 2"}
-    ]
+  "status": "success",
+  "data": [
+    { "id": 1, "nombre": "Producto 1" },
+    { "id": 2, "nombre": "Producto 2" }
+  ]
 }
 ```
 
 **Respuesta con error**:
+
 ```json
 {
-    "status": "error",
-    "message": "Descripción del error para el usuario",
-    "detalle": "Información técnica (solo en desarrollo)"
+  "status": "error",
+  "message": "Descripción del error para el usuario",
+  "detalle": "Información técnica (solo en desarrollo)"
 }
 ```
 
 ### 16.3 Convenciones de Nomenclatura
 
-| Elemento | Convención | Ejemplo |
-|----------|-----------|---------|
-| Vistas | `modulo-accion-view.php` | `empleados-listado-view.php` |
-| Controladores | `modulo_accion_C.php` | `empleados_listado_C.php` |
-| Modelos | `schema.tabla.php` | `core.empleado.php` |
-| API Client | `modulo-accion.js` | `empleados-listado.js` |
-| API Server | `modulo/tabla.php` | `seguridad_acceso/usuario.php` |
+| Elemento      | Convención               | Ejemplo                        |
+| ------------- | ------------------------ | ------------------------------ |
+| Vistas        | `modulo-accion-view.php` | `empleados-listado-view.php`   |
+| Controladores | `modulo_accion_C.php`    | `empleados_listado_C.php`      |
+| Modelos       | `schema.tabla.php`       | `core.empleado.php`            |
+| API Client    | `modulo-accion.js`       | `empleados-listado.js`         |
+| API Server    | `modulo/tabla.php`       | `seguridad_acceso/usuario.php` |
 
 ### 16.4 Enlaces Rápidos a Código
 
 **Archivos clave del proyecto**:
+
 - [index.php](../../index.php) - Punto de entrada MVC
 - [plantilla.php](../view/plantilla.php) - Plantilla base
 - [api/server/index.php](../api/server/index.php) - Punto de entrada API
@@ -1300,5 +1357,8 @@ psql -U postgres -d QuickStock                           # Conectar a BD
 
 **Fin del Manual de Desarrollador - QuickStock v1.0**
 
-*Última actualización: 2025-12-01*
+Última actualización: 2025-12-06
+
+```
+
 ```
