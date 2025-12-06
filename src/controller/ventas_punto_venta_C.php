@@ -56,7 +56,7 @@ class ventas_punto_venta_C extends mainModel
                 "monto" => floatval($pago['monto']),
                 "id_moneda" => $pago['id_moneda'],
                 "tasa" => floatval($pago['tasa']),
-                "referencia" => $pago['referencia'] ?? null
+                "referencia" => (isset($pago['referencia']) && trim($pago['referencia']) !== '') ? trim($pago['referencia']) : null
             ];
         }
 
