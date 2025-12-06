@@ -358,3 +358,108 @@ function obtenerNombreSucursalDashboard($id_sucursal)
     $row = pg_fetch_assoc($result);
     return ["nombre" => $row['nombre'] ?? "Sucursal Desconocida"];
 }
+
+/**
+ * Obtiene productos con mayor stock (Top 5)
+ */
+function obtenerProductosMayorStock($id_sucursal = null)
+{
+    $conn = conectar_base_datos();
+
+    $sql = "SELECT 
+                p.nombre AS producto,
+                i.cantidad
+            FROM inventario.inventario i
+            INNER JOIN inventario.producto p ON i.id_producto = p.id_producto
+            WHERE i.activo = true 
+              AND p.activo = true";
+
+    $params = [];
+    $paramIndex = 1;
+
+    if ($id_sucursal !== null && $id_sucursal > 0) {
+        $sql .= " AND i.id_sucursal = $" . $paramIndex;
+        $params[] = $id_sucursal;
+    }
+
+    $sql .= " ORDER BY i.cantidad DESC LIMIT 5";
+
+    $queryName = "mayor_stock_" . uniqid();
+    pg_prepare($conn, $queryName, $sql);
+    $result = pg_execute($conn, $queryName, $params);
+
+    if (!$result) {
+        return ["error" => "Error al obtener productos con mayor stock"];
+    }
+
+    $data = pg_fetch_all($result);
+    return ["productos" => $data ?: []];
+}
+
+/**
+ * Obtiene distribución de stock por categoría
+ */
+function obtenerDistribucionCategoria($id_sucursal = null)
+{
+    $conn = conectar_base_datos();
+
+    $sql = "SELECT 
+                c.nombre AS categoria,
+                COALESCE(SUM(i.cantidad), 0) AS total_stock
+            FROM inventario.inventario i
+            INNER JOIN inventario.producto p ON i.id_producto = p.id_producto
+            INNER JOIN core.categoria c ON p.id_categoria = c.id_categoria
+            WHERE i.activo = true 
+              AND p.activo = true
+              AND c.activo = true";
+
+    $params = [];
+    $paramIndex = 1;
+
+    if ($id_sucursal !== null && $id_sucursal > 0) {
+        $sql .= " AND i.id_sucursal = $" . $paramIndex;
+        $params[] = $id_sucursal;
+    }
+
+    $sql .= " GROUP BY c.id_categoria, c.nombre ORDER BY total_stock DESC LIMIT 5";
+
+    $queryName = "distribucion_categoria_" . uniqid();
+    pg_prepare($conn, $queryName, $sql);
+    $result = pg_execute($conn, $queryName, $params);
+
+    if (!$result) {
+        return ["error" => "Error al obtener distribución por categoría"];
+    }
+
+    $data = pg_fetch_all($result);
+    return ["categorias" => $data ?: []];
+}
+
+/**
+ * Obtiene stock total por sucursal
+ */
+function obtenerStockPorSucursal()
+{
+    $conn = conectar_base_datos();
+
+    $sql = "SELECT 
+                s.nombre AS sucursal,
+                COALESCE(SUM(i.cantidad), 0) AS total_stock
+            FROM inventario.inventario i
+            INNER JOIN core.sucursal s ON i.id_sucursal = s.id_sucursal
+            WHERE i.activo = true 
+              AND s.activo = true
+            GROUP BY s.id_sucursal, s.nombre
+            ORDER BY total_stock DESC";
+
+    $queryName = "stock_sucursal_" . uniqid();
+    pg_prepare($conn, $queryName, $sql);
+    $result = pg_execute($conn, $queryName, []);
+
+    if (!$result) {
+        return ["error" => "Error al obtener stock por sucursal"];
+    }
+
+    $data = pg_fetch_all($result);
+    return ["sucursales" => $data ?: []];
+}

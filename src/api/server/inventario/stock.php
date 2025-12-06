@@ -17,7 +17,7 @@ function ajustarStock($id_producto, $id_sucursal, $cantidad, $tipo_ajuste, $moti
     }
 
     // 2. Verificar existencia del producto en inventario de la sucursal
-    $sql_check = "SELECT cantidad FROM inventario.inventario WHERE id_producto = $1 AND id_sucursal = $2";
+    $sql_check = "SELECT cantidad, minimo FROM inventario.inventario WHERE id_producto = $1 AND id_sucursal = $2";
     $stmt_check = "check_inv_" . uniqid();
     pg_prepare($conn, $stmt_check, $sql_check);
     $res_check = pg_execute($conn, $stmt_check, [$id_producto, $id_sucursal]);
@@ -62,6 +62,25 @@ function ajustarStock($id_producto, $id_sucursal, $cantidad, $tipo_ajuste, $moti
 
     // 5. Registrar movimiento (Opcional pero recomendado, por ahora solo retornamos éxito)
     // Aquí podrías insertar en una tabla de historial de movimientos si existiera.
+
+    // 6. Verificar Alerta de Stock Bajo
+    if ($nuevo_stock <= $row['minimo']) {
+        require_once __DIR__ . "/../mailer.php";
+
+        // Obtener nombre del producto y sucursal si no los tenemos a mano (aunque nombre prod no lo tenemos en params, lo buscamos o lo pasamos)
+        // Para optimizar, haremos una pequeña query para obtener nombre producto y sucursal
+        $sql_info = "SELECT p.nombre as producto, s.nombre as sucursal 
+                     FROM inventario.producto p, core.sucursal s 
+                     WHERE p.id_producto = $1 AND s.id_sucursal = $2";
+        $stmt_info = "info_alert_" . uniqid();
+        pg_prepare($conn, $stmt_info, $sql_info);
+        $res_info = pg_execute($conn, $stmt_info, [$id_producto, $id_sucursal]);
+        $info = pg_fetch_assoc($res_info);
+
+        if ($info) {
+            enviarCorreoAlerta($info['producto'], $nuevo_stock, $row['minimo'], $info['sucursal']);
+        }
+    }
 
     return [
         "status" => "success",

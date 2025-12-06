@@ -288,6 +288,23 @@ try {
             $out = obtenerNombreSucursalDashboard($id_sucursal);
             break;
 
+        case "dashboard_mayor_stock":
+            include_once __DIR__ . "/dashboard/gerente.php";
+            $id_sucursal = $_SESSION["sesion_usuario"]["sucursal"]["id_sucursal"] ?? null;
+            $out = obtenerProductosMayorStock($id_sucursal);
+            break;
+
+        case "dashboard_distribucion_categoria":
+            include_once __DIR__ . "/dashboard/gerente.php";
+            $id_sucursal = $_SESSION["sesion_usuario"]["sucursal"]["id_sucursal"] ?? null;
+            $out = obtenerDistribucionCategoria($id_sucursal);
+            break;
+
+        case "dashboard_stock_sucursal":
+            include_once __DIR__ . "/dashboard/gerente.php";
+            $out = obtenerStockPorSucursal();
+            break;
+
         // ========== CLIENTES ==========
         case "obtener_todos_los_clientes":
             include_once __DIR__ . "/core/cliente.php";

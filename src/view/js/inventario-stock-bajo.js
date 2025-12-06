@@ -1,150 +1,199 @@
-// =============================
-// ESTADÍSTICAS DE INVENTARIO
-// =============================
+import { api } from "/DEV/PHP/QuickStock/src/api/client/index.js";
 
-// 1️⃣ Productos con Stock Bajo (menor a stock mínimo)
-const ctxStockBajo = document.getElementById('chartStockBajo');
+document.addEventListener("DOMContentLoaded", () => {
+    cargarDatosStockBajo();
+    cargarDatosMayorStock();
+    cargarDistribucionCategoria();
+    cargarStockPorSucursal();
+});
 
-Chart.defaults.maintainAspectRatio = false;
-Chart.defaults.responsive = true;
+// 1. Stock Bajo (Tabla y Gráfico)
+function cargarDatosStockBajo() {
+    api({ accion: "dashboard_stock_bajo" }).then(res => {
+        const productos = res.productos || [];
+        renderizarTabla(productos);
+        renderizarGraficoStockBajo(productos);
+    }).catch(err => console.error("Error cargando stock bajo:", err));
+}
 
-new Chart(ctxStockBajo, {
-    type: 'bar',
-    data: {
-        labels: ['Zapatilla Pro 42', 'Oxford Negro 43', 'Sandalia Dama 37', 'Botín Cuero 40'],
-        datasets: [{
-            label: 'Unidades en stock',
-            data: [5, 3, 2, 7],
-            backgroundColor: 'rgba(255, 99, 132, 0.7)',
-            borderColor: 'rgba(255, 99, 132, 1)',
-            borderWidth: 1,
-            borderRadius: 5
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                display: false
-            },
-            title: {
-                display: true,
-                text: 'Productos con bajo stock'
-            }
+function renderizarTabla(productos) {
+    const tbody = document.getElementById("tabla_stock_bajo");
+    tbody.innerHTML = "";
+
+    if (productos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center">No hay alertas de stock bajo.</td></tr>';
+        return;
+    }
+
+    productos.forEach(prod => {
+        const stock = parseInt(prod.cantidad);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${prod.codigo}</td>
+            <td>${prod.producto}</td>
+            <td class="fw-bold text-danger">${stock}</td>
+            <td><span class="badge bg-warning text-dark">Bajo</span></td>
+            <td><span class="badge bg-danger">Crítico</span></td>
+            <td>
+                <a href="inventario-ajustes-manuales-stock" class="btn btn-sm btn-primary">
+                    <i class="bi bi-box-seam"></i> Ajustar
+                </a>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function renderizarGraficoStockBajo(productos) {
+    const ctx = document.getElementById('chartStockBajo');
+    if (!ctx) return;
+
+    const labels = productos.map(p => p.producto);
+    const data = productos.map(p => p.cantidad);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Unidades',
+                data: data,
+                backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1,
+                borderRadius: 5
+            }]
         },
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-});
-
-// 2️⃣ Productos con Mayor Stock
-const ctxStockAlto = document.getElementById('chartStockAlto');
-new Chart(ctxStockAlto, {
-    type: 'bar',
-    data: {
-        labels: ['Zapatilla Running Pro', 'Sandalia Verano', 'Mocasín Casual', 'Zapato Deportivo Junior'],
-        datasets: [{
-            label: 'Unidades en stock',
-            data: [120, 95, 85, 76],
-            backgroundColor: 'rgba(75, 192, 192, 0.7)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1,
-            borderRadius: 5
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                display: false
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                title: { display: true, text: 'Top Productos con Stock Crítico' }
             },
-            title: {
-                display: true,
-                text: 'Productos con stock más alto'
-            }
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+}
+
+// 2. Mayor Stock
+function cargarDatosMayorStock() {
+    api({ accion: "dashboard_mayor_stock" }).then(res => {
+        const productos = res.productos || [];
+        renderizarGraficoMayorStock(productos);
+    }).catch(err => console.error("Error cargando mayor stock:", err));
+}
+
+function renderizarGraficoMayorStock(productos) {
+    const ctx = document.getElementById('chartStockAlto');
+    if (!ctx) return;
+
+    const labels = productos.map(p => p.producto);
+    const data = productos.map(p => p.cantidad);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Unidades',
+                data: data,
+                backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                borderRadius: 5
+            }]
         },
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-});
-
-// 3️⃣ Distribución de Stock por Categoría
-const ctxCategorias = document.getElementById('chartCategorias');
-new Chart(ctxCategorias, {
-    type: 'doughnut',
-    data: {
-        labels: ['Deportivo', 'Formal', 'Casual', 'Sandalias', 'Botas'],
-        datasets: [{
-            data: [250, 180, 200, 120, 150],
-            backgroundColor: [
-                'rgba(54, 162, 235, 0.7)',
-                'rgba(255, 205, 86, 0.7)',
-                'rgba(153, 102, 255, 0.7)',
-                'rgba(255, 159, 64, 0.7)',
-                'rgba(75, 192, 192, 0.7)'
-            ],
-            borderColor: 'rgba(255, 255, 255, 0.3)',
-            borderWidth: 2
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            title: {
-                display: true,
-                text: 'Distribución de stock por categoría'
-            }
-        }
-    }
-});
-
-// 4️⃣ Stock por Sucursal
-const ctxSucursales = document.getElementById('chartSucursales');
-new Chart(ctxSucursales, {
-    type: 'bar',
-    data: {
-        labels: ['Sucursal Centro', 'Sucursal Norte', 'Sucursal Este', 'Sucursal Oeste'],
-        datasets: [{
-            label: 'Cantidad total en stock',
-            data: [480, 350, 410, 300],
-            backgroundColor: 'rgba(255, 206, 86, 0.7)',
-            borderColor: 'rgba(255, 206, 86, 1)',
-            borderWidth: 1,
-            borderRadius: 5
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            title: {
-                display: true,
-                text: 'Stock total por sucursal'
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                title: { display: true, text: 'Productos con Mayor Stock' }
             },
-            legend: {
-                display: false
-            }
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+}
+
+// 3. Distribución por Categoría
+function cargarDistribucionCategoria() {
+    api({ accion: "dashboard_distribucion_categoria" }).then(res => {
+        const categorias = res.categorias || [];
+        renderizarGraficoCategorias(categorias);
+    }).catch(err => console.error("Error cargando categorías:", err));
+}
+
+function renderizarGraficoCategorias(categorias) {
+    const ctx = document.getElementById('chartCategorias');
+    if (!ctx) return;
+
+    const labels = categorias.map(c => c.categoria);
+    const data = categorias.map(c => c.total_stock);
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(255, 205, 86, 0.7)',
+                    'rgba(153, 102, 255, 0.7)',
+                    'rgba(255, 159, 64, 0.7)',
+                    'rgba(75, 192, 192, 0.7)'
+                ],
+                borderColor: 'rgba(255, 255, 255, 0.3)',
+                borderWidth: 2
+            }]
         },
-        scales: {
-            y: {
-                beginAtZero: true
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: { display: true, text: 'Distribución de stock por categoría' }
             }
         }
-    }
-});
+    });
+}
 
-// 5️⃣ Valor total del inventario (sumatoria del costo total)
-const valorTotal = 480 * 55 + 350 * 65 + 410 * 72 + 300 * 60; // Ejemplo calculado ficticio
-document.getElementById('valorTotalInventario').textContent = `${valorTotal.toFixed(2)} Bs.`;
+// 4. Stock por Sucursal
+function cargarStockPorSucursal() {
+    api({ accion: "dashboard_stock_sucursal" }).then(res => {
+        const sucursales = res.sucursales || [];
+        renderizarGraficoSucursales(sucursales);
+    }).catch(err => console.error("Error cargando sucursales:", err));
+}
 
-// =========================================
-// 🧩 Recomendación visual:
-// Para usar Flowchart.js además de esto,
-// puedes representar el flujo de stock:
-// “Entrada → Inventario → Venta → Ajuste”
-// =========================================
+function renderizarGraficoSucursales(sucursales) {
+    const ctx = document.getElementById('chartSucursales');
+    if (!ctx) return;
+
+    const labels = sucursales.map(s => s.sucursal);
+    const data = sucursales.map(s => s.total_stock);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Stock',
+                data: data,
+                backgroundColor: 'rgba(255, 206, 86, 0.7)',
+                borderColor: 'rgba(255, 206, 86, 1)',
+                borderWidth: 1,
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: { display: true, text: 'Stock total por sucursal' },
+                legend: { display: false }
+            },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+}
