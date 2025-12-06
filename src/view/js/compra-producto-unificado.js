@@ -171,7 +171,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             inputElement.disabled = false;
             inputElement.required = true;
-            inputElement.setAttribute('name', `productos[${index}][${inputIdBase.substring(4)}]`);
+            const finalInputName = field === 'talla' ? 'rango_talla' : 'nombre_color';
+            inputElement.setAttribute('name', `productos[${index}][${finalInputName}]`);
             inputElement.classList.add("prod-campo-requerido");
 
             selectElement.disabled = true;
@@ -187,10 +188,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // --- MÓDULO: Inyección y Lógica del Producto Dinámico ---
 
+    // Helper para obtener símbolo actual
+    function obtenerSimboloActual() {
+        const select = document.getElementById("compra_id_moneda");
+        let simbolo = "Bs."; // Default
+        if (select && select.value) {
+            // Intentar obtener del texto seleccionado si no tenemos el objeto data a mano
+            // O mejor, buscamos el label que ya se actualizó
+            const label = document.querySelector('label[for^="prod_precio_compra_"]');
+            if (label) {
+                const match = label.textContent.match(/\((.*?)\)/);
+                if (match) return match[1];
+            }
+        }
+        return simbolo;
+    }
+
     function generarModuloProductoHTML(index, baseData) {
         const categoriaOptions = crearOpcionesHTML(baseData.categorias, 'id_categoria', 'nombre', 'Seleccione categoría');
         const colorOptions = crearOpcionesHTML(baseData.colores, 'id_color', 'nombre', 'Seleccione color');
         const tallaOptions = crearOpcionesHTML(baseData.tallas, 'id_talla', 'rango_talla', 'Seleccione talla');
+        
+        const simbolo = obtenerSimboloActual();
 
         return `
             <div class="row Quick-form-product p-4 mb-4 border border-info rounded-3" data-index="${index}">
@@ -269,13 +288,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                 </div>
 
                 <div class="col-md-6 d-flex flex-column py-2 position-relative">
-                    <label for="prod_precio_compra_${index}" class="form-label Quick-title">Precio Compra Unitario (Bs.)</label>
+                    <label for="prod_precio_compra_${index}" class="form-label Quick-title">Precio Compra Unitario (${simbolo})</label>
                     <input type="number" id="prod_precio_compra_${index}" name="productos[${index}][precio_compra]" class="Quick-form-input prod-campo-requerido prod-recalcular" step="0.01" min="0.01" value="0.01" required>
                     <div class="invalid-tooltip">Precio de compra obligatorio y min 0.01.</div>
                 </div>
 
                 <div class="col-md-6 d-flex flex-column py-2 position-relative">
-                    <label for="prod_precio_venta_${index}" class="form-label Quick-title">Precio Venta Sugerido (Bs.)</label>
+                    <label for="prod_precio_venta_${index}" class="form-label Quick-title">Precio Venta Sugerido (${simbolo})</label>
                     <input type="number" id="prod_precio_venta_${index}" name="productos[${index}][precio_venta]" class="Quick-form-input prod-campo-requerido" step="0.01" min="0.01" value="0.01" required>
                     <div class="invalid-tooltip">Precio de venta obligatorio y min 0.01.</div>
                 </div>

@@ -6,6 +6,34 @@ Este archivo documenta los cambios y avances realizados en el desarrollo del sis
 
 ---
 
+---
+
+## [v0.3.0] - Implementación de Roles y Mejoras en UX
+
+**Fecha:** 2025-12-06
+**Estado:** Completado
+
+### Añadido
+
+- **Sistema de Roles (RBAC) Completo**:
+
+  - Implementación de menús laterales específicos para: Encargado, Cajero, Vendedor, Depositario y Administrador.
+  - Creación de `dashboard-empleado-view.php` simplificado para roles no gerenciales.
+  - Lógica de redirección y carga de menús dinámicos en `plantilla.php`.
+
+- **Mejoras en Gestión de Empleados**:
+  - Opción de "Sucursal: Ninguna" para Administradores.
+  - Validación dinámica en frontend para hacer opcional la sucursal solo si el rol es Admin.
+  - Corrección en la población del select de roles (excluyendo "Gerente" en edición).
+
+### Corregido
+
+- **Edición de Productos**:
+  - Solucionado bug donde el estado "Activo/Inactivo" siempre se mostraba como Inactivo debido a una conversión de tipos incorrecta de PostgreSQL a PHP (`t` vs `true`).
+  - Corrección en la carga de valores booleanos desde la API.
+
+---
+
 ## [v0.2.0] - Módulo de Reportes y Actualización de Dependencias
 
 **Fecha:** 2025-12-01  

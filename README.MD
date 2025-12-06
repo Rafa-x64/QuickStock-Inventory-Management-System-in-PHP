@@ -67,80 +67,121 @@ El proyecto está construido con un stack moderno y enfocado en la seguridad y l
 
 ---
 
-## Instalación y Configuración
+## 🚀 Instalación y Configuración
 
-Sigue estos pasos para poner en marcha el proyecto en tu entorno local. Requisitos mínimos: PHP 8.0+, Apache y Composer.
+Sigue estos pasos detallados para desplegar el proyecto en tu entorno local.
 
-### 1. Preparar el entorno de desarrollo
+### Prerrequisitos
 
-Ubica el directorio raíz de tu servidor web (por ejemplo, `htdocs` en XAMPP) y crea la siguiente estructura:
+- **XAMPP / LAMP / WAMP**: Servidor web Apache y PHP 8.0+.
+- **PostgreSQL 12+**: Motor de base de datos.
+- **Composer**: Gestor de dependencias de PHP.
+- **Git**: Control de versiones.
 
-```bash
-cd xampp/htdocs
-mkdir -p DEV/PHP
-cd DEV/PHP
+---
+
+### 1. Preparación del Entorno (Windows/XAMPP)
+
+1.  Navega a la carpeta pública de tu servidor web (usualmente `htdocs` en XAMPP).
+2.  Crea la estructura de carpetas recomendada para mantener el orden:
+
+```powershell
+cd C:\xampp\htdocs
+mkdir DEV\PHP
+cd DEV\PHP
 ```
 
-### 2. Clonar el repositorio
+---
 
-Clona el proyecto en la carpeta creada:
+### 2. Clonar el Proyecto
 
-```bash
-git clone https://LINK_DEL_REPOSITORIO
-cd nombre-del-repositorio
-git init
-git remote add origin https://LINK_DEL_REPOSITORIO
-git switch master
-git pull origin master
+Clona el repositorio dentro de la carpeta creada:
+
+```powershell
+git clone https://ruta-a-tu-repo/QuickStock.git
+cd QuickStock
 ```
 
-### 3. Instalar dependencias
+---
 
-Ejecuta Composer para instalar las librerías necesarias:
+### 3. Gestión de Dependencias (Composer)
 
-> 💡 Presiona ctrl + ñ para abrir el terminal integrado o abre la terminal en la carpeta raiz del proyecto
+QuickStock utiliza **Composer** para gestionar librerías críticas como `mPDF` (generación de reportes) y para el autocarga de clases (autoloading).
+
+**Es obligatorio instalar las dependencias antes de ejecutar el proyecto:**
+
+1.  Abre una terminal en la raíz del proyecto (`.../QuickStock/`).
+2.  Ejecuta el comando de instalación:
 
 ```bash
 composer install
 ```
 
-### 4. Verificar configuración de Apache
+> **¿Qué hace esto?**
+>
+> - Descarga las librerías definidas en `composer.json` a la carpeta `vendor/`.
+> - Genera el archivo `vendor/autoload.php`, necesario para que PHP encuentre las clases del proyecto automáticamente. sin esto, el sistema arrojará errores de "Class not found".
 
-Asegúrate de que el módulo mod_rewrite esté habilitado y que el archivo .htaccess esté siendo interpretado correctamente. Esto es necesario para la reescritura de URLs.
+---
 
-### 5. Configurar base de datos (PostgreSQL)
+### 4. Configuración de Base de Datos (PostgreSQL)
 
-Importa el archivo src/config/quickstock.sql en tu gestor de base de datos (por ejemplo, phpMyAdmin) y ajusta las credenciales en src/config/SERVER.php según tu entorno local.
+El sistema utiliza PostgreSQL. Debes crear la base de datos e importar el esquema inicial.
 
-> 💡 En caso de utilizar **PostgreSQL** como manejador de base de datos, sigue estos pasos adicionales:
+#### Paso A: Crear la Base de Datos
 
-#### a. Importar la base de datos
+Puedes usar **pgAdmin 4** o la línea de comandos (`psql`).
 
-Utiliza tu gestor de base de datos (por ejemplo, pgAdmin o la terminal) para importar el archivo `src/config/quickstock.sql` a tu instancia de PostgreSQL. Asegúrate de crear previamente la base de datos con el nombre correspondiente.
+**Opción Terminal (psql):**
 
 ```bash
-psql -U tu_usuario -d nombre_base_datos -f src/config/quickstock.sql
+# Inicia sesión como superusuario (generalmente 'postgres')
+psql -U postgres
 ```
 
-#### b. Modificar la conexión en el código
+```sql
+-- Dentro de la consola psql:
+CREATE DATABASE "QuickStock";
+\q
+```
 
-Edita el archivo src/config/SERVER.php para adaptar la conexión a PostgreSQL utilizando pg_connect. Asegúrate de que el formato sea compatible. Ejemplo:
+#### Paso B: Importar el Esquema
+
+El archivo SQL se encuentra en `src/config/quickstock.sql`.
+
+```powershell
+# Desde PowerShell / Terminal en la raíz del proyecto
+psql -U postgres -d QuickStock -f src/config/quickstock.sql
+```
+
+> **Nota:** Si tu usuario `postgres` tiene contraseña, el sistema te la solicitará.
+
+#### Paso C: Configurar la Conexión (SERVER.php)
+
+Debes decirle a la aplicación cómo conectarse a tu base de datos local.
+
+1.  Abre el archivo `src/config/SERVER.php`.
+2.  Localiza la definición de conexión y ajusta los valores (host, puerto, dbname, user, password).
 
 ```php
-define('DB_CONNECTION', pg_connect("host=localhost port=5432 dbname=nombre_base_datos user=tu_usuario password=tu_clave"));
+// Ejemplo de configuración típica en local
+const DB_SERVER = "localhost";
+const DB_NAME = "QuickStock";
+const DB_USER = "postgres";
+const DB_PASS = "tu_contraseña_aqui"; // Déjalo vacío "" si no tienes contraseña
 ```
 
-> 💡 Por lo general el usuario por defecto es postgres y en caso de no haber configurado una contraseña se omite el campo 'password=' del DSN
+---
 
-#### c. Validar compatibilidad
+### 5. Verificar Servidor Web (Apache)
 
-Verifica que los modelos y funciones que interactúan con la base de datos estén adaptados para PostgreSQL. Si originalmente fueron escritos para MySQL (por ejemplo, usando mysqli*\* o PDO con mysql:), será necesario refactorizar las llamadas para usar funciones compatibles con pg*\*.
+Para que el enrutamiento amigable (URLs limpias) funcione, Apache debe tener habilitado el módulo `mod_rewrite` y permitir la lectura del archivo `.htaccess`.
 
-#### d. Revisión adicional
+- En XAMPP, asegúrate de iniciar el servicio **Apache**.
+- Accede al proyecto desde tu navegador:
+  `http://localhost/DEV/PHP/QuickStock/src/`
 
-Asegúrate de que los tipos de datos en el script SQL sean compatibles con PostgreSQL.
-
-Revisa el uso de comillas, funciones específicas (NOW(), AUTO_INCREMENT, etc.) y sintaxis de claves primarias/foráneas.
+---
 
 ## Estructura del Proyecto (MVC)
 
@@ -159,6 +200,26 @@ El núcleo del sistema sigue el patrón **Modelo-Vista-Controlador (MVC)**, gara
 ### Referencia a estructura del proyecto
 
 > [Estructura del proyecto](src/docs/estructura_proyecto.md)
+
+---
+
+## 🏗️ Arquitectura Híbrida (MVC + Client-Server)
+
+QuickStock implementa dos patrones de arquitectura que conviven para ofrecer una experiencia moderna y robusta:
+
+### 1. MVC Tradicional (Navegación)
+Utilizado para la carga de vistas, gestión de sesiones y renderizado de plantillas HTML.
+*   **Front Controller**: `src/index.php` gestiona todas las rutas amigables.
+*   **Vistas**: Renderizadas desde el servidor con PHP.
+
+### 2. Cliente-Servidor (API RESTful)
+Utilizado para la interactividad dinámica sin recargas de página (AJAX/Fetch).
+
+*   **Cliente (Frontend)**: Archivos JS en `src/api/client/` consumen la API.
+*   **Servidor (Backend)**: Endpoints en `src/api/server/index.php` procesan solicitudes JSON y responden datos estructurados.
+
+**Flujo de Datos:**
+`Vista (JS)` ➡️ `Fetch (JSON)` ➡️ `API (PHP)` ➡️ `Base de Datos` ➡️ `Respuesta JSON` ➡️ `DOM Update`
 
 ---
 

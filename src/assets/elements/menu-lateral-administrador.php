@@ -1,3 +1,6 @@
+<style>
+
+</style>
 <!--menu para disposiciones mdianas y pequeñas-->
 <button
     class="btn btn-secondary menu-flotante d-lg-none"
@@ -36,6 +39,8 @@
                                 <a href="inventario-ver-productos" class="ms-3">Ver Productos</a>
                                 <a href="inventario-añadir-producto" class="ms-3">Añadir Productos</a>
                                 <a href="inventario-gestionar-categorias" class="ms-3">Gestionar Categorias</a>
+                                <a href="inventario-gestionar-colores" class="ms-3">Gestionar Colores</a>
+                                <a href="inventario-gestionar-tallas" class="ms-3">Gestionar Tallas</a>
                                 <a href="inventario-ajustes-manuales-stock" class="ms-3">Ajustes Manuales de Stock</a>
                                 <a href="inventario-stock-bajo" class="ms-3">Alertas de Stock Bajo</a>
                             </div>
@@ -50,8 +55,8 @@
                                 <p class="texto-menu m-0 ms-2">Sucursales</p>
                             </summary>
                             <div class="menu-submenu d-flex flex-column ps-2">
+                                <a href="sucursales-añadir" class="ms-3">Añadir Sucursal</a>
                                 <a href="sucursales-listado" class="ms-3">Listado de Sucursales</a>
-                                <a href="sucursales-detalle" class="ms-3">Detalle de Sucursal</a>
                             </div>
                         </details>
                     </div>
@@ -65,7 +70,7 @@
                             </summary>
                             <div class="menu-submenu d-flex flex-column ps-2">
                                 <a href="compras-historial" class="ms-3">Historial de Compras</a>
-                                <a href="compras-detalle" class="ms-3">Detalle de Compra</a>
+                                <a href="compras-añadir" class="ms-3">Registrar Nueva Compra</a>
                             </div>
                         </details>
                     </div>
@@ -82,7 +87,6 @@
                                 <a href="ventas-productos-populares" class="ms-3">Productos mas Vendidos</a>
                                 <a href="ventas-añadir-metodo-pago" class="ms-3">Añadir Metodo de Pago</a>
                                 <a href="ventas-lista-metodos-pago" class="ms-3">Listado de Metodos de pago</a>
-                                <a href="ventas-detalle-metodo-pago" class="ms-3">Detalle Metodo de Pago</a>
                             </div>
                         </details>
                     </div>
@@ -96,9 +100,6 @@
                             </summary>
                             <div class="menu-submenu d-flex flex-column ps-2">
                                 <a href="clientes-ver-listado-clientes" class="ms-3">Ver listado de Clientes</a>
-                                <a href="clientes-gestionar-clientes" class="ms-3">Gestionar Clientes</a>
-                                <a href="clientes-listado" class="ms-3">Ver listado de Clientes</a>
-                                <a href="clientes-detalle" class="ms-3">Detalle Cliente</a>
                             </div>
                         </details>
                     </div>
@@ -113,7 +114,6 @@
                             <div class="menu-submenu d-flex flex-column ps-2">
                                 <a href="proveedores-listado" class="ms-3">lista de Proveedores</a>
                                 <a href="proveedores-añadir" class="ms-3">Añadir Proveedor</a>
-                                <a href="proveedores-detalles" class="ms-3">Detalles Proveedor</a>
                             </div>
                         </details>
                     </div>
@@ -128,30 +128,17 @@
                             <div class="menu-submenu d-flex flex-column ps-2">
                                 <a href="empleados-listado" class="ms-3">Listado de Empleados</a>
                                 <a href="empleados-añadir" class="ms-3">Añadir Empleado</a>
-                                <a href="empleados-detalle" class="ms-3">Detalle Empleado</a>
                                 <a href="empleados-añadir-rol" class="ms-3">Añadir Rol</a>
                                 <a href="empleados-lista-roles" class="ms-3">Lista de Roles</a>
-                                <a href="empleados-detalle-rol" class="ms-3">Detalle Rol</a>
                             </div>
                         </details>
                     </div>
                 </li>
                 <li class="list-group-item pt-2">
-                    <div class="col-12 p-0 m-0 menu-item">
-                        <details class="menu-details">
-                            <summary class="d-flex flex-row align-items-center Quick-white-link">
-                                <i class="bi bi-file-earmark-text fs-6"></i>
-                                <p class="texto-menu m-0 ms-2">Contabilidad y Reportes</p>
-                            </summary>
-                            <div class="menu-submenu d-flex flex-column ps-2">
-                                <a href="#" class="ms-3">Reportes de Rotacion</a>
-                                <a href="#" class="ms-3">Reporte de Ventas</a>
-                                <a href="#" class="ms-3">Reporte de Inventario</a>
-                                <a href="#" class="ms-3">Reporte de Financiero</a>
-                                <a href="#" class="ms-3">Reporte de Auditoria</a>
-                            </div>
-                        </details>
-                    </div>
+                    <a href="prueba-reporte" class="d-flex flex-row align-items-center text-decoration-none Quick-white-link">
+                        <i class="bi bi-file-earmark-text fs-5"></i>
+                        <p class="m-0 ms-2">Contabilidad y Reportes</p>
+                    </a>
                 </li>
                 <li class="list-group-item pt-2">
                     <div class="col-12 p-0 m-0 menu-item">
@@ -232,6 +219,8 @@
                         <a href="inventario-ver-productos" class="ms-3">Ver Productos</a>
                         <a href="inventario-añadir-producto" class="ms-3">Añadir Productos</a>
                         <a href="inventario-gestionar-categorias" class="ms-3">Gestionar Categorias</a>
+                        <a href="inventario-gestionar-colores" class="ms-3">Gestionar Colores</a>
+                        <a href="inventario-gestionar-tallas" class="ms-3">Gestionar Tallas</a>
                         <a href="inventario-ajustes-manuales-stock" class="ms-3">Ajustes Manuales de Stock</a>
                         <a href="inventario-stock-bajo" class="ms-3">Alertas de Stock Bajo</a>
                     </div>
@@ -245,8 +234,8 @@
                         <p class="texto-menu">Sucursales</p>
                     </summary>
                     <div class="menu-submenu d-flex flex-column ps-5">
+                        <a href="sucursales-añadir" class="ms-3">Añadir Sucursal</a>
                         <a href="sucursales-listado" class="ms-3">Listado de Sucursales</a>
-                        <a href="sucursales-detalle" class="ms-3">Detalle de Sucursal</a>
                     </div>
                 </details>
             </div>
@@ -259,7 +248,7 @@
                     </summary>
                     <div class="menu-submenu d-flex flex-column ps-5">
                         <a href="compras-historial" class="ms-3">Historial de Compras</a>
-                        <a href="compras-detalle" class="ms-3">Detalle de Compra</a>
+                        <a href="compras-añadir" class="ms-3">Registrar Nueva Compra</a>
                     </div>
                 </details>
             </div>
@@ -275,10 +264,10 @@
                         <a href="ventas-productos-populares" class="ms-3">Productos mas Vendidos</a>
                         <a href="ventas-añadir-metodo-pago" class="ms-3">Añadir Metodo de Pago</a>
                         <a href="ventas-lista-metodos-pago" class="ms-3">Listado de Metodos de pago</a>
-                        <a href="ventas-detalle-metodo-pago" class="ms-3">Detalle Metodo de Pago</a>
                     </div>
                 </details>
             </div>
+
             <div class="col-12 p-0 mt-2 menu-item">
                 <details class="menu-details">
                     <summary class="d-flex flex-row align-items-center Quick-white-link">
@@ -286,8 +275,7 @@
                         <p class="texto-menu">Clientes</p>
                     </summary>
                     <div class="menu-submenu d-flex flex-column ps-5">
-                        <a href="clientes-listado" class="ms-3">Ver listado de Clientes</a>
-                        <a href="clientes-detalle" class="ms-3">Detalle Cliente</a>
+                        <a href="clientes-ver-listado-clientes" class="ms-3">Ver listado de Clientes</a>
                     </div>
                 </details>
             </div>
@@ -301,7 +289,6 @@
                     <div class="menu-submenu d-flex flex-column ps-5">
                         <a href="proveedores-listado" class="ms-3">lista de Proveedores</a>
                         <a href="proveedores-añadir" class="ms-3">Añadir Proveedor</a>
-                        <a href="proveedores-detalles" class="ms-3">Detalles Proveedor</a>
                     </div>
                 </details>
             </div>
@@ -315,28 +302,17 @@
                     <div class="menu-submenu d-flex flex-column ps-5">
                         <a href="empleados-listado" class="ms-3">Listado de Empleados</a>
                         <a href="empleados-añadir" class="ms-3">Añadir Empleado</a>
-                        <a href="empleados-detalle" class="ms-3">Detalle Empleado</a>
                         <a href="empleados-añadir-rol" class="ms-3">Añadir Rol</a>
                         <a href="empleados-lista-roles" class="ms-3">Lista de Roles</a>
-                        <a href="empleados-detalle-rol" class="ms-3">Detalle Rol</a>
                     </div>
                 </details>
             </div>
 
             <div class="col-12 p-0 mt-2 menu-item">
-                <details class="menu-details">
-                    <summary class="d-flex flex-row align-items-center Quick-white-link">
-                        <i class="bi bi-file-earmark-text fs-5"></i>
-                        <p class="texto-menu">Contabilidad y Reportes</p>
-                    </summary>
-                    <div class="menu-submenu d-flex flex-column ps-5">
-                        <a href="#" class="ms-3">Reportes de Rotacion</a>
-                        <a href="#" class="ms-3">Reporte de Ventas</a>
-                        <a href="#" class="ms-3">Reporte de Inventario</a>
-                        <a href="#" class="ms-3">Reporte de Financiero</a>
-                        <a href="#" class="ms-3">Reporte de Auditoria</a>
-                    </div>
-                </details>
+                <a href="prueba-reporte" class="d-flex flex-row align-items-center Quick-white-link menu-details-link">
+                    <i class="bi bi-file-earmark-text fs-5"></i>
+                    <p class="texto-menu">Contabilidad y reportes</p>
+                </a>
             </div>
 
             <div class="col-12 p-0 mt-2 menu-item">
