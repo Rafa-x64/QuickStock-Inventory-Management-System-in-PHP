@@ -60,7 +60,7 @@ class compras_añadir_C extends mainModel
 
                 // 🟢 Lógica de Color CORREGIDA: Permite ser nulo/opcional 🟢
                 $id_color_existente = $this->limpiar_cadena($producto['id_color'] ?? '');
-                $nombre_color_nuevo = $this->normalizarTexto($producto['_nombre_color'] ?? '');
+                $nombre_color_nuevo = $this->normalizarTexto($producto['nombre_color'] ?? '');
 
                 if (!empty($id_color_existente) && intval($id_color_existente) > 0) {
                     // Opción 1: Color Existente

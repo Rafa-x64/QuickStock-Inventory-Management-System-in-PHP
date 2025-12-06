@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     tbody.innerHTML = `<tr><td colspan="6" class="text-danger">Error: ${res.error}</td></tr>`;
                     return;
                 }
-                renderizar(res.filas || res.data || []);
+                renderizar(res.monedas || res.filas || res.data || []);
             })
             .catch(err => {
                 console.error(err);

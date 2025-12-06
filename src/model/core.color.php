@@ -55,7 +55,7 @@ class color extends mainModel
         // Usamos ucwords/mb_convert_case para capitalizar la primera letra del nombre a insertar
         $nombreCapitalizado = mb_convert_case($nombreLimpio, MB_CASE_TITLE, 'UTF-8');
 
-        $sql_crear = "INSERT INTO core.color (nombre_color, activo) VALUES ($1, true) RETURNING id_color";
+        $sql_crear = "INSERT INTO core.color (nombre, activo) VALUES ($1, true) RETURNING id_color";
         $result_crear = pg_query_params($conn, $sql_crear, [$nombreCapitalizado]);
 
         if ($result_crear && pg_num_rows($result_crear) > 0) {

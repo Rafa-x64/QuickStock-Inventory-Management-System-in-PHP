@@ -69,8 +69,8 @@ async function cargarSelectsCompraPrincipal() {
     );
 
     // 3. Moneda (compra_id_moneda)
-    // Clave de retorno de la API: "monedas" (asumido), ID en la BD: "id_moneda"
-    await cargarSelect(
+    // Clave de retorno de la API: "monedas", ID en la BD: "id_moneda"
+    const monedas = await cargarSelect(
         "compra_id_moneda",
         "obtener_todas_monedas",
         "monedas",
@@ -78,6 +78,29 @@ async function cargarSelectsCompraPrincipal() {
         "codigo", // Asumo que el campo a mostrar es 'codigo'
         "Seleccione una moneda..."
     );
+
+    // [NUEVO] Listener para actualizar etiquetas de precio según moneda
+    const monedaSelect = document.getElementById("compra_id_moneda");
+    if (monedaSelect && monedas) {
+        monedaSelect.addEventListener("change", () => {
+             const idMoneda = monedaSelect.value;
+             let simbolo = "Bs."; // Default
+             
+             const selected = monedas.find(m => m.id_moneda == idMoneda);
+             if (selected && selected.simbolo) {
+                 simbolo = selected.simbolo;
+             }
+             
+             // Actualizar etiquetas
+             // Input labels: "Precio Compra Unitario (Bs.)" -> "Precio Compra Unitario ($)"
+             document.querySelectorAll('label[for^="prod_precio_compra_"]').forEach(lbl => {
+                 lbl.textContent = `Precio Compra Unitario (${simbolo})`;
+             });
+             document.querySelectorAll('label[for^="prod_precio_venta_"]').forEach(lbl => {
+                 lbl.textContent = `Precio Venta Sugerido (${simbolo})`;
+             });
+        });
+    }
 
     // 4. Empleado Responsable (compra_id_usuario)
     // Clave de retorno de la API: "empleados" (asumido), ID en la BD: "id_usuario"

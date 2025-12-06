@@ -6,7 +6,7 @@ function obtenerTodasMonedas()
 {
     // Usamos el modelo existente
     $monedas = Moneda::obtenerTodas();
-    return ["filas" => $monedas];
+    return ["monedas" => $monedas];
 }
 
 function crearMoneda($datos)
