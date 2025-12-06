@@ -155,7 +155,7 @@ class venta extends mainModel
                 ]);
 
                 if (!$resPago) {
-                    throw new Exception("Error al registrar el pago.");
+                    throw new Exception("Error al registrar el pago: " . pg_last_error($conn));
                 }
             }
 
