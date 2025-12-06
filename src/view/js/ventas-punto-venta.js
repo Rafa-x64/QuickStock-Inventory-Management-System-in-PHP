@@ -197,12 +197,37 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Funciones de Carga de Datos ---
 
   async function cargarTasas() {
-    const res = await ventasAPI.obtenerTasasCambio();
-    if (res && res.tasas) {
-      tasasCambio["USD"] = 1;
-      res.tasas.forEach((t) => {
+    const res = await ventasAPI.obtenerTasasCambio(); // Llama a obtener_resumen_tasas
+    if (res && (res.tasas || res.data)) {
+      const data = res.data || res.tasas;
+      
+      tasasCambio = {};
+      
+      // Limpiar y llenar dropdowns
+      idMonedaSelect.innerHTML = '<option value="">Seleccione...</option>';
+      idMonedaPago.innerHTML = '<option value="">Seleccione...</option>';
+
+      // Añadir opción base (USD) si no viene en el API explícitamente como activo
+      // Pero usualmente el API traerá USD con tasa 1. Si no, lo forzamos.
+      
+      data.forEach((t) => {
         tasasCambio[t.codigo] = parseFloat(t.tasa);
+        
+        // Agregar a Dropdowns
+        const opt = document.createElement("option");
+        opt.value = t.id_moneda; // Usar ID real de la BD
+        opt.textContent = t.codigo; // Mostrar Codigo (USD, VES, EUR)
+        opt.dataset.codigo = t.codigo; 
+        
+        // Clonar para el otro select
+        const opt2 = opt.cloneNode(true);
+
+        idMonedaSelect.appendChild(opt);
+        idMonedaPago.appendChild(opt2);
       });
+      
+      // Asegurar default USD = 1 si no existiera (fallback)
+      if (!tasasCambio["USD"]) tasasCambio["USD"] = 1;
     }
   }
 
@@ -548,38 +573,37 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderCarrito() {
+    // Helper para formateo profesional
+    const formatCurrency = (amount, currency) => {
+        return amount.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + currency;
+    };
+
     detalleVentaTableBody.innerHTML = "";
     let total = 0;
-    const monedaVenta =
-      idMonedaSelect.options[idMonedaSelect.selectedIndex].text;
+    const monedaVenta = idMonedaSelect.options[idMonedaSelect.selectedIndex].text;
     const tasa = obtenerTasa(monedaVenta);
 
     carrito.forEach((item, index) => {
       const precioBase = parseFloat(item.precio_venta);
       const precioConvertido = precioBase * tasa;
-      const subtotal =
-        precioConvertido * item.cantidad * (1 - item.descuento / 100);
+      const subtotal = precioConvertido * item.cantidad * (1 - item.descuento / 100);
       total += subtotal;
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
                 <td>
                     <strong>${item.nombre}</strong><br>
-                    <small class="text-muted">${
-                      item.codigo_barra || "S/C"
-                    }</small>
+                    <small class="text-muted">${item.codigo_barra || "S/C"}</small>
                 </td>
                 <td>
                     <small>Talla: ${item.talla || "-"}</small><br>
                     <small>Color: ${item.color || "-"}</small>
                 </td>
                 <td>
-                    <input type="number" min="1" value="${
-                      item.cantidad
-                    }" class="form-control form-control-sm cant-input" data-index="${index}" style="width: 70px;">
+                    <input type="number" min="1" value="${item.cantidad}" class="form-control form-control-sm cant-input" data-index="${index}" style="width: 70px;">
                 </td>
-                <td>${precioConvertido.toFixed(2)} ${monedaVenta}</td>
-                <td>${subtotal.toFixed(2)} ${monedaVenta}</td>
+                <td>${formatCurrency(precioConvertido, monedaVenta)}</td>
+                <td>${formatCurrency(subtotal, monedaVenta)}</td>
                 <td>
                     <button class="btn btn-sm btn-danger remove-btn" data-index="${index}">&times;</button>
                 </td>
@@ -587,7 +611,7 @@ document.addEventListener("DOMContentLoaded", () => {
       detalleVentaTableBody.appendChild(tr);
     });
 
-    totalVentaDisplay.textContent = `${total.toFixed(2)} ${monedaVenta}`;
+    totalVentaDisplay.textContent = formatCurrency(total, monedaVenta);
 
     document.querySelectorAll(".cant-input").forEach((input) => {
       input.addEventListener("change", (e) => {
@@ -658,26 +682,30 @@ document.addEventListener("DOMContentLoaded", () => {
   function calcularTotalesPago() {
       const info = calcularTotalesGenerales();
 
-      resumenTotal.textContent = `${info.totalVenta.toFixed(2)} ${info.moneda}`;
-      resumenPagado.textContent = `${info.totalPagadoVenta.toFixed(2)} ${info.moneda}`;
+      const formatCurrency = (amount, currency) => {
+          return amount.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + currency;
+      };
+
+      resumenTotal.textContent = formatCurrency(info.totalVenta, info.moneda);
+      resumenPagado.textContent = formatCurrency(info.totalPagadoVenta, info.moneda);
 
       if (info.cambio > 0) {
           // Hay cambio (sobrante)
           containerRestante.style.setProperty("display", "none", "important");
           containerCambio.style.setProperty("display", "flex", "important");
-          resumenCambio.textContent = `${info.cambio.toFixed(2)} ${info.moneda}`;
+          resumenCambio.textContent = formatCurrency(info.cambio, info.moneda);
           submitBtn.disabled = false;
       } else if (info.restante > 0.01) {
           // Falta por pagar
           containerRestante.style.setProperty("display", "flex", "important");
           containerCambio.style.setProperty("display", "none", "important");
-          resumenRestante.textContent = `${info.restante.toFixed(2)} ${info.moneda}`;
+          resumenRestante.textContent = formatCurrency(info.restante, info.moneda);
           submitBtn.disabled = true;
       } else {
           // Pago exacto
           containerRestante.style.setProperty("display", "flex", "important");
           containerCambio.style.setProperty("display", "none", "important");
-          resumenRestante.textContent = `0.00 ${info.moneda}`;
+          resumenRestante.textContent = formatCurrency(0, info.moneda);
           submitBtn.disabled = false;
       }
   }
@@ -729,6 +757,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderPagos() {
+      const formatCurrency = (amount, currency) => {
+          return amount.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + currency;
+      };
+
       tablaPagosBody.innerHTML = "";
       const monedaVenta = idMonedaSelect.options[idMonedaSelect.selectedIndex].text;
 
@@ -737,9 +769,9 @@ document.addEventListener("DOMContentLoaded", () => {
           tr.innerHTML = `
             <td>${p.nombre_metodo}</td>
             <td>${p.referencia || '<small class="text-muted">N/A</small>'}</td>
-            <td>${p.monto.toFixed(2)} ${p.moneda_nombre}</td>
+            <td>${formatCurrency(p.monto, p.moneda_nombre)}</td>
             <td>${p.tasa}</td>
-            <td>${p.equivalenteVenta.toFixed(2)} ${monedaVenta}</td>
+            <td>${formatCurrency(p.equivalenteVenta, monedaVenta)}</td>
             <td class="text-center">
                 <button class="btn btn-sm btn-outline-danger btn-borrar-pago" data-index="${index}">
                     <i class="bi bi-trash"></i>

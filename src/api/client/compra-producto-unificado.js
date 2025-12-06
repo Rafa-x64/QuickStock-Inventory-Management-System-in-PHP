@@ -72,7 +72,7 @@ async function cargarSelectsCompraPrincipal() {
     // Clave de retorno de la API: "monedas" (asumido), ID en la BD: "id_moneda"
     await cargarSelect(
         "compra_id_moneda",
-        "obtener_monedas",
+        "obtener_todas_monedas",
         "monedas",
         "id_moneda",
         "codigo", // Asumo que el campo a mostrar es 'codigo'

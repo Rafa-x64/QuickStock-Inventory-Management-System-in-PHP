@@ -1,55 +1,64 @@
- <div class="container-fluid" id="mainContent">
-     <div class="row">
-         <div class="col-12 p-5">
-             <div class="row d-flex flex-row justify-content-center align-items-center">
-                 <div class="col-6 p-5 Quick-title">
-                     <h1>Tasas Activas</h1>
-                 </div>
+<?php
+$accion = $_POST["accion"] ?? null;
+// Verificar permisos si es necesario
+?>
+<div class="container-fluid" id="mainContent">
+    <div class="row d-flex flex-column justify-content-center align-items-center">
+        <div class="col-12 p-3 p-lg-5">
 
-                 <div class="row p-0 m-0 d-flex flex-row justify-content-center align-items-center Quick-widget">
-                     <div class="col-12 Quick-table pt-5 mb-3">
-                         <table class="w-100">
-                             <thead>
-                                 <tr>
-                                     <th>Moneda</th>
-                                     <th>Código</th>
-                                     <th>Tasa de Cambio</th>
-                                     <th>Fecha de Vigencia</th>
-                                     <th>Estado</th>
-                                     <th>Variación</th>
-                                     <th>Acciones</th>
-                                 </tr>
-                             </thead>
-                             <tbody>
-                                 <tr>
-                                     <td>Dólar Estadounidense</td>
-                                     <td>USD</td>
-                                     <td>227.12</td>
-                                     <td>4/11/2025</td>
-                                     <td><span class="badge bg-success">Activa</span></td>
-                                     <td><span class="text-success">+0.5%</span></td>
-                                     <td>
-                                         <a href="#" class="btn btn-sm btn-info text-white btn-action">Detalles</a>
-                                         <a href="#" class="btn btn-sm btn-warning btn-action">Editar</a>
-                                     </td>
-                                 </tr>
-                                 <tr>
-                                     <td>Euro</td>
-                                     <td>EUR</td>
-                                     <td>259.63</td>
-                                     <td>04/11/2025</td>
-                                     <td><span class="badge bg-success">Activa</span></td>
-                                     <td><span class="text-danger">-12.0%</span></td>
-                                     <td>
-                                         <a href="#" class="btn btn-sm btn-info text-white btn-action">Detalles</a>
-                                         <a href="#" class="btn btn-sm btn-warning btn-action">Editar</a>
-                                     </td>
-                                 </tr>
-                             </tbody>
-                         </table>
-                     </div>
-                 </div>
-             </div>
-         </div>
-     </div>
- </div>
+            <div class="row d-flex flex-row justify-content-between align-items-center mb-4">
+                <div class="col-12 col-md-6 Quick-title">
+                    <h1 class="m-0">Tasas de Cambio</h1>
+                </div>
+                <div class="col-12 col-md-6 d-flex justify-content-end">
+                    <button class="btn btn-primary" id="btn-sync-api">
+                        <i class="bi bi-arrow-repeat"></i> Sincronizar Tasas (API)
+                    </button>
+                    <a href="monedas-historial" class="btn btn-secondary ms-2">
+                        <i class="bi bi-clock-history"></i> Ver Historial
+                    </a>
+                </div>
+            </div>
+
+            <!-- Cards Container -->
+            <div class="row mb-4" id="container-tasas-cards">
+                <!-- Se llena dinamicamente con JS -->
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+
+            <!-- Formulario Manual -->
+            <div class="row d-flex flex-column justify-content-center align-items-center">
+                <div class="col-12 col-md-8 Quick-widget">
+                    <div class="col-12 Quick-form px-5 rounded-2">
+                        <h4 class="Quick-title mb-3">Establecer Tasa Manual</h4>
+
+                        <form id="form-tasa-manual" class="form">
+                            <div class="row">
+                                <div class="col-12 col-md-6 py-2">
+                                    <label class="form-label Quick-title">Moneda</label>
+                                    <select class="form-select Quick-select" id="select_moneda_manual" required>
+                                        <option value="">Cargando...</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-6 py-2">
+                                    <label class="form-label Quick-title">Nueva Tasa (vs USD)</label>
+                                    <input type="number" step="0.0001" class="form-control Quick-form-input" id="valor_manual" required placeholder="Ej: 50.1234">
+                                </div>
+                                <div class="col-12 py-3 text-end">
+                                    <button type="submit" class="btn btn-warning fw-bold">
+                                        <i class="bi bi-save"></i> Guardar Tasa Manual
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="module" src="view/js/monedas.js"></script>

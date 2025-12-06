@@ -11,7 +11,8 @@ function obtenerTasasCambioActivas()
             m.nombre,
             m.codigo,
             t.tasa,
-            t.fecha
+            t.fecha,
+            t.origen
         FROM finanzas.moneda m
         JOIN finanzas.tasa_cambio t ON t.id_moneda = m.id_moneda
         WHERE m.activo = true AND t.activo = true
