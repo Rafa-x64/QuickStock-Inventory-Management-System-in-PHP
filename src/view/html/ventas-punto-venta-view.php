@@ -186,48 +186,99 @@ $fecha_actual = date('Y-m-d\TH:i');
 
                             <div class="row g-3">
 
-                                <div class="col-md-6">
-                                    <label class="form-label">Método de Pago</label>
-                                    <select id="idMetodoPago" class="form-select" required>
-                                        <option value="">Cargando...</option>
-                                    </select>
+                                <!-- Formulario para AGREGAR un pago -->
+                                <div class="col-12">
+                                    <div class="card border-info">
+                                        <div class="card-header bg-light text-dark">
+                                            <h6 class="mb-0"><i class="bi bi-wallet2"></i> Agregar Método de Pago</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row g-2">
+                                                <div class="col-md-3">
+                                                    <label class="form-label small">Método</label>
+                                                    <select id="idMetodoPago" class="form-select form-select-sm">
+                                                        <option value="">Cargando...</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label small">Moneda</label>
+                                                    <select id="idMonedaPago" class="form-select form-select-sm">
+                                                        <option value="">Seleccione...</option>
+                                                        <option value="1">USD</option>
+                                                        <option value="2">EUR</option>
+                                                        <option value="3">VES</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label class="form-label small">Tasa</label>
+                                                    <input type="number" step="0.0001" id="tasaConversion" class="form-control form-control-sm" placeholder="1.00">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label class="form-label small">Monto</label>
+                                                    <input type="number" step="0.01" id="montoPagado" class="form-control form-control-sm" placeholder="0.00">
+                                                </div>
+                                                <div class="col-md-2 d-flex align-items-end">
+                                                    <button type="button" class="btn btn-info btn-sm w-100 text-white" id="btnAgregarPago">
+                                                        <i class="bi bi-plus-circle"></i> Agregar
+                                                    </button>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label class="form-label small">Referencia (Opcional)</label>
+                                                    <input type="text" id="referenciaPago" class="form-control form-control-sm" placeholder="Nro de referencia, lote, etc.">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <label class="form-label">Monto Pagado</label>
-                                    <input type="number" id="montoPagado" step="0.01" class="form-control" required>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">Moneda de Pago</label>
-                                    <select id="idMonedaPago" class="form-select" required>
-                                        <option value="">Seleccione...</option>
-                                        <option value="1">USD</option>
-                                        <option value="2">EUR</option>
-                                        <option value="3">VES</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">Referencia</label>
-                                    <input type="text" id="referenciaPago" class="form-control">
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">Tasa de Conversión</label>
-                                    <input type="number" step="0.0001" id="tasaConversion" class="form-control" placeholder="Ej: 40.5">
-                                </div>
-
-                                <div class="col-md-12">
-                                    <label class="form-label">Comentario</label>
-                                    <textarea id="pagoComentario" class="form-control" rows="2" placeholder="Opcional"></textarea>
+                                <!-- Lista de Pagos Agregados -->
+                                <div class="col-12 mt-3">
+                                    <h6 class="text-secondary">Pagos Registrados</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered table-striped" id="tablaPagos">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Método</th>
+                                                    <th>Ref.</th>
+                                                    <th>Monto Original</th>
+                                                    <th>Tasa</th>
+                                                    <th>Equivalente (Venta)</th>
+                                                    <th style="width: 50px;"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Se llena dinámicamente con JS -->
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
 
                             </div>
 
-                            <div class="alert alert-info mt-3">
-                                <p class="mb-1"><strong>Total Venta:</strong> <span id="resumenTotal">$0.00</span></p>
-                                <p class="mb-0"><strong>Cambio:</strong> <span id="resumenCambio">$0.00</span></p>
+                            <!-- Totales Globales -->
+                            <div class="alert alert-primary mt-3">
+                                <div class="d-flex justify-content-between fs-5">
+                                    <span>Total a Pagar:</span>
+                                    <strong id="resumenTotal">$0.00</strong>
+                                </div>
+                                <div class="d-flex justify-content-between fs-5 text-success">
+                                    <span>Total Pagado:</span>
+                                    <strong id="resumenPagado">$0.00</strong>
+                                </div>
+                                <hr class="my-2">
+                                <div class="d-flex justify-content-between fs-4 fw-bold" id="containerRestante">
+                                    <span>Restante:</span>
+                                    <span id="resumenRestante">$0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between fs-5 text-muted mt-2" id="containerCambio" style="display: none !important;">
+                                    <span>Cambio:</span>
+                                    <span id="resumenCambio">$0.00</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-12 mt-2">
+                                <label class="form-label">Comentario General</label>
+                                <textarea id="pagoComentario" class="form-control" rows="2" placeholder="Opcional"></textarea>
                             </div>
                         </div>
 

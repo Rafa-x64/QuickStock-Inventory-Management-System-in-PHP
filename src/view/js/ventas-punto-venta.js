@@ -34,26 +34,37 @@ document.addEventListener("DOMContentLoaded", () => {
   );
   const totalVentaDisplay = document.getElementById("totalVentaDisplay");
 
-  // Inputs Paso 3 (Pago)
+  // Inputs Paso 3 (Pago - MODIFICADO)
   const idMetodoPago = document.getElementById("idMetodoPago");
   const montoPagadoInput = document.getElementById("montoPagado");
   const idMonedaPago = document.getElementById("idMonedaPago");
   const tasaConversionInput = document.getElementById("tasaConversion");
+  const referenciaPagoInput = document.getElementById("referenciaPago");
+  const btnAgregarPago = document.getElementById("btnAgregarPago");
+  const tablaPagosBody = document.querySelector("#tablaPagos tbody");
+
+  // Totales y Resumen
   const resumenTotal = document.getElementById("resumenTotal");
+  const resumenPagado = document.getElementById("resumenPagado");
+  const resumenRestante = document.getElementById("resumenRestante");
+  const containerRestante = document.getElementById("containerRestante");
   const resumenCambio = document.getElementById("resumenCambio");
+  const containerCambio = document.getElementById("containerCambio");
 
   // --- Estado de la Aplicación ---
   let currentStep = 0;
   let clienteActual = null; // Objeto cliente validado
   let carrito = []; // Array de objetos { producto, cantidad, precio, descuento }
+  let listaPagos = []; // Array de pagos registrados para la venta actual { id_metodo, nombre_metodo, monto, id_moneda, moneda_nombre, tasa, referencia, equivalenteVenta }
   let tasasCambio = {}; // { USD: 1, VES: 40.5, EUR: 0.9 }
   let idSucursal = idSucursalHidden ? parseInt(idSucursalHidden.value) : 5;
 
   // --- Reglas de Validación ---
   const reglas = {
     cliente_cedula: {
-      regex: /^([VvEeJjGg]-?)?\d{5,9}$/,
-      msg: "Formato inválido. Ej: V-12345678 o 12345678",
+      // Permite: V-12345678, V-12.345.678, 12345678 (se formateará), e-12345678
+      regex: /^([VEJGvejg]-?)?(\d{1,3}(\.?\d{3}){1,3})$/,
+      msg: "Formato inválido. Ej: V-12.345.678"
     },
     cliente_nombre: {
       regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$/,
@@ -64,11 +75,11 @@ document.addEventListener("DOMContentLoaded", () => {
       msg: "Solo letras, mín 2 caracteres.",
     },
     cliente_email: {
-      regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      regex: /^$|^[^\s@]+@[^\s@]+\.[^\s@]+$/,
       msg: "Email inválido.",
     },
     cliente_telefono: {
-      regex: /^(\+58|0)(412|414|424|416|426|2\d{2})[-\s]?\d{7}$/,
+      regex: /^$|^(\+58|0)(412|414|424|416|426|2\d{2})[-\s]?\d{7}$/,
       msg: "Teléfono inválido. Ej: 04121234567",
     },
     cliente_direccion: {
@@ -77,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     montoPagado: {
       custom: (val) => parseFloat(val) > 0,
-      msg: "El monto debe ser mayor a 0.",
+      msg: "El monto debe ser positivo.",
     },
     tasaConversion: {
       custom: (val) => parseFloat(val) > 0,
@@ -102,10 +113,45 @@ document.addEventListener("DOMContentLoaded", () => {
     setupValidationListeners();
   }
 
+  // --- Formateador de Cédula ---
+  function formatCedula(val) {
+    // 1. Limpiar todo lo que no sea número o V/E/J/G
+    let raw = val.replace(/[^0-9vejgVEJG]/g, "").toUpperCase();
+
+    // 2. Extraer prefijo si existe
+    let prefix = "V"; // Default
+    const match = raw.match(/^([VEJG])(.*)/);
+    if (match) {
+      prefix = match[1];
+      raw = match[2]; // Dejar solo números en raw
+    }
+
+    // 3. Limpiar números (por si quedaron letras sueltas)
+    let numbers = raw.replace(/\D/g, "");
+
+    // Casos borde: si no hay números o es muy corto, devolvemos lo que hay para que falle regex
+    if (!numbers || numbers.length < 5) return val.toUpperCase();
+
+    // 4. Formatear con puntos
+    let formattedNum = numbers.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+    return `${prefix}-${formattedNum}`;
+  }
+
   // --- Funciones de Validación ---
   function validarCampo(input) {
     const id = input.id;
     const regla = reglas[id];
+
+    // Normalización específica para cédula
+    if (id === 'cliente_cedula') {
+      const rawVal = input.value.trim();
+      // Solo formatear si tiene al menos unos números y no está vacío
+      if (rawVal && rawVal.length > 2) { 
+        input.value = formatCedula(rawVal);
+      }
+    }
+
     if (!regla) return true; // Si no hay regla, es válido (o no se valida aquí)
 
     const val = input.value.trim();
@@ -185,21 +231,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function cargarCatalogos() {
-    /* 
-        // Categorías ya no se cargan en select, es input readonly
-        try {
-            const resCat = await ventasAPI.obtenerCategorias();
-            if (resCat && resCat.categorias) {
-                resCat.categorias.forEach(cat => {
-                    const opt = document.createElement("option");
-                    opt.value = cat.id_categoria;
-                    opt.textContent = cat.nombre;
-                    prodCategoria.appendChild(opt);
-                });
-            }
-        } catch(e) { console.error(e); }
-        */
-
     try {
       const resCol = await ventasAPI.obtenerColores();
       if (resCol && resCol.colores) {
@@ -231,17 +262,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // Cargar Metodos de Pago
     try {
       const resMet = await ventasAPI.obtenerMetodosPago();
-      const selectMetodo = document.getElementById("idMetodoPago");
-      selectMetodo.innerHTML = '<option value="">Seleccione...</option>';
+      idMetodoPago.innerHTML = '<option value="">Seleccione...</option>';
 
       if (resMet && (resMet.filas || resMet.data)) {
-        // Ajustar según retorno de API
         const metodos = resMet.filas || resMet.data;
         metodos.forEach((met) => {
           const opt = document.createElement("option");
           opt.value = met.id_metodo_pago;
           opt.textContent = met.nombre;
-          selectMetodo.appendChild(opt);
+          idMetodoPago.appendChild(opt);
         });
       }
     } catch (e) {
@@ -278,9 +307,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function setupClienteListeners() {
     clienteCedula.addEventListener("blur", async () => {
-      const cedula = clienteCedula.value.trim();
-      // Validar formato antes de buscar
+      // 1. Ejecutar validación (esto también formatea el input.value si es necesario)
       if (!validarCampo(clienteCedula)) return;
+
+      // 2. Obtener el valor YA formateado del input
+      const cedula = clienteCedula.value.trim();
 
       const res = await ventasAPI.obtenerClientePorCedula(cedula);
       if (res && res.status && res.cliente) {
@@ -345,15 +376,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function setupPagoListeners() {
-    montoPagadoInput.addEventListener("input", () => {
-      validarCampo(montoPagadoInput);
-      calcularCambio();
+    // Al cambiar la moneda de pago, actualizar tasa sugerida
+    idMonedaPago.addEventListener("change", () => {
+        const moneda = idMonedaPago.options[idMonedaPago.selectedIndex].text;
+        const tasa = obtenerTasa(moneda);
+        tasaConversionInput.value = tasa;
+        // Validar para visual
+        validarCampo(tasaConversionInput);
     });
-    idMonedaPago.addEventListener("change", calcularCambio);
-    tasaConversionInput.addEventListener("input", () => {
-      validarCampo(tasaConversionInput);
-      calcularCambio();
-    });
+
+    btnAgregarPago.addEventListener("click", agregarPago);
   }
 
   // --- Lógica del Wizard ---
@@ -375,9 +407,15 @@ document.addEventListener("DOMContentLoaded", () => {
     prevBtn.style.display = currentStep === 0 ? "none" : "inline-block";
     nextBtn.style.display = currentStep === 3 ? "none" : "inline-block";
     submitBtn.style.display = currentStep === 3 ? "inline-block" : "none";
-
+    
+    // El botón finalizar está deshabilitado por defecto hasta que se complete el pago
+    if (currentStep === 3) {
+        submitBtn.disabled = true;
+        // Calcular totales iniciales
+        calcularTotalesPago();
+    }
+    
     if (currentStep === 2) renderCarrito();
-    if (currentStep === 3) calcularCambio();
   }
 
   async function validateStep(step) {
@@ -387,8 +425,6 @@ document.addEventListener("DOMContentLoaded", () => {
         clienteCedula,
         clienteNombre,
         clienteApellido,
-        clienteEmail,
-        clienteTelefono,
         clienteDireccion,
       ];
       let allValid = true;
@@ -429,16 +465,13 @@ document.addEventListener("DOMContentLoaded", () => {
       return true;
     }
     if (step === 3) {
-      // Validar pago
-      if (
-        !validarCampo(montoPagadoInput) ||
-        !validarCampo(tasaConversionInput)
-      ) {
-        return false;
-      }
-      // Validar que cubra el monto (opcional en front, obligatorio en back)
-      // Aquí solo validamos formato
-      return true;
+        // Validación del pago completo
+        const totales = calcularTotalesGenerales();
+        if (totales.restante > 0.01) { // Tolerancia por redondeo
+            alert("El pago está incompleto. Faltan: " + totales.restante.toFixed(2) + " " + totales.moneda);
+            return false;
+        }
+        return true;
     }
     return true;
   }
@@ -582,61 +615,158 @@ document.addEventListener("DOMContentLoaded", () => {
     return tasasCambio[codigoMoneda] || 1;
   }
 
-  function calcularCambio() {
-    const monedaVenta =
-      idMonedaSelect.options[idMonedaSelect.selectedIndex].text;
-    const tasaVenta = obtenerTasa(monedaVenta);
+  // Calcula totales generales para la venta en curso
+  function calcularTotalesGenerales() {
+      const monedaVenta = idMonedaSelect.options[idMonedaSelect.selectedIndex].text;
+      const tasaVenta = obtenerTasa(monedaVenta);
+      
+      // 1. Calcular TOTAL DE LA VENTA (en moneda seleccionada)
+      // Basado en el carrito, iteramos para sumar precios base convertidos
+      let totalVentaUSD = 0;
+      carrito.forEach(item => {
+          totalVentaUSD += parseFloat(item.precio_venta) * item.cantidad * (1 - item.descuento / 100);
+      });
+      
+      const totalVenta = totalVentaUSD * tasaVenta;
 
-    let totalVentaEnMonedaVenta = 0;
-    carrito.forEach((item) => {
-      const precioBase = parseFloat(item.precio_venta);
-      const precioConvertido = precioBase * tasaVenta;
-      totalVentaEnMonedaVenta +=
-        precioConvertido * item.cantidad * (1 - item.descuento / 100);
-    });
+      // 2. Calcular TOTAL PAGADO (en moneda seleccionada)
+      // Iteramos listaPagos, convertimos cada pago a USD y luego a monedaVenta
+      let totalPagadoVenta = 0;
+      listaPagos.forEach(p => {
+          let montoPagoUSD = 0;
+          if (p.moneda_nombre === 'USD') {
+              montoPagoUSD = p.monto;
+          } else {
+              montoPagoUSD = p.monto / p.tasa;
+          }
+          totalPagadoVenta += montoPagoUSD * tasaVenta;
+      });
 
-    const totalVentaUSD = totalVentaEnMonedaVenta / tasaVenta;
-    const montoPago = parseFloat(montoPagadoInput.value) || 0;
-    const monedaPago = idMonedaPago.options[idMonedaPago.selectedIndex].text;
+      const restante = totalVenta - totalPagadoVenta;
+      const cambio = restante < 0 ? Math.abs(restante) : 0;
+      const restanteReal = restante > 0 ? restante : 0; // No mostrar negativos como restante
 
-    let tasaPago = parseFloat(tasaConversionInput.value);
-    if (!tasaPago) {
-      tasaPago = obtenerTasa(monedaPago);
-      if (monedaPago !== "USD") tasaConversionInput.value = tasaPago;
-    }
+      return {
+          totalVenta,
+          totalPagadoVenta,
+          restante: restanteReal,
+          cambio,
+          moneda: monedaVenta
+      };
+  }
 
-    let pagoEnUSD = 0;
-    if (monedaPago === "USD") {
-      pagoEnUSD = montoPago;
-    } else {
-      pagoEnUSD = montoPago / tasaPago;
-    }
+  function calcularTotalesPago() {
+      const info = calcularTotalesGenerales();
 
-    const cambioUSD = pagoEnUSD - totalVentaUSD;
-    const cambioEnMonedaVenta = cambioUSD * tasaVenta;
+      resumenTotal.textContent = `${info.totalVenta.toFixed(2)} ${info.moneda}`;
+      resumenPagado.textContent = `${info.totalPagadoVenta.toFixed(2)} ${info.moneda}`;
 
-    resumenTotal.textContent = `${totalVentaEnMonedaVenta.toFixed(
-      2
-    )} ${monedaVenta}`;
-    resumenCambio.textContent = `${cambioEnMonedaVenta.toFixed(
-      2
-    )} ${monedaVenta}`;
+      if (info.cambio > 0) {
+          // Hay cambio (sobrante)
+          containerRestante.style.setProperty("display", "none", "important");
+          containerCambio.style.setProperty("display", "flex", "important");
+          resumenCambio.textContent = `${info.cambio.toFixed(2)} ${info.moneda}`;
+          submitBtn.disabled = false;
+      } else if (info.restante > 0.01) {
+          // Falta por pagar
+          containerRestante.style.setProperty("display", "flex", "important");
+          containerCambio.style.setProperty("display", "none", "important");
+          resumenRestante.textContent = `${info.restante.toFixed(2)} ${info.moneda}`;
+          submitBtn.disabled = true;
+      } else {
+          // Pago exacto
+          containerRestante.style.setProperty("display", "flex", "important");
+          containerCambio.style.setProperty("display", "none", "important");
+          resumenRestante.textContent = `0.00 ${info.moneda}`;
+          submitBtn.disabled = false;
+      }
+  }
 
-    if (cambioUSD < -0.01) {
-      // Tolerancia pequeña
-      resumenCambio.classList.add("text-danger");
-      resumenCambio.classList.remove("text-success");
-    } else {
-      resumenCambio.classList.remove("text-danger");
-      resumenCambio.classList.add("text-success");
-    }
+  function agregarPago() {
+      // Validaciones
+      const idMetodo = idMetodoPago.value;
+      const nombreMetodo = idMetodoPago.options[idMetodoPago.selectedIndex]?.text;
+      const monto = parseFloat(montoPagadoInput.value);
+      const idMoneda = idMonedaPago.value;
+      const nombreMoneda = idMonedaPago.options[idMonedaPago.selectedIndex]?.text;
+      const tasa = parseFloat(tasaConversionInput.value);
+      const referencia = referenciaPagoInput.value.trim();
+
+      if (!idMetodo) { alert("Seleccione un método de pago."); return; }
+      if (!idMoneda) { alert("Seleccione la moneda del pago."); return; }
+      if (!monto || monto <= 0) { alert("El monto debe ser válido."); return; }
+      if (!tasa || tasa <= 0) { alert("La tasa de cambio debe ser válida."); return; }
+
+      // Calcular valor equivalente en moneda de venta (solo para visualización en tabla)
+      const monedaVenta = idMonedaSelect.options[idMonedaSelect.selectedIndex].text;
+      const tasaVenta = obtenerTasa(monedaVenta);
+      
+      let montoUSD = (nombreMoneda === 'USD') ? monto : (monto / tasa);
+      let montoEnVenta = montoUSD * tasaVenta;
+
+      // Agregar a lista
+      listaPagos.push({
+          id_metodo_pago: idMetodo,
+          nombre_metodo: nombreMetodo,
+          monto: monto,
+          id_moneda: idMoneda,
+          moneda_nombre: nombreMoneda,
+          tasa: tasa,
+          referencia: referencia,
+          equivalenteVenta: montoEnVenta
+      });
+
+      // Limpiar inputs
+      montoPagadoInput.value = "";
+      referenciaPagoInput.value = "";
+      // Resetear clases de validación
+      montoPagadoInput.classList.remove("is-valid", "is-invalid");
+      referenciaPagoInput.classList.remove("is-valid", "is-invalid");
+
+      // Actualizar UI
+      renderPagos();
+      calcularTotalesPago();
+  }
+
+  function renderPagos() {
+      tablaPagosBody.innerHTML = "";
+      const monedaVenta = idMonedaSelect.options[idMonedaSelect.selectedIndex].text;
+
+      listaPagos.forEach((p, index) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${p.nombre_metodo}</td>
+            <td>${p.referencia || '<small class="text-muted">N/A</small>'}</td>
+            <td>${p.monto.toFixed(2)} ${p.moneda_nombre}</td>
+            <td>${p.tasa}</td>
+            <td>${p.equivalenteVenta.toFixed(2)} ${monedaVenta}</td>
+            <td class="text-center">
+                <button class="btn btn-sm btn-outline-danger btn-borrar-pago" data-index="${index}">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+          `;
+          tablaPagosBody.appendChild(tr);
+      });
+
+      // Listeners para borrar
+      document.querySelectorAll(".btn-borrar-pago").forEach(btn => {
+          btn.addEventListener("click", (e) => {
+              const target = e.target.closest("button");
+              const idx = parseInt(target.dataset.index);
+              eliminarPago(idx);
+          });
+      });
+  }
+
+  function eliminarPago(index) {
+      listaPagos.splice(index, 1);
+      renderPagos();
+      calcularTotalesPago();
   }
 
   async function finalizarVenta() {
     if (!confirm("¿Confirmar venta?")) return;
-
-    const monedaVenta =
-      idMonedaSelect.options[idMonedaSelect.selectedIndex].text;
 
     // Calcular total en USD
     let totalUSD = 0;
@@ -659,15 +789,16 @@ document.addEventListener("DOMContentLoaded", () => {
       id_sucursal: idSucursal,
       total_venta: totalUSD,
       detalles: detalles,
-      pagos: [
-        {
-          id_metodo_pago: idMetodoPago.value,
-          monto: parseFloat(montoPagadoInput.value),
-          id_moneda: idMonedaPago.value,
-          tasa: parseFloat(tasaConversionInput.value) || 1,
-          referencia: document.getElementById("referenciaPago").value,
-        },
-      ],
+      // Enviar listaPagos completa
+      pagos: listaPagos.map((p) => ({
+        id_metodo_pago: p.id_metodo_pago,
+        monto: p.monto,
+        id_moneda: p.id_moneda,
+        tasa: p.tasa,
+        referencia: p.referencia,
+      })),
+      // Comentario (opcional si el backend lo soporta, por ahora no está en DB pero lo enviamos)
+      // comentario: document.getElementById("pagoComentario").value 
     };
 
     const res = await ventasAPI.procesarVenta(datos);

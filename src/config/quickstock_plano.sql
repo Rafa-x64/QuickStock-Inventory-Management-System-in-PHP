@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict aOH3xa19xGFdyuFxmFsdejTxenrnlCPiOLoYPIHbwBZbGHixHZ5bQyXbTIUzb5E
+\restrict cXKatHmCGakv1lMwMnGqC2zxl78YhqQxYqhkpLnwPKy30SpMo9S6Rc7YEJjtynC
 
 -- Dumped from database version 18.0
 -- Dumped by pg_dump version 18.0
 
--- Started on 2025-11-30 22:55:40
+-- Started on 2025-12-06 11:19:23
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -108,7 +108,7 @@ CREATE SEQUENCE core.categoria_id_categoria_seq
 ALTER SEQUENCE core.categoria_id_categoria_seq OWNER TO postgres;
 
 --
--- TOC entry 5191 (class 0 OID 0)
+-- TOC entry 5179 (class 0 OID 0)
 -- Dependencies: 224
 -- Name: categoria_id_categoria_seq; Type: SEQUENCE OWNED BY; Schema: core; Owner: postgres
 --
@@ -152,7 +152,7 @@ CREATE SEQUENCE core.cliente_id_cliente_seq
 ALTER SEQUENCE core.cliente_id_cliente_seq OWNER TO postgres;
 
 --
--- TOC entry 5192 (class 0 OID 0)
+-- TOC entry 5180 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: cliente_id_cliente_seq; Type: SEQUENCE OWNED BY; Schema: core; Owner: postgres
 --
@@ -191,7 +191,7 @@ CREATE SEQUENCE core.color_id_color_seq
 ALTER SEQUENCE core.color_id_color_seq OWNER TO postgres;
 
 --
--- TOC entry 5193 (class 0 OID 0)
+-- TOC entry 5181 (class 0 OID 0)
 -- Dependencies: 228
 -- Name: color_id_color_seq; Type: SEQUENCE OWNED BY; Schema: core; Owner: postgres
 --
@@ -233,7 +233,7 @@ CREATE SEQUENCE core.proveedor_id_proveedor_seq
 ALTER SEQUENCE core.proveedor_id_proveedor_seq OWNER TO postgres;
 
 --
--- TOC entry 5194 (class 0 OID 0)
+-- TOC entry 5182 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: proveedor_id_proveedor_seq; Type: SEQUENCE OWNED BY; Schema: core; Owner: postgres
 --
@@ -276,7 +276,7 @@ CREATE SEQUENCE core.sucursal_id_sucursal_seq
 ALTER SEQUENCE core.sucursal_id_sucursal_seq OWNER TO postgres;
 
 --
--- TOC entry 5195 (class 0 OID 0)
+-- TOC entry 5183 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: sucursal_id_sucursal_seq; Type: SEQUENCE OWNED BY; Schema: core; Owner: postgres
 --
@@ -315,7 +315,7 @@ CREATE SEQUENCE core.talla_id_talla_seq
 ALTER SEQUENCE core.talla_id_talla_seq OWNER TO postgres;
 
 --
--- TOC entry 5196 (class 0 OID 0)
+-- TOC entry 5184 (class 0 OID 0)
 -- Dependencies: 234
 -- Name: talla_id_talla_seq; Type: SEQUENCE OWNED BY; Schema: core; Owner: postgres
 --
@@ -324,7 +324,7 @@ ALTER SEQUENCE core.talla_id_talla_seq OWNED BY core.talla.id_talla;
 
 
 --
--- TOC entry 243 (class 1259 OID 31091)
+-- TOC entry 241 (class 1259 OID 31091)
 -- Name: metodo_pago; Type: TABLE; Schema: finanzas; Owner: postgres
 --
 
@@ -340,7 +340,7 @@ CREATE TABLE finanzas.metodo_pago (
 ALTER TABLE finanzas.metodo_pago OWNER TO postgres;
 
 --
--- TOC entry 242 (class 1259 OID 31090)
+-- TOC entry 240 (class 1259 OID 31090)
 -- Name: metodo_pago_id_metodo_pago_seq; Type: SEQUENCE; Schema: finanzas; Owner: postgres
 --
 
@@ -356,8 +356,8 @@ CREATE SEQUENCE finanzas.metodo_pago_id_metodo_pago_seq
 ALTER SEQUENCE finanzas.metodo_pago_id_metodo_pago_seq OWNER TO postgres;
 
 --
--- TOC entry 5197 (class 0 OID 0)
--- Dependencies: 242
+-- TOC entry 5185 (class 0 OID 0)
+-- Dependencies: 240
 -- Name: metodo_pago_id_metodo_pago_seq; Type: SEQUENCE OWNED BY; Schema: finanzas; Owner: postgres
 --
 
@@ -365,7 +365,7 @@ ALTER SEQUENCE finanzas.metodo_pago_id_metodo_pago_seq OWNED BY finanzas.metodo_
 
 
 --
--- TOC entry 245 (class 1259 OID 31103)
+-- TOC entry 243 (class 1259 OID 31103)
 -- Name: moneda; Type: TABLE; Schema: finanzas; Owner: postgres
 --
 
@@ -380,7 +380,7 @@ CREATE TABLE finanzas.moneda (
 ALTER TABLE finanzas.moneda OWNER TO postgres;
 
 --
--- TOC entry 244 (class 1259 OID 31102)
+-- TOC entry 242 (class 1259 OID 31102)
 -- Name: moneda_id_moneda_seq; Type: SEQUENCE; Schema: finanzas; Owner: postgres
 --
 
@@ -396,8 +396,8 @@ CREATE SEQUENCE finanzas.moneda_id_moneda_seq
 ALTER SEQUENCE finanzas.moneda_id_moneda_seq OWNER TO postgres;
 
 --
--- TOC entry 5198 (class 0 OID 0)
--- Dependencies: 244
+-- TOC entry 5186 (class 0 OID 0)
+-- Dependencies: 242
 -- Name: moneda_id_moneda_seq; Type: SEQUENCE OWNED BY; Schema: finanzas; Owner: postgres
 --
 
@@ -405,7 +405,7 @@ ALTER SEQUENCE finanzas.moneda_id_moneda_seq OWNED BY finanzas.moneda.id_moneda;
 
 
 --
--- TOC entry 247 (class 1259 OID 31118)
+-- TOC entry 245 (class 1259 OID 31118)
 -- Name: tasa_cambio; Type: TABLE; Schema: finanzas; Owner: postgres
 --
 
@@ -422,7 +422,7 @@ CREATE TABLE finanzas.tasa_cambio (
 ALTER TABLE finanzas.tasa_cambio OWNER TO postgres;
 
 --
--- TOC entry 246 (class 1259 OID 31117)
+-- TOC entry 244 (class 1259 OID 31117)
 -- Name: tasa_cambio_id_tasa_seq; Type: SEQUENCE; Schema: finanzas; Owner: postgres
 --
 
@@ -438,8 +438,8 @@ CREATE SEQUENCE finanzas.tasa_cambio_id_tasa_seq
 ALTER SEQUENCE finanzas.tasa_cambio_id_tasa_seq OWNER TO postgres;
 
 --
--- TOC entry 5199 (class 0 OID 0)
--- Dependencies: 246
+-- TOC entry 5187 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: tasa_cambio_id_tasa_seq; Type: SEQUENCE OWNED BY; Schema: finanzas; Owner: postgres
 --
 
@@ -447,7 +447,7 @@ ALTER SEQUENCE finanzas.tasa_cambio_id_tasa_seq OWNED BY finanzas.tasa_cambio.id
 
 
 --
--- TOC entry 259 (class 1259 OID 32223)
+-- TOC entry 257 (class 1259 OID 32223)
 -- Name: compra; Type: TABLE; Schema: inventario; Owner: postgres
 --
 
@@ -472,7 +472,7 @@ CREATE TABLE inventario.compra (
 ALTER TABLE inventario.compra OWNER TO postgres;
 
 --
--- TOC entry 258 (class 1259 OID 32222)
+-- TOC entry 256 (class 1259 OID 32222)
 -- Name: compra_id_compra_seq; Type: SEQUENCE; Schema: inventario; Owner: postgres
 --
 
@@ -488,8 +488,8 @@ CREATE SEQUENCE inventario.compra_id_compra_seq
 ALTER SEQUENCE inventario.compra_id_compra_seq OWNER TO postgres;
 
 --
--- TOC entry 5200 (class 0 OID 0)
--- Dependencies: 258
+-- TOC entry 5188 (class 0 OID 0)
+-- Dependencies: 256
 -- Name: compra_id_compra_seq; Type: SEQUENCE OWNED BY; Schema: inventario; Owner: postgres
 --
 
@@ -497,7 +497,7 @@ ALTER SEQUENCE inventario.compra_id_compra_seq OWNED BY inventario.compra.id_com
 
 
 --
--- TOC entry 261 (class 1259 OID 32262)
+-- TOC entry 259 (class 1259 OID 32262)
 -- Name: detalle_compra; Type: TABLE; Schema: inventario; Owner: postgres
 --
 
@@ -514,7 +514,7 @@ CREATE TABLE inventario.detalle_compra (
 ALTER TABLE inventario.detalle_compra OWNER TO postgres;
 
 --
--- TOC entry 260 (class 1259 OID 32261)
+-- TOC entry 258 (class 1259 OID 32261)
 -- Name: detalle_compra_id_detalle_compra_seq; Type: SEQUENCE; Schema: inventario; Owner: postgres
 --
 
@@ -530,8 +530,8 @@ CREATE SEQUENCE inventario.detalle_compra_id_detalle_compra_seq
 ALTER SEQUENCE inventario.detalle_compra_id_detalle_compra_seq OWNER TO postgres;
 
 --
--- TOC entry 5201 (class 0 OID 0)
--- Dependencies: 260
+-- TOC entry 5189 (class 0 OID 0)
+-- Dependencies: 258
 -- Name: detalle_compra_id_detalle_compra_seq; Type: SEQUENCE OWNED BY; Schema: inventario; Owner: postgres
 --
 
@@ -539,7 +539,7 @@ ALTER SEQUENCE inventario.detalle_compra_id_detalle_compra_seq OWNED BY inventar
 
 
 --
--- TOC entry 251 (class 1259 OID 31173)
+-- TOC entry 249 (class 1259 OID 31173)
 -- Name: inventario; Type: TABLE; Schema: inventario; Owner: postgres
 --
 
@@ -558,7 +558,7 @@ CREATE TABLE inventario.inventario (
 ALTER TABLE inventario.inventario OWNER TO postgres;
 
 --
--- TOC entry 250 (class 1259 OID 31172)
+-- TOC entry 248 (class 1259 OID 31172)
 -- Name: inventario_id_inventario_seq; Type: SEQUENCE; Schema: inventario; Owner: postgres
 --
 
@@ -574,8 +574,8 @@ CREATE SEQUENCE inventario.inventario_id_inventario_seq
 ALTER SEQUENCE inventario.inventario_id_inventario_seq OWNER TO postgres;
 
 --
--- TOC entry 5202 (class 0 OID 0)
--- Dependencies: 250
+-- TOC entry 5190 (class 0 OID 0)
+-- Dependencies: 248
 -- Name: inventario_id_inventario_seq; Type: SEQUENCE OWNED BY; Schema: inventario; Owner: postgres
 --
 
@@ -583,7 +583,7 @@ ALTER SEQUENCE inventario.inventario_id_inventario_seq OWNED BY inventario.inven
 
 
 --
--- TOC entry 249 (class 1259 OID 31136)
+-- TOC entry 247 (class 1259 OID 31136)
 -- Name: producto; Type: TABLE; Schema: inventario; Owner: postgres
 --
 
@@ -607,7 +607,7 @@ CREATE TABLE inventario.producto (
 ALTER TABLE inventario.producto OWNER TO postgres;
 
 --
--- TOC entry 248 (class 1259 OID 31135)
+-- TOC entry 246 (class 1259 OID 31135)
 -- Name: producto_id_producto_seq; Type: SEQUENCE; Schema: inventario; Owner: postgres
 --
 
@@ -623,54 +623,12 @@ CREATE SEQUENCE inventario.producto_id_producto_seq
 ALTER SEQUENCE inventario.producto_id_producto_seq OWNER TO postgres;
 
 --
--- TOC entry 5203 (class 0 OID 0)
--- Dependencies: 248
+-- TOC entry 5191 (class 0 OID 0)
+-- Dependencies: 246
 -- Name: producto_id_producto_seq; Type: SEQUENCE OWNED BY; Schema: inventario; Owner: postgres
 --
 
 ALTER SEQUENCE inventario.producto_id_producto_seq OWNED BY inventario.producto.id_producto;
-
-
---
--- TOC entry 241 (class 1259 OID 31073)
--- Name: auditoria; Type: TABLE; Schema: seguridad_acceso; Owner: postgres
---
-
-CREATE TABLE seguridad_acceso.auditoria (
-    id_auditoria integer NOT NULL,
-    id_usuario integer,
-    tabla character varying(120) NOT NULL,
-    accion character varying(50) NOT NULL,
-    fecha timestamp without time zone DEFAULT now(),
-    descripcion text
-);
-
-
-ALTER TABLE seguridad_acceso.auditoria OWNER TO postgres;
-
---
--- TOC entry 240 (class 1259 OID 31072)
--- Name: auditoria_id_auditoria_seq; Type: SEQUENCE; Schema: seguridad_acceso; Owner: postgres
---
-
-CREATE SEQUENCE seguridad_acceso.auditoria_id_auditoria_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE seguridad_acceso.auditoria_id_auditoria_seq OWNER TO postgres;
-
---
--- TOC entry 5204 (class 0 OID 0)
--- Dependencies: 240
--- Name: auditoria_id_auditoria_seq; Type: SEQUENCE OWNED BY; Schema: seguridad_acceso; Owner: postgres
---
-
-ALTER SEQUENCE seguridad_acceso.auditoria_id_auditoria_seq OWNED BY seguridad_acceso.auditoria.id_auditoria;
 
 
 --
@@ -705,7 +663,7 @@ CREATE SEQUENCE seguridad_acceso.rol_id_rol_seq
 ALTER SEQUENCE seguridad_acceso.rol_id_rol_seq OWNER TO postgres;
 
 --
--- TOC entry 5205 (class 0 OID 0)
+-- TOC entry 5192 (class 0 OID 0)
 -- Dependencies: 236
 -- Name: rol_id_rol_seq; Type: SEQUENCE OWNED BY; Schema: seguridad_acceso; Owner: postgres
 --
@@ -753,7 +711,7 @@ CREATE SEQUENCE seguridad_acceso.usuario_id_usuario_seq
 ALTER SEQUENCE seguridad_acceso.usuario_id_usuario_seq OWNER TO postgres;
 
 --
--- TOC entry 5206 (class 0 OID 0)
+-- TOC entry 5193 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: usuario_id_usuario_seq; Type: SEQUENCE OWNED BY; Schema: seguridad_acceso; Owner: postgres
 --
@@ -762,7 +720,7 @@ ALTER SEQUENCE seguridad_acceso.usuario_id_usuario_seq OWNED BY seguridad_acceso
 
 
 --
--- TOC entry 255 (class 1259 OID 31223)
+-- TOC entry 253 (class 1259 OID 31223)
 -- Name: detalle_venta; Type: TABLE; Schema: ventas; Owner: postgres
 --
 
@@ -784,7 +742,7 @@ CREATE TABLE ventas.detalle_venta (
 ALTER TABLE ventas.detalle_venta OWNER TO postgres;
 
 --
--- TOC entry 254 (class 1259 OID 31222)
+-- TOC entry 252 (class 1259 OID 31222)
 -- Name: detalle_venta_id_detalle_seq; Type: SEQUENCE; Schema: ventas; Owner: postgres
 --
 
@@ -800,8 +758,8 @@ CREATE SEQUENCE ventas.detalle_venta_id_detalle_seq
 ALTER SEQUENCE ventas.detalle_venta_id_detalle_seq OWNER TO postgres;
 
 --
--- TOC entry 5207 (class 0 OID 0)
--- Dependencies: 254
+-- TOC entry 5194 (class 0 OID 0)
+-- Dependencies: 252
 -- Name: detalle_venta_id_detalle_seq; Type: SEQUENCE OWNED BY; Schema: ventas; Owner: postgres
 --
 
@@ -809,7 +767,7 @@ ALTER SEQUENCE ventas.detalle_venta_id_detalle_seq OWNED BY ventas.detalle_venta
 
 
 --
--- TOC entry 257 (class 1259 OID 31251)
+-- TOC entry 255 (class 1259 OID 31251)
 -- Name: pago_venta; Type: TABLE; Schema: ventas; Owner: postgres
 --
 
@@ -831,7 +789,7 @@ CREATE TABLE ventas.pago_venta (
 ALTER TABLE ventas.pago_venta OWNER TO postgres;
 
 --
--- TOC entry 256 (class 1259 OID 31250)
+-- TOC entry 254 (class 1259 OID 31250)
 -- Name: pago_venta_id_pago_seq; Type: SEQUENCE; Schema: ventas; Owner: postgres
 --
 
@@ -847,8 +805,8 @@ CREATE SEQUENCE ventas.pago_venta_id_pago_seq
 ALTER SEQUENCE ventas.pago_venta_id_pago_seq OWNER TO postgres;
 
 --
--- TOC entry 5208 (class 0 OID 0)
--- Dependencies: 256
+-- TOC entry 5195 (class 0 OID 0)
+-- Dependencies: 254
 -- Name: pago_venta_id_pago_seq; Type: SEQUENCE OWNED BY; Schema: ventas; Owner: postgres
 --
 
@@ -856,7 +814,7 @@ ALTER SEQUENCE ventas.pago_venta_id_pago_seq OWNED BY ventas.pago_venta.id_pago;
 
 
 --
--- TOC entry 253 (class 1259 OID 31200)
+-- TOC entry 251 (class 1259 OID 31200)
 -- Name: venta; Type: TABLE; Schema: ventas; Owner: postgres
 --
 
@@ -874,7 +832,7 @@ CREATE TABLE ventas.venta (
 ALTER TABLE ventas.venta OWNER TO postgres;
 
 --
--- TOC entry 252 (class 1259 OID 31199)
+-- TOC entry 250 (class 1259 OID 31199)
 -- Name: venta_id_venta_seq; Type: SEQUENCE; Schema: ventas; Owner: postgres
 --
 
@@ -890,8 +848,8 @@ CREATE SEQUENCE ventas.venta_id_venta_seq
 ALTER SEQUENCE ventas.venta_id_venta_seq OWNER TO postgres;
 
 --
--- TOC entry 5209 (class 0 OID 0)
--- Dependencies: 252
+-- TOC entry 5196 (class 0 OID 0)
+-- Dependencies: 250
 -- Name: venta_id_venta_seq; Type: SEQUENCE OWNED BY; Schema: ventas; Owner: postgres
 --
 
@@ -899,7 +857,7 @@ ALTER SEQUENCE ventas.venta_id_venta_seq OWNED BY ventas.venta.id_venta;
 
 
 --
--- TOC entry 4850 (class 2604 OID 30951)
+-- TOC entry 4845 (class 2604 OID 30951)
 -- Name: categoria id_categoria; Type: DEFAULT; Schema: core; Owner: postgres
 --
 
@@ -907,7 +865,7 @@ ALTER TABLE ONLY core.categoria ALTER COLUMN id_categoria SET DEFAULT nextval('c
 
 
 --
--- TOC entry 4852 (class 2604 OID 30965)
+-- TOC entry 4847 (class 2604 OID 30965)
 -- Name: cliente id_cliente; Type: DEFAULT; Schema: core; Owner: postgres
 --
 
@@ -915,7 +873,7 @@ ALTER TABLE ONLY core.cliente ALTER COLUMN id_cliente SET DEFAULT nextval('core.
 
 
 --
--- TOC entry 4854 (class 2604 OID 30981)
+-- TOC entry 4849 (class 2604 OID 30981)
 -- Name: color id_color; Type: DEFAULT; Schema: core; Owner: postgres
 --
 
@@ -923,7 +881,7 @@ ALTER TABLE ONLY core.color ALTER COLUMN id_color SET DEFAULT nextval('core.colo
 
 
 --
--- TOC entry 4856 (class 2604 OID 30993)
+-- TOC entry 4851 (class 2604 OID 30993)
 -- Name: proveedor id_proveedor; Type: DEFAULT; Schema: core; Owner: postgres
 --
 
@@ -931,7 +889,7 @@ ALTER TABLE ONLY core.proveedor ALTER COLUMN id_proveedor SET DEFAULT nextval('c
 
 
 --
--- TOC entry 4858 (class 2604 OID 31005)
+-- TOC entry 4853 (class 2604 OID 31005)
 -- Name: sucursal id_sucursal; Type: DEFAULT; Schema: core; Owner: postgres
 --
 
@@ -939,7 +897,7 @@ ALTER TABLE ONLY core.sucursal ALTER COLUMN id_sucursal SET DEFAULT nextval('cor
 
 
 --
--- TOC entry 4861 (class 2604 OID 31020)
+-- TOC entry 4856 (class 2604 OID 31020)
 -- Name: talla id_talla; Type: DEFAULT; Schema: core; Owner: postgres
 --
 
@@ -947,7 +905,7 @@ ALTER TABLE ONLY core.talla ALTER COLUMN id_talla SET DEFAULT nextval('core.tall
 
 
 --
--- TOC entry 4870 (class 2604 OID 31094)
+-- TOC entry 4863 (class 2604 OID 31094)
 -- Name: metodo_pago id_metodo_pago; Type: DEFAULT; Schema: finanzas; Owner: postgres
 --
 
@@ -955,7 +913,7 @@ ALTER TABLE ONLY finanzas.metodo_pago ALTER COLUMN id_metodo_pago SET DEFAULT ne
 
 
 --
--- TOC entry 4873 (class 2604 OID 31106)
+-- TOC entry 4866 (class 2604 OID 31106)
 -- Name: moneda id_moneda; Type: DEFAULT; Schema: finanzas; Owner: postgres
 --
 
@@ -963,7 +921,7 @@ ALTER TABLE ONLY finanzas.moneda ALTER COLUMN id_moneda SET DEFAULT nextval('fin
 
 
 --
--- TOC entry 4875 (class 2604 OID 31121)
+-- TOC entry 4868 (class 2604 OID 31121)
 -- Name: tasa_cambio id_tasa; Type: DEFAULT; Schema: finanzas; Owner: postgres
 --
 
@@ -971,7 +929,7 @@ ALTER TABLE ONLY finanzas.tasa_cambio ALTER COLUMN id_tasa SET DEFAULT nextval('
 
 
 --
--- TOC entry 4893 (class 2604 OID 32226)
+-- TOC entry 4886 (class 2604 OID 32226)
 -- Name: compra id_compra; Type: DEFAULT; Schema: inventario; Owner: postgres
 --
 
@@ -979,7 +937,7 @@ ALTER TABLE ONLY inventario.compra ALTER COLUMN id_compra SET DEFAULT nextval('i
 
 
 --
--- TOC entry 4901 (class 2604 OID 32265)
+-- TOC entry 4894 (class 2604 OID 32265)
 -- Name: detalle_compra id_detalle_compra; Type: DEFAULT; Schema: inventario; Owner: postgres
 --
 
@@ -987,7 +945,7 @@ ALTER TABLE ONLY inventario.detalle_compra ALTER COLUMN id_detalle_compra SET DE
 
 
 --
--- TOC entry 4880 (class 2604 OID 31176)
+-- TOC entry 4873 (class 2604 OID 31176)
 -- Name: inventario id_inventario; Type: DEFAULT; Schema: inventario; Owner: postgres
 --
 
@@ -995,7 +953,7 @@ ALTER TABLE ONLY inventario.inventario ALTER COLUMN id_inventario SET DEFAULT ne
 
 
 --
--- TOC entry 4878 (class 2604 OID 31139)
+-- TOC entry 4871 (class 2604 OID 31139)
 -- Name: producto id_producto; Type: DEFAULT; Schema: inventario; Owner: postgres
 --
 
@@ -1003,15 +961,7 @@ ALTER TABLE ONLY inventario.producto ALTER COLUMN id_producto SET DEFAULT nextva
 
 
 --
--- TOC entry 4868 (class 2604 OID 31076)
--- Name: auditoria id_auditoria; Type: DEFAULT; Schema: seguridad_acceso; Owner: postgres
---
-
-ALTER TABLE ONLY seguridad_acceso.auditoria ALTER COLUMN id_auditoria SET DEFAULT nextval('seguridad_acceso.auditoria_id_auditoria_seq'::regclass);
-
-
---
--- TOC entry 4863 (class 2604 OID 31032)
+-- TOC entry 4858 (class 2604 OID 31032)
 -- Name: rol id_rol; Type: DEFAULT; Schema: seguridad_acceso; Owner: postgres
 --
 
@@ -1019,7 +969,7 @@ ALTER TABLE ONLY seguridad_acceso.rol ALTER COLUMN id_rol SET DEFAULT nextval('s
 
 
 --
--- TOC entry 4865 (class 2604 OID 31046)
+-- TOC entry 4860 (class 2604 OID 31046)
 -- Name: usuario id_usuario; Type: DEFAULT; Schema: seguridad_acceso; Owner: postgres
 --
 
@@ -1027,7 +977,7 @@ ALTER TABLE ONLY seguridad_acceso.usuario ALTER COLUMN id_usuario SET DEFAULT ne
 
 
 --
--- TOC entry 4886 (class 2604 OID 31226)
+-- TOC entry 4879 (class 2604 OID 31226)
 -- Name: detalle_venta id_detalle; Type: DEFAULT; Schema: ventas; Owner: postgres
 --
 
@@ -1035,7 +985,7 @@ ALTER TABLE ONLY ventas.detalle_venta ALTER COLUMN id_detalle SET DEFAULT nextva
 
 
 --
--- TOC entry 4889 (class 2604 OID 31254)
+-- TOC entry 4882 (class 2604 OID 31254)
 -- Name: pago_venta id_pago; Type: DEFAULT; Schema: ventas; Owner: postgres
 --
 
@@ -1043,7 +993,7 @@ ALTER TABLE ONLY ventas.pago_venta ALTER COLUMN id_pago SET DEFAULT nextval('ven
 
 
 --
--- TOC entry 4883 (class 2604 OID 31203)
+-- TOC entry 4876 (class 2604 OID 31203)
 -- Name: venta id_venta; Type: DEFAULT; Schema: ventas; Owner: postgres
 --
 
@@ -1051,31 +1001,34 @@ ALTER TABLE ONLY ventas.venta ALTER COLUMN id_venta SET DEFAULT nextval('ventas.
 
 
 --
--- TOC entry 5149 (class 0 OID 30948)
+-- TOC entry 5139 (class 0 OID 30948)
 -- Dependencies: 225
 -- Data for Name: categoria; Type: TABLE DATA; Schema: core; Owner: postgres
 --
 
 COPY core.categoria (id_categoria, nombre, descripcion, activo, id_categoria_padre) FROM stdin;
 6	zapatos deportivos unisex	zapato para cualquier tipo de genero	t	5
-4	Zapatos De Nieve	\N	f	\N
 5	zapatos deportivos	zapatos para hacer deporte	t	\N
+4	Zapatos De Nieve	\N	t	\N
+7	zandalias dama	calzado para mujer	t	\N
 \.
 
 
 --
--- TOC entry 5151 (class 0 OID 30962)
+-- TOC entry 5141 (class 0 OID 30962)
 -- Dependencies: 227
 -- Data for Name: cliente; Type: TABLE DATA; Schema: core; Owner: postgres
 --
 
 COPY core.cliente (id_cliente, nombre, apellido, cedula, telefono, correo, direccion, activo) FROM stdin;
-1	rafael andres	alvarez tortoza	v-31757781	04125551041	alvarezrafaelat@gmail.com	cabudare centro las mercedes	t
+5	madga	perozo	v-19621445	0424-1111111	magda@gmail.com	aiscnianscinasci	t
+6	ejemplo ejemplo	ejemplo ejemplo	v-11111111	0424-1111111	ejemplo@gmail.com	ejemplo ejemplo ejemplo ejemplo	t
+1	Rafael Andres	Alvarez Tortoza	V-31.757.781	0412-555-10-41	alvarezrafaelat@gmail.com	cabudare centro las mercedes	t
 \.
 
 
 --
--- TOC entry 5153 (class 0 OID 30978)
+-- TOC entry 5143 (class 0 OID 30978)
 -- Dependencies: 229
 -- Data for Name: color; Type: TABLE DATA; Schema: core; Owner: postgres
 --
@@ -1089,18 +1042,19 @@ COPY core.color (id_color, nombre, activo) FROM stdin;
 
 
 --
--- TOC entry 5155 (class 0 OID 30990)
+-- TOC entry 5145 (class 0 OID 30990)
 -- Dependencies: 231
 -- Data for Name: proveedor; Type: TABLE DATA; Schema: core; Owner: postgres
 --
 
 COPY core.proveedor (id_proveedor, nombre, telefono, correo, direccion, activo) FROM stdin;
-1	Proveedor Ejemplo S.A.	555-1234	contacto@proveedorejemplo.com	Av. Principal #123, Ciudad	t
+1	Proveedor Ejemplo S.A.	0412-555-55-55	contacto@proveedorejemplo.com	Av. Principal #123, Ciudad	t
+2	Calzados Juandiegiño	0412-555-10-55	juagdiego@gmail.com	piritu portuguesa	t
 \.
 
 
 --
--- TOC entry 5157 (class 0 OID 31002)
+-- TOC entry 5147 (class 0 OID 31002)
 -- Dependencies: 233
 -- Data for Name: sucursal; Type: TABLE DATA; Schema: core; Owner: postgres
 --
@@ -1108,25 +1062,27 @@ COPY core.proveedor (id_proveedor, nombre, telefono, correo, direccion, activo) 
 COPY core.sucursal (id_sucursal, nombre, direccion, telefono, rif, activo, fecha_registro) FROM stdin;
 6	Fifty Four Cabudare	Cabudare Centro	04125551041	J-12345678-9	t	2025-11-22
 8	Ginza	Baquisimeto Av Vargas	04125551041	J-12345678-3	t	2025-11-23
-5	Global Sport	Yaracuy	0412-555-10-41	J-12345678-9	t	2025-11-22
 9	Ginza Outlet	Oasdkoaskdoaksoddkoasd	0424-589-87-63	J-12345678-1	t	2025-11-30
+5	Global Sport	Yaracuy	0412-555-10-41	J-12345678-9	t	2025-11-22
 \.
 
 
 --
--- TOC entry 5159 (class 0 OID 31017)
+-- TOC entry 5149 (class 0 OID 31017)
 -- Dependencies: 235
 -- Data for Name: talla; Type: TABLE DATA; Schema: core; Owner: postgres
 --
 
 COPY core.talla (id_talla, rango_talla, activo) FROM stdin;
 4	39-40-41-42-43-44	t
+5	40-41-42	t
+6	35-40	t
 \.
 
 
 --
--- TOC entry 5167 (class 0 OID 31091)
--- Dependencies: 243
+-- TOC entry 5155 (class 0 OID 31091)
+-- Dependencies: 241
 -- Data for Name: metodo_pago; Type: TABLE DATA; Schema: finanzas; Owner: postgres
 --
 
@@ -1138,8 +1094,8 @@ COPY finanzas.metodo_pago (id_metodo_pago, nombre, activo, descripcion, referenc
 
 
 --
--- TOC entry 5169 (class 0 OID 31103)
--- Dependencies: 245
+-- TOC entry 5157 (class 0 OID 31103)
+-- Dependencies: 243
 -- Data for Name: moneda; Type: TABLE DATA; Schema: finanzas; Owner: postgres
 --
 
@@ -1151,8 +1107,8 @@ COPY finanzas.moneda (id_moneda, nombre, codigo, activo) FROM stdin;
 
 
 --
--- TOC entry 5171 (class 0 OID 31118)
--- Dependencies: 247
+-- TOC entry 5159 (class 0 OID 31118)
+-- Dependencies: 245
 -- Data for Name: tasa_cambio; Type: TABLE DATA; Schema: finanzas; Owner: postgres
 --
 
@@ -1161,8 +1117,8 @@ COPY finanzas.tasa_cambio (id_tasa, id_moneda, fecha, tasa, activo) FROM stdin;
 
 
 --
--- TOC entry 5183 (class 0 OID 32223)
--- Dependencies: 259
+-- TOC entry 5171 (class 0 OID 32223)
+-- Dependencies: 257
 -- Data for Name: compra; Type: TABLE DATA; Schema: inventario; Owner: postgres
 --
 
@@ -1172,12 +1128,14 @@ COPY inventario.compra (id_compra, id_proveedor, id_sucursal, id_usuario, id_mon
 4	1	6	5	2	0111	2025-11-24	2025-11-24 17:54:13.023619	2000.00	320.00	2320.00		pendiente	t
 6	1	6	5	1	0192	2025-11-24	2025-11-24 21:35:41.085196	4000.00	640.00	4640.00	ninguna	pendiente	t
 5	1	8	5	1	0456	2025-11-24	2025-11-24 21:28:56.378523	3000.00	480.00	3480.00	aisdiasdiajsd	pendiente	t
+7	1	5	5	3	0509	2025-12-04	2025-12-04 10:24:47.87401	4500.00	720.00	5220.00		pendiente	t
+8	1	8	5	1	0578	2025-12-04	2025-12-04 11:04:22.032844	90000.00	14400.00	104400.00		pendiente	t
 \.
 
 
 --
--- TOC entry 5185 (class 0 OID 32262)
--- Dependencies: 261
+-- TOC entry 5173 (class 0 OID 32262)
+-- Dependencies: 259
 -- Data for Name: detalle_compra; Type: TABLE DATA; Schema: inventario; Owner: postgres
 --
 
@@ -1188,12 +1146,14 @@ COPY inventario.detalle_compra (id_detalle_compra, id_compra, id_producto, canti
 7	6	15	50	60.00	3000.00
 8	6	16	200	5.00	1000.00
 5	5	12	50	60.00	3000.00
+9	7	17	90	50.00	4500.00
+10	8	18	60	1500.00	90000.00
 \.
 
 
 --
--- TOC entry 5175 (class 0 OID 31173)
--- Dependencies: 251
+-- TOC entry 5163 (class 0 OID 31173)
+-- Dependencies: 249
 -- Data for Name: inventario; Type: TABLE DATA; Schema: inventario; Owner: postgres
 --
 
@@ -1205,18 +1165,21 @@ COPY inventario.inventario (id_inventario, id_producto, id_sucursal, cantidad, m
 9	15	6	50	0	t
 10	16	6	200	0	t
 8	13	8	0	0	t
-3	5	5	22	10	t
+12	18	8	60	0	t
+13	19	9	100	5	t
+11	17	5	89	0	t
+14	20	9	50	10	t
+3	5	5	18	10	t
 \.
 
 
 --
--- TOC entry 5173 (class 0 OID 31136)
--- Dependencies: 249
+-- TOC entry 5161 (class 0 OID 31136)
+-- Dependencies: 247
 -- Data for Name: producto; Type: TABLE DATA; Schema: inventario; Owner: postgres
 --
 
 COPY inventario.producto (id_producto, nombre, descripcion, id_categoria, id_color, id_talla, precio_venta, id_proveedor, activo, codigo_barra, precio_compra) FROM stdin;
-5	Zapato Numero 1	\N	4	4	4	20.00	\N	t	zap-01	10.00
 6	Nike air force one	\N	5	5	4	60.00	1	t	zap-02	30.00
 7	Botas timberland	\N	5	6	4	45.00	1	t	timber-10	30.00
 8	Nike retro jordan i	\N	6	7	4	30.00	1	t	zap-04	20.00
@@ -1224,21 +1187,16 @@ COPY inventario.producto (id_producto, nombre, descripcion, id_categoria, id_col
 13	Chancletas dama	\N	6	4	4	10.00	1	t	chan-dam	5.00
 15	Nike retro jordan iv	\N	\N	7	4	70.00	1	t	zap-31	60.00
 16	Chancleta niño	\N	\N	5	4	7.94	1	t	chan-niño	5.00
+17	Tacos futbol	\N	5	7	4	60.00	1	t	zap-99	50.00
+18	Chancleta unisex	\N	\N	4	4	1600.00	1	t	zap-100	1500.00
+19	Chancletas	ninguna	4	4	5	40.00	1	t	zap-999	50.00
+5	Zapato Numero 1	\N	4	4	4	20.00	\N	t	zap-01	10.00
+20	Zandalias Amarre		7	6	6	250.00	\N	t	zap-150	150.00
 \.
 
 
 --
--- TOC entry 5165 (class 0 OID 31073)
--- Dependencies: 241
--- Data for Name: auditoria; Type: TABLE DATA; Schema: seguridad_acceso; Owner: postgres
---
-
-COPY seguridad_acceso.auditoria (id_auditoria, id_usuario, tabla, accion, fecha, descripcion) FROM stdin;
-\.
-
-
---
--- TOC entry 5161 (class 0 OID 31029)
+-- TOC entry 5151 (class 0 OID 31029)
 -- Dependencies: 237
 -- Data for Name: rol; Type: TABLE DATA; Schema: seguridad_acceso; Owner: postgres
 --
@@ -1254,7 +1212,7 @@ COPY seguridad_acceso.rol (id_rol, nombre_rol, descripcion, activo) FROM stdin;
 
 
 --
--- TOC entry 5163 (class 0 OID 31043)
+-- TOC entry 5153 (class 0 OID 31043)
 -- Dependencies: 239
 -- Data for Name: usuario; Type: TABLE DATA; Schema: seguridad_acceso; Owner: postgres
 --
@@ -1267,61 +1225,73 @@ COPY seguridad_acceso.usuario (id_usuario, nombre, apellido, cedula, email, tele
 
 
 --
--- TOC entry 5179 (class 0 OID 31223)
--- Dependencies: 255
+-- TOC entry 5167 (class 0 OID 31223)
+-- Dependencies: 253
 -- Data for Name: detalle_venta; Type: TABLE DATA; Schema: ventas; Owner: postgres
 --
 
 COPY ventas.detalle_venta (id_detalle, id_venta, id_producto, cantidad, precio_unitario, subtotal, activo) FROM stdin;
 1	1	5	1	20.00	20.00	t
 2	2	5	1	20.00	20.00	t
+6	6	5	2	20.00	40.00	t
+8	8	5	1	20.00	20.00	t
+9	9	5	1	20.00	20.00	t
+10	10	17	1	60.00	60.00	t
 \.
 
 
 --
--- TOC entry 5181 (class 0 OID 31251)
--- Dependencies: 257
+-- TOC entry 5169 (class 0 OID 31251)
+-- Dependencies: 255
 -- Data for Name: pago_venta; Type: TABLE DATA; Schema: ventas; Owner: postgres
 --
 
 COPY ventas.pago_venta (id_pago, id_venta, id_metodo_pago, monto, id_moneda, tasa, activo, referencia) FROM stdin;
 1	1	3	20.00	1	1.0000	t	\N
 2	2	3	20.00	1	1.0000	t	\N
+3	6	3	40.00	1	1.0000	t	\N
+4	8	3	20.00	3	1.0000	t	\N
+5	9	2	20.00	3	1.0000	t	0456
+6	10	2	80.00	3	1.0000	t	0555
 \.
 
 
 --
--- TOC entry 5177 (class 0 OID 31200)
--- Dependencies: 253
+-- TOC entry 5165 (class 0 OID 31200)
+-- Dependencies: 251
 -- Data for Name: venta; Type: TABLE DATA; Schema: ventas; Owner: postgres
 --
 
 COPY ventas.venta (id_venta, id_cliente, id_usuario, fecha, total, activo) FROM stdin;
 1	1	7	2025-11-30 15:38:15.419179	20.00	t
 2	1	7	2025-11-30 22:04:53.407207	20.00	t
+6	1	7	2025-12-04 10:21:29.070794	40.00	t
+8	5	7	2025-12-04 11:10:17.980034	20.00	t
+9	1	7	2025-12-04 20:06:38.923812	20.00	t
+10	6	7	2025-12-05 14:50:36.777199	60.00	t
 \.
 
 
 --
--- TOC entry 5210 (class 0 OID 0)
+-- TOC entry 5197 (class 0 OID 0)
 -- Dependencies: 224
 -- Name: categoria_id_categoria_seq; Type: SEQUENCE SET; Schema: core; Owner: postgres
 --
 
-SELECT pg_catalog.setval('core.categoria_id_categoria_seq', 6, true);
+SELECT pg_catalog.setval('core.categoria_id_categoria_seq', 7, true);
 
 
 --
--- TOC entry 5211 (class 0 OID 0)
+-- TOC entry 5198 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: cliente_id_cliente_seq; Type: SEQUENCE SET; Schema: core; Owner: postgres
 --
 
-SELECT pg_catalog.setval('core.cliente_id_cliente_seq', 1, true);
+SELECT pg_catalog.setval('core.cliente_id_cliente_seq', 6, true);
 
 
 --
--- TOC entry 5212 (class 0 OID 0)
+-- TOC entry 5199 (class 0 OID 0)
 -- Dependencies: 228
 -- Name: color_id_color_seq; Type: SEQUENCE SET; Schema: core; Owner: postgres
 --
@@ -1330,16 +1300,16 @@ SELECT pg_catalog.setval('core.color_id_color_seq', 7, true);
 
 
 --
--- TOC entry 5213 (class 0 OID 0)
+-- TOC entry 5200 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: proveedor_id_proveedor_seq; Type: SEQUENCE SET; Schema: core; Owner: postgres
 --
 
-SELECT pg_catalog.setval('core.proveedor_id_proveedor_seq', 1, true);
+SELECT pg_catalog.setval('core.proveedor_id_proveedor_seq', 2, true);
 
 
 --
--- TOC entry 5214 (class 0 OID 0)
+-- TOC entry 5201 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: sucursal_id_sucursal_seq; Type: SEQUENCE SET; Schema: core; Owner: postgres
 --
@@ -1348,17 +1318,17 @@ SELECT pg_catalog.setval('core.sucursal_id_sucursal_seq', 9, true);
 
 
 --
--- TOC entry 5215 (class 0 OID 0)
+-- TOC entry 5202 (class 0 OID 0)
 -- Dependencies: 234
 -- Name: talla_id_talla_seq; Type: SEQUENCE SET; Schema: core; Owner: postgres
 --
 
-SELECT pg_catalog.setval('core.talla_id_talla_seq', 4, true);
+SELECT pg_catalog.setval('core.talla_id_talla_seq', 6, true);
 
 
 --
--- TOC entry 5216 (class 0 OID 0)
--- Dependencies: 242
+-- TOC entry 5203 (class 0 OID 0)
+-- Dependencies: 240
 -- Name: metodo_pago_id_metodo_pago_seq; Type: SEQUENCE SET; Schema: finanzas; Owner: postgres
 --
 
@@ -1366,8 +1336,8 @@ SELECT pg_catalog.setval('finanzas.metodo_pago_id_metodo_pago_seq', 3, true);
 
 
 --
--- TOC entry 5217 (class 0 OID 0)
--- Dependencies: 244
+-- TOC entry 5204 (class 0 OID 0)
+-- Dependencies: 242
 -- Name: moneda_id_moneda_seq; Type: SEQUENCE SET; Schema: finanzas; Owner: postgres
 --
 
@@ -1375,8 +1345,8 @@ SELECT pg_catalog.setval('finanzas.moneda_id_moneda_seq', 3, true);
 
 
 --
--- TOC entry 5218 (class 0 OID 0)
--- Dependencies: 246
+-- TOC entry 5205 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: tasa_cambio_id_tasa_seq; Type: SEQUENCE SET; Schema: finanzas; Owner: postgres
 --
 
@@ -1384,52 +1354,43 @@ SELECT pg_catalog.setval('finanzas.tasa_cambio_id_tasa_seq', 1, false);
 
 
 --
--- TOC entry 5219 (class 0 OID 0)
--- Dependencies: 258
+-- TOC entry 5206 (class 0 OID 0)
+-- Dependencies: 256
 -- Name: compra_id_compra_seq; Type: SEQUENCE SET; Schema: inventario; Owner: postgres
 --
 
-SELECT pg_catalog.setval('inventario.compra_id_compra_seq', 6, true);
+SELECT pg_catalog.setval('inventario.compra_id_compra_seq', 8, true);
 
 
 --
--- TOC entry 5220 (class 0 OID 0)
--- Dependencies: 260
+-- TOC entry 5207 (class 0 OID 0)
+-- Dependencies: 258
 -- Name: detalle_compra_id_detalle_compra_seq; Type: SEQUENCE SET; Schema: inventario; Owner: postgres
 --
 
-SELECT pg_catalog.setval('inventario.detalle_compra_id_detalle_compra_seq', 8, true);
+SELECT pg_catalog.setval('inventario.detalle_compra_id_detalle_compra_seq', 10, true);
 
 
 --
--- TOC entry 5221 (class 0 OID 0)
--- Dependencies: 250
+-- TOC entry 5208 (class 0 OID 0)
+-- Dependencies: 248
 -- Name: inventario_id_inventario_seq; Type: SEQUENCE SET; Schema: inventario; Owner: postgres
 --
 
-SELECT pg_catalog.setval('inventario.inventario_id_inventario_seq', 10, true);
+SELECT pg_catalog.setval('inventario.inventario_id_inventario_seq', 14, true);
 
 
 --
--- TOC entry 5222 (class 0 OID 0)
--- Dependencies: 248
+-- TOC entry 5209 (class 0 OID 0)
+-- Dependencies: 246
 -- Name: producto_id_producto_seq; Type: SEQUENCE SET; Schema: inventario; Owner: postgres
 --
 
-SELECT pg_catalog.setval('inventario.producto_id_producto_seq', 16, true);
+SELECT pg_catalog.setval('inventario.producto_id_producto_seq', 20, true);
 
 
 --
--- TOC entry 5223 (class 0 OID 0)
--- Dependencies: 240
--- Name: auditoria_id_auditoria_seq; Type: SEQUENCE SET; Schema: seguridad_acceso; Owner: postgres
---
-
-SELECT pg_catalog.setval('seguridad_acceso.auditoria_id_auditoria_seq', 1, false);
-
-
---
--- TOC entry 5224 (class 0 OID 0)
+-- TOC entry 5210 (class 0 OID 0)
 -- Dependencies: 236
 -- Name: rol_id_rol_seq; Type: SEQUENCE SET; Schema: seguridad_acceso; Owner: postgres
 --
@@ -1438,7 +1399,7 @@ SELECT pg_catalog.setval('seguridad_acceso.rol_id_rol_seq', 6, true);
 
 
 --
--- TOC entry 5225 (class 0 OID 0)
+-- TOC entry 5211 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: usuario_id_usuario_seq; Type: SEQUENCE SET; Schema: seguridad_acceso; Owner: postgres
 --
@@ -1447,34 +1408,34 @@ SELECT pg_catalog.setval('seguridad_acceso.usuario_id_usuario_seq', 7, true);
 
 
 --
--- TOC entry 5226 (class 0 OID 0)
--- Dependencies: 254
+-- TOC entry 5212 (class 0 OID 0)
+-- Dependencies: 252
 -- Name: detalle_venta_id_detalle_seq; Type: SEQUENCE SET; Schema: ventas; Owner: postgres
 --
 
-SELECT pg_catalog.setval('ventas.detalle_venta_id_detalle_seq', 2, true);
+SELECT pg_catalog.setval('ventas.detalle_venta_id_detalle_seq', 10, true);
 
 
 --
--- TOC entry 5227 (class 0 OID 0)
--- Dependencies: 256
+-- TOC entry 5213 (class 0 OID 0)
+-- Dependencies: 254
 -- Name: pago_venta_id_pago_seq; Type: SEQUENCE SET; Schema: ventas; Owner: postgres
 --
 
-SELECT pg_catalog.setval('ventas.pago_venta_id_pago_seq', 2, true);
+SELECT pg_catalog.setval('ventas.pago_venta_id_pago_seq', 6, true);
 
 
 --
--- TOC entry 5228 (class 0 OID 0)
--- Dependencies: 252
+-- TOC entry 5214 (class 0 OID 0)
+-- Dependencies: 250
 -- Name: venta_id_venta_seq; Type: SEQUENCE SET; Schema: ventas; Owner: postgres
 --
 
-SELECT pg_catalog.setval('ventas.venta_id_venta_seq', 2, true);
+SELECT pg_catalog.setval('ventas.venta_id_venta_seq', 10, true);
 
 
 --
--- TOC entry 4914 (class 2606 OID 30960)
+-- TOC entry 4907 (class 2606 OID 30960)
 -- Name: categoria categoria_nombre_key; Type: CONSTRAINT; Schema: core; Owner: postgres
 --
 
@@ -1483,7 +1444,7 @@ ALTER TABLE ONLY core.categoria
 
 
 --
--- TOC entry 4916 (class 2606 OID 30958)
+-- TOC entry 4909 (class 2606 OID 30958)
 -- Name: categoria categoria_pkey; Type: CONSTRAINT; Schema: core; Owner: postgres
 --
 
@@ -1492,7 +1453,7 @@ ALTER TABLE ONLY core.categoria
 
 
 --
--- TOC entry 4918 (class 2606 OID 30974)
+-- TOC entry 4911 (class 2606 OID 30974)
 -- Name: cliente cliente_cedula_key; Type: CONSTRAINT; Schema: core; Owner: postgres
 --
 
@@ -1501,7 +1462,7 @@ ALTER TABLE ONLY core.cliente
 
 
 --
--- TOC entry 4920 (class 2606 OID 30976)
+-- TOC entry 4913 (class 2606 OID 30976)
 -- Name: cliente cliente_correo_key; Type: CONSTRAINT; Schema: core; Owner: postgres
 --
 
@@ -1510,7 +1471,7 @@ ALTER TABLE ONLY core.cliente
 
 
 --
--- TOC entry 4922 (class 2606 OID 30972)
+-- TOC entry 4915 (class 2606 OID 30972)
 -- Name: cliente cliente_pkey; Type: CONSTRAINT; Schema: core; Owner: postgres
 --
 
@@ -1519,7 +1480,7 @@ ALTER TABLE ONLY core.cliente
 
 
 --
--- TOC entry 4924 (class 2606 OID 30988)
+-- TOC entry 4917 (class 2606 OID 30988)
 -- Name: color color_nombre_key; Type: CONSTRAINT; Schema: core; Owner: postgres
 --
 
@@ -1528,7 +1489,7 @@ ALTER TABLE ONLY core.color
 
 
 --
--- TOC entry 4926 (class 2606 OID 30986)
+-- TOC entry 4919 (class 2606 OID 30986)
 -- Name: color color_pkey; Type: CONSTRAINT; Schema: core; Owner: postgres
 --
 
@@ -1537,7 +1498,7 @@ ALTER TABLE ONLY core.color
 
 
 --
--- TOC entry 4928 (class 2606 OID 31000)
+-- TOC entry 4921 (class 2606 OID 31000)
 -- Name: proveedor proveedor_pkey; Type: CONSTRAINT; Schema: core; Owner: postgres
 --
 
@@ -1546,7 +1507,7 @@ ALTER TABLE ONLY core.proveedor
 
 
 --
--- TOC entry 4930 (class 2606 OID 31015)
+-- TOC entry 4923 (class 2606 OID 31015)
 -- Name: sucursal sucursal_nombre_key; Type: CONSTRAINT; Schema: core; Owner: postgres
 --
 
@@ -1555,7 +1516,7 @@ ALTER TABLE ONLY core.sucursal
 
 
 --
--- TOC entry 4932 (class 2606 OID 31013)
+-- TOC entry 4925 (class 2606 OID 31013)
 -- Name: sucursal sucursal_pkey; Type: CONSTRAINT; Schema: core; Owner: postgres
 --
 
@@ -1564,7 +1525,7 @@ ALTER TABLE ONLY core.sucursal
 
 
 --
--- TOC entry 4934 (class 2606 OID 31027)
+-- TOC entry 4927 (class 2606 OID 31027)
 -- Name: talla talla_nombre_key; Type: CONSTRAINT; Schema: core; Owner: postgres
 --
 
@@ -1573,7 +1534,7 @@ ALTER TABLE ONLY core.talla
 
 
 --
--- TOC entry 4936 (class 2606 OID 31025)
+-- TOC entry 4929 (class 2606 OID 31025)
 -- Name: talla talla_pkey; Type: CONSTRAINT; Schema: core; Owner: postgres
 --
 
@@ -1582,7 +1543,7 @@ ALTER TABLE ONLY core.talla
 
 
 --
--- TOC entry 4950 (class 2606 OID 31101)
+-- TOC entry 4941 (class 2606 OID 31101)
 -- Name: metodo_pago metodo_pago_nombre_key; Type: CONSTRAINT; Schema: finanzas; Owner: postgres
 --
 
@@ -1591,7 +1552,7 @@ ALTER TABLE ONLY finanzas.metodo_pago
 
 
 --
--- TOC entry 4952 (class 2606 OID 31099)
+-- TOC entry 4943 (class 2606 OID 31099)
 -- Name: metodo_pago metodo_pago_pkey; Type: CONSTRAINT; Schema: finanzas; Owner: postgres
 --
 
@@ -1600,7 +1561,7 @@ ALTER TABLE ONLY finanzas.metodo_pago
 
 
 --
--- TOC entry 4954 (class 2606 OID 31116)
+-- TOC entry 4945 (class 2606 OID 31116)
 -- Name: moneda moneda_codigo_key; Type: CONSTRAINT; Schema: finanzas; Owner: postgres
 --
 
@@ -1609,7 +1570,7 @@ ALTER TABLE ONLY finanzas.moneda
 
 
 --
--- TOC entry 4956 (class 2606 OID 31114)
+-- TOC entry 4947 (class 2606 OID 31114)
 -- Name: moneda moneda_nombre_key; Type: CONSTRAINT; Schema: finanzas; Owner: postgres
 --
 
@@ -1618,7 +1579,7 @@ ALTER TABLE ONLY finanzas.moneda
 
 
 --
--- TOC entry 4958 (class 2606 OID 31112)
+-- TOC entry 4949 (class 2606 OID 31112)
 -- Name: moneda moneda_pkey; Type: CONSTRAINT; Schema: finanzas; Owner: postgres
 --
 
@@ -1627,7 +1588,7 @@ ALTER TABLE ONLY finanzas.moneda
 
 
 --
--- TOC entry 4960 (class 2606 OID 31129)
+-- TOC entry 4951 (class 2606 OID 31129)
 -- Name: tasa_cambio tasa_cambio_pkey; Type: CONSTRAINT; Schema: finanzas; Owner: postgres
 --
 
@@ -1636,7 +1597,7 @@ ALTER TABLE ONLY finanzas.tasa_cambio
 
 
 --
--- TOC entry 4976 (class 2606 OID 32245)
+-- TOC entry 4967 (class 2606 OID 32245)
 -- Name: compra compra_pkey; Type: CONSTRAINT; Schema: inventario; Owner: postgres
 --
 
@@ -1645,7 +1606,7 @@ ALTER TABLE ONLY inventario.compra
 
 
 --
--- TOC entry 4978 (class 2606 OID 32273)
+-- TOC entry 4969 (class 2606 OID 32273)
 -- Name: detalle_compra detalle_compra_pkey; Type: CONSTRAINT; Schema: inventario; Owner: postgres
 --
 
@@ -1654,7 +1615,7 @@ ALTER TABLE ONLY inventario.detalle_compra
 
 
 --
--- TOC entry 4964 (class 2606 OID 31188)
+-- TOC entry 4955 (class 2606 OID 31188)
 -- Name: inventario inventario_id_producto_id_sucursal_key; Type: CONSTRAINT; Schema: inventario; Owner: postgres
 --
 
@@ -1663,7 +1624,7 @@ ALTER TABLE ONLY inventario.inventario
 
 
 --
--- TOC entry 4966 (class 2606 OID 31186)
+-- TOC entry 4957 (class 2606 OID 31186)
 -- Name: inventario inventario_pkey; Type: CONSTRAINT; Schema: inventario; Owner: postgres
 --
 
@@ -1672,7 +1633,7 @@ ALTER TABLE ONLY inventario.inventario
 
 
 --
--- TOC entry 4962 (class 2606 OID 31151)
+-- TOC entry 4953 (class 2606 OID 31151)
 -- Name: producto producto_pkey; Type: CONSTRAINT; Schema: inventario; Owner: postgres
 --
 
@@ -1681,16 +1642,7 @@ ALTER TABLE ONLY inventario.producto
 
 
 --
--- TOC entry 4948 (class 2606 OID 31084)
--- Name: auditoria auditoria_pkey; Type: CONSTRAINT; Schema: seguridad_acceso; Owner: postgres
---
-
-ALTER TABLE ONLY seguridad_acceso.auditoria
-    ADD CONSTRAINT auditoria_pkey PRIMARY KEY (id_auditoria);
-
-
---
--- TOC entry 4938 (class 2606 OID 31041)
+-- TOC entry 4931 (class 2606 OID 31041)
 -- Name: rol rol_nombre_rol_key; Type: CONSTRAINT; Schema: seguridad_acceso; Owner: postgres
 --
 
@@ -1699,7 +1651,7 @@ ALTER TABLE ONLY seguridad_acceso.rol
 
 
 --
--- TOC entry 4940 (class 2606 OID 31039)
+-- TOC entry 4933 (class 2606 OID 31039)
 -- Name: rol rol_pkey; Type: CONSTRAINT; Schema: seguridad_acceso; Owner: postgres
 --
 
@@ -1708,7 +1660,7 @@ ALTER TABLE ONLY seguridad_acceso.rol
 
 
 --
--- TOC entry 4942 (class 2606 OID 31059)
+-- TOC entry 4935 (class 2606 OID 31059)
 -- Name: usuario usuario_cedula_key; Type: CONSTRAINT; Schema: seguridad_acceso; Owner: postgres
 --
 
@@ -1717,7 +1669,7 @@ ALTER TABLE ONLY seguridad_acceso.usuario
 
 
 --
--- TOC entry 4944 (class 2606 OID 31061)
+-- TOC entry 4937 (class 2606 OID 31061)
 -- Name: usuario usuario_email_key; Type: CONSTRAINT; Schema: seguridad_acceso; Owner: postgres
 --
 
@@ -1726,7 +1678,7 @@ ALTER TABLE ONLY seguridad_acceso.usuario
 
 
 --
--- TOC entry 4946 (class 2606 OID 31057)
+-- TOC entry 4939 (class 2606 OID 31057)
 -- Name: usuario usuario_pkey; Type: CONSTRAINT; Schema: seguridad_acceso; Owner: postgres
 --
 
@@ -1735,7 +1687,7 @@ ALTER TABLE ONLY seguridad_acceso.usuario
 
 
 --
--- TOC entry 4970 (class 2606 OID 31239)
+-- TOC entry 4961 (class 2606 OID 31239)
 -- Name: detalle_venta detalle_venta_pkey; Type: CONSTRAINT; Schema: ventas; Owner: postgres
 --
 
@@ -1744,7 +1696,7 @@ ALTER TABLE ONLY ventas.detalle_venta
 
 
 --
--- TOC entry 4972 (class 2606 OID 31266)
+-- TOC entry 4963 (class 2606 OID 31266)
 -- Name: pago_venta pago_venta_pkey; Type: CONSTRAINT; Schema: ventas; Owner: postgres
 --
 
@@ -1753,7 +1705,7 @@ ALTER TABLE ONLY ventas.pago_venta
 
 
 --
--- TOC entry 4974 (class 2606 OID 32290)
+-- TOC entry 4965 (class 2606 OID 32290)
 -- Name: pago_venta pago_venta_referencia_key; Type: CONSTRAINT; Schema: ventas; Owner: postgres
 --
 
@@ -1762,7 +1714,7 @@ ALTER TABLE ONLY ventas.pago_venta
 
 
 --
--- TOC entry 4968 (class 2606 OID 31211)
+-- TOC entry 4959 (class 2606 OID 31211)
 -- Name: venta venta_pkey; Type: CONSTRAINT; Schema: ventas; Owner: postgres
 --
 
@@ -1771,7 +1723,7 @@ ALTER TABLE ONLY ventas.venta
 
 
 --
--- TOC entry 4982 (class 2606 OID 31130)
+-- TOC entry 4972 (class 2606 OID 31130)
 -- Name: tasa_cambio tasa_cambio_id_moneda_fkey; Type: FK CONSTRAINT; Schema: finanzas; Owner: postgres
 --
 
@@ -1780,7 +1732,7 @@ ALTER TABLE ONLY finanzas.tasa_cambio
 
 
 --
--- TOC entry 4996 (class 2606 OID 32246)
+-- TOC entry 4986 (class 2606 OID 32246)
 -- Name: compra compra_id_proveedor_fkey; Type: FK CONSTRAINT; Schema: inventario; Owner: postgres
 --
 
@@ -1789,7 +1741,7 @@ ALTER TABLE ONLY inventario.compra
 
 
 --
--- TOC entry 4997 (class 2606 OID 32251)
+-- TOC entry 4987 (class 2606 OID 32251)
 -- Name: compra compra_id_sucursal_fkey; Type: FK CONSTRAINT; Schema: inventario; Owner: postgres
 --
 
@@ -1798,7 +1750,7 @@ ALTER TABLE ONLY inventario.compra
 
 
 --
--- TOC entry 4998 (class 2606 OID 32256)
+-- TOC entry 4988 (class 2606 OID 32256)
 -- Name: compra compra_id_usuario_fkey; Type: FK CONSTRAINT; Schema: inventario; Owner: postgres
 --
 
@@ -1807,7 +1759,7 @@ ALTER TABLE ONLY inventario.compra
 
 
 --
--- TOC entry 4999 (class 2606 OID 32274)
+-- TOC entry 4989 (class 2606 OID 32274)
 -- Name: detalle_compra detalle_compra_id_compra_fkey; Type: FK CONSTRAINT; Schema: inventario; Owner: postgres
 --
 
@@ -1816,7 +1768,7 @@ ALTER TABLE ONLY inventario.detalle_compra
 
 
 --
--- TOC entry 5000 (class 2606 OID 32279)
+-- TOC entry 4990 (class 2606 OID 32279)
 -- Name: detalle_compra detalle_compra_id_producto_fkey; Type: FK CONSTRAINT; Schema: inventario; Owner: postgres
 --
 
@@ -1825,7 +1777,7 @@ ALTER TABLE ONLY inventario.detalle_compra
 
 
 --
--- TOC entry 4987 (class 2606 OID 31189)
+-- TOC entry 4977 (class 2606 OID 31189)
 -- Name: inventario inventario_id_producto_fkey; Type: FK CONSTRAINT; Schema: inventario; Owner: postgres
 --
 
@@ -1834,7 +1786,7 @@ ALTER TABLE ONLY inventario.inventario
 
 
 --
--- TOC entry 4988 (class 2606 OID 31194)
+-- TOC entry 4978 (class 2606 OID 31194)
 -- Name: inventario inventario_id_sucursal_fkey; Type: FK CONSTRAINT; Schema: inventario; Owner: postgres
 --
 
@@ -1843,7 +1795,7 @@ ALTER TABLE ONLY inventario.inventario
 
 
 --
--- TOC entry 4983 (class 2606 OID 31152)
+-- TOC entry 4973 (class 2606 OID 31152)
 -- Name: producto producto_id_categoria_fkey; Type: FK CONSTRAINT; Schema: inventario; Owner: postgres
 --
 
@@ -1852,7 +1804,7 @@ ALTER TABLE ONLY inventario.producto
 
 
 --
--- TOC entry 4984 (class 2606 OID 31157)
+-- TOC entry 4974 (class 2606 OID 31157)
 -- Name: producto producto_id_color_fkey; Type: FK CONSTRAINT; Schema: inventario; Owner: postgres
 --
 
@@ -1861,7 +1813,7 @@ ALTER TABLE ONLY inventario.producto
 
 
 --
--- TOC entry 4985 (class 2606 OID 31167)
+-- TOC entry 4975 (class 2606 OID 31167)
 -- Name: producto producto_id_proveedor_fkey; Type: FK CONSTRAINT; Schema: inventario; Owner: postgres
 --
 
@@ -1870,7 +1822,7 @@ ALTER TABLE ONLY inventario.producto
 
 
 --
--- TOC entry 4986 (class 2606 OID 31162)
+-- TOC entry 4976 (class 2606 OID 31162)
 -- Name: producto producto_id_talla_fkey; Type: FK CONSTRAINT; Schema: inventario; Owner: postgres
 --
 
@@ -1879,16 +1831,7 @@ ALTER TABLE ONLY inventario.producto
 
 
 --
--- TOC entry 4981 (class 2606 OID 31085)
--- Name: auditoria auditoria_id_usuario_fkey; Type: FK CONSTRAINT; Schema: seguridad_acceso; Owner: postgres
---
-
-ALTER TABLE ONLY seguridad_acceso.auditoria
-    ADD CONSTRAINT auditoria_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES seguridad_acceso.usuario(id_usuario) ON UPDATE CASCADE ON DELETE SET NULL;
-
-
---
--- TOC entry 4979 (class 2606 OID 31062)
+-- TOC entry 4970 (class 2606 OID 31062)
 -- Name: usuario usuario_id_rol_fkey; Type: FK CONSTRAINT; Schema: seguridad_acceso; Owner: postgres
 --
 
@@ -1897,7 +1840,7 @@ ALTER TABLE ONLY seguridad_acceso.usuario
 
 
 --
--- TOC entry 4980 (class 2606 OID 31067)
+-- TOC entry 4971 (class 2606 OID 31067)
 -- Name: usuario usuario_id_sucursal_fkey; Type: FK CONSTRAINT; Schema: seguridad_acceso; Owner: postgres
 --
 
@@ -1906,7 +1849,7 @@ ALTER TABLE ONLY seguridad_acceso.usuario
 
 
 --
--- TOC entry 4991 (class 2606 OID 31245)
+-- TOC entry 4981 (class 2606 OID 31245)
 -- Name: detalle_venta detalle_venta_id_producto_fkey; Type: FK CONSTRAINT; Schema: ventas; Owner: postgres
 --
 
@@ -1915,7 +1858,7 @@ ALTER TABLE ONLY ventas.detalle_venta
 
 
 --
--- TOC entry 4992 (class 2606 OID 31240)
+-- TOC entry 4982 (class 2606 OID 31240)
 -- Name: detalle_venta detalle_venta_id_venta_fkey; Type: FK CONSTRAINT; Schema: ventas; Owner: postgres
 --
 
@@ -1924,7 +1867,7 @@ ALTER TABLE ONLY ventas.detalle_venta
 
 
 --
--- TOC entry 4993 (class 2606 OID 31272)
+-- TOC entry 4983 (class 2606 OID 31272)
 -- Name: pago_venta pago_venta_id_metodo_pago_fkey; Type: FK CONSTRAINT; Schema: ventas; Owner: postgres
 --
 
@@ -1933,7 +1876,7 @@ ALTER TABLE ONLY ventas.pago_venta
 
 
 --
--- TOC entry 4994 (class 2606 OID 31277)
+-- TOC entry 4984 (class 2606 OID 31277)
 -- Name: pago_venta pago_venta_id_moneda_fkey; Type: FK CONSTRAINT; Schema: ventas; Owner: postgres
 --
 
@@ -1942,7 +1885,7 @@ ALTER TABLE ONLY ventas.pago_venta
 
 
 --
--- TOC entry 4995 (class 2606 OID 31267)
+-- TOC entry 4985 (class 2606 OID 31267)
 -- Name: pago_venta pago_venta_id_venta_fkey; Type: FK CONSTRAINT; Schema: ventas; Owner: postgres
 --
 
@@ -1951,7 +1894,7 @@ ALTER TABLE ONLY ventas.pago_venta
 
 
 --
--- TOC entry 4989 (class 2606 OID 31212)
+-- TOC entry 4979 (class 2606 OID 31212)
 -- Name: venta venta_id_cliente_fkey; Type: FK CONSTRAINT; Schema: ventas; Owner: postgres
 --
 
@@ -1960,7 +1903,7 @@ ALTER TABLE ONLY ventas.venta
 
 
 --
--- TOC entry 4990 (class 2606 OID 31217)
+-- TOC entry 4980 (class 2606 OID 31217)
 -- Name: venta venta_id_usuario_fkey; Type: FK CONSTRAINT; Schema: ventas; Owner: postgres
 --
 
@@ -1968,11 +1911,11 @@ ALTER TABLE ONLY ventas.venta
     ADD CONSTRAINT venta_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES seguridad_acceso.usuario(id_usuario) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
--- Completed on 2025-11-30 22:55:41
+-- Completed on 2025-12-06 11:19:23
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict aOH3xa19xGFdyuFxmFsdejTxenrnlCPiOLoYPIHbwBZbGHixHZ5bQyXbTIUzb5E
+\unrestrict cXKatHmCGakv1lMwMnGqC2zxl78YhqQxYqhkpLnwPKy30SpMo9S6Rc7YEJjtynC
 
