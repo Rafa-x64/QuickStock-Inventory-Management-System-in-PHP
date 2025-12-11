@@ -387,9 +387,11 @@ function obtenerCierreCaja($fecha = null)
 
     // 2. Totales por Moneda (Dinero Real Recaudado)
     $sql_monedas = "SELECT 
-                        m.nombre as moneda,
+                        m.nombre,
                         m.codigo,
-                        COALESCE(SUM(pv.monto), 0) as total_recaudado
+                        m.simbolo,
+                        COALESCE(SUM(pv.monto), 0) as total_recaudado,
+                        COUNT(pv.id_pago) as total_transacciones
                     FROM ventas.pago_venta pv
                     JOIN ventas.venta v ON pv.id_venta = v.id_venta
                     JOIN finanzas.moneda m ON pv.id_moneda = m.id_moneda
@@ -398,7 +400,8 @@ function obtenerCierreCaja($fecha = null)
                       AND u.id_sucursal = $2
                       AND v.activo = 't' 
                       AND pv.activo = 't'
-                    GROUP BY m.id_moneda, m.nombre, m.codigo";
+                    GROUP BY m.id_moneda, m.nombre, m.codigo, m.simbolo
+                    ORDER BY m.nombre ASC";
 
     $query_monedas = "cierre_monedas_" . uniqid();
     pg_prepare($conn, $query_monedas, $sql_monedas);
@@ -409,6 +412,7 @@ function obtenerCierreCaja($fecha = null)
     $sql_metodos = "SELECT 
                         mp.nombre as metodo_pago,
                         m.codigo as moneda,
+                        m.simbolo as simbolo_moneda,
                         COALESCE(SUM(pv.monto), 0) as monto,
                         COUNT(pv.id_pago) as transacciones
                     FROM ventas.pago_venta pv
@@ -420,7 +424,7 @@ function obtenerCierreCaja($fecha = null)
                       AND u.id_sucursal = $2
                       AND v.activo = 't' 
                       AND pv.activo = 't'
-                    GROUP BY mp.id_metodo_pago, mp.nombre, m.id_moneda, m.codigo
+                    GROUP BY mp.id_metodo_pago, mp.nombre, m.id_moneda, m.codigo, m.simbolo
                     ORDER BY mp.nombre, m.codigo";
 
     $query_metodos = "cierre_metodos_" . uniqid();

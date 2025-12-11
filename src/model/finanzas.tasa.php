@@ -13,8 +13,9 @@ class TasaCambio extends mainModel
     {
         $conn = parent::conectar_base_datos();
 
-        // 1. Obtener tasa actual para comparación (Alertas)
-        $sqlLast = "SELECT tasa FROM finanzas.tasa_cambio WHERE id_moneda = $1 AND activo = true ORDER BY fecha DESC LIMIT 1";
+        // 1. Obtener tasa anterior VÁLIDA para comparación (Alertas)
+        // Solo consideramos tasas >= 10 Bs como válidas (valores menores son errores de sincronizaciones anteriores)
+        $sqlLast = "SELECT tasa FROM finanzas.tasa_cambio WHERE id_moneda = $1 AND activo = true AND tasa >= 10 ORDER BY fecha DESC, id_tasa DESC LIMIT 1";
         $stmtLast = "getLastTasa_" . uniqid();
         pg_prepare($conn, $stmtLast, $sqlLast);
         $resLast = pg_execute($conn, $stmtLast, [$id_moneda]);

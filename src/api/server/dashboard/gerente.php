@@ -251,6 +251,48 @@ function obtenerProductosStockBajo($id_sucursal = null)
 }
 
 /**
+ * Obtiene productos con stock bajo incluyendo nombre de sucursal (para correos)
+ */
+function obtenerProductosStockBajoCompleto($id_sucursal = null)
+{
+    $conn = conectar_base_datos();
+
+    $sql = "SELECT 
+                p.codigo_barra AS codigo,
+                p.nombre AS producto,
+                i.cantidad,
+                i.minimo,
+                s.nombre AS sucursal_nombre
+            FROM inventario.inventario i
+            INNER JOIN inventario.producto p ON i.id_producto = p.id_producto
+            INNER JOIN core.sucursal s ON i.id_sucursal = s.id_sucursal
+            WHERE i.activo = true 
+              AND p.activo = true
+              AND i.cantidad <= i.minimo";
+
+    $params = [];
+    $paramIndex = 1;
+
+    if ($id_sucursal !== null && $id_sucursal > 0) {
+        $sql .= " AND i.id_sucursal = $" . $paramIndex;
+        $params[] = $id_sucursal;
+    }
+
+    $sql .= " ORDER BY i.cantidad ASC";
+
+    $queryName = "stock_bajo_completo_" . uniqid();
+    pg_prepare($conn, $queryName, $sql);
+    $result = pg_execute($conn, $queryName, $params);
+
+    if (!$result) {
+        return ["error" => "Error al obtener productos con stock bajo"];
+    }
+
+    $data = pg_fetch_all($result);
+    return ["productos" => $data ?: []];
+}
+
+/**
  * Obtiene categorías con categoría padre
  */
 function obtenerCategoriasConPadre()

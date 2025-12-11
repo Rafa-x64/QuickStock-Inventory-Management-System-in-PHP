@@ -6,7 +6,7 @@
 return [
     'host' => 'smtp.gmail.com',
     'username' => 'alvarezrafaelat@gmail.com',
-    'password' => 'esternocleidomastoideo1', // <--- PEGAR CONTRASEÑA AQUI
+    'password' => 'lcqn jara eltr dvrk', // <--- PEGAR CONTRASEÑA AQUI
     'port' => 465,
     'smtp_secure' => 'ssl', // o PHPMailer::ENCRYPTION_SMTPS
     'from_email' => 'alvarezrafaelat@gmail.com',
