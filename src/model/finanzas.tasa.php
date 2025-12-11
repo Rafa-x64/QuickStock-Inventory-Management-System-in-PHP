@@ -58,21 +58,7 @@ class TasaCambio extends mainModel
             return ["status" => "skip", "msg" => "Ya se actualizó hoy."];
         }
 
-        // Si NO existe, verificamos la hora, PERO si el usuario pide "traer una aunque no sean las 4pm" 
-        // podemos ser flexibles: Si no hay NADA de hoy, intentamos actualizar de todas formas (Lazy Force), 
-        // o mantenemos la regla de hora.
-        // El usuario dijo: "al menos trae una desde la api del dia de hoy aunque no sean las 4pm"
-        // Así que quitamos la restricción de hora SI no hay datos de hoy.
-
-        /* 
-        $hora = (int)date('H');
-        $minuto = (int)date('i');
-        if ($hora < self::HORA_ACTUALIZACION || ($hora == self::HORA_ACTUALIZACION && $minuto < self::MINUTO_ACTUALIZACION)) {
-             return ["status" => "skip", "msg" => "Aún no es la hora de actualización."];
-        }
-        */
-
-        // 3. Ejecutar Sincronización
+        // Si NO existe, intentamos actualizar de todas formas (Lazy Force)
         return self::sincronizarTasasApi();
     }
 
@@ -84,28 +70,79 @@ class TasaCambio extends mainModel
             return ["status" => "error", "msg" => "Fallo al conectar con API externa."];
         }
 
-        // Obtener monedas activas del sistema para saber qué buscar
         $monedasSistema = Moneda::obtenerTodas();
         $actualizadas = 0;
+        $conn = parent::conectar_base_datos(); // Necesario para verificaciones
+
+        // 1. Obtener la tasa base del Dólar en Bolívares directamente de la API
+        // La API retorna "USD" como base, por lo que $tasasExternas['VES'] es cuantos Bs vale 1 USD.
+        $baseBs = $tasasExternas['VES'] ?? 1;
 
         foreach ($monedasSistema as $m) {
-            $codigo = $m['codigo']; // USD, VES, EUR
+            $codigo = $m['codigo'];
+            if ($codigo == 'VES') continue; // VES no se toca directo (es base derivada)
 
-            // La API base es USD.
-            if ($codigo == 'USD') continue;
+            // PROTECCION MANUAL:
+            // "logicamente solo se deberia actualizar el $ y el euro al darle a boton de actualizar tasas
+            // si no obviamente se pierde lo que el usuario registra manualmente"
+            // Verificamos si YA existe una tasa MANUAL para hoy.
+            // Usamos ILIKE para ignorar mayusculas/minusculas por seguridad
 
-            if (isset($tasasExternas[$codigo])) {
-                $valor = $tasasExternas[$codigo];
+            $sqlCheck = "SELECT COUNT(*) FROM finanzas.tasa_cambio WHERE id_moneda = $1 AND fecha = CURRENT_DATE AND origen ILIKE 'Manual'";
+            $stmtN = "checkMan_" . $m['id_moneda'] . "_" . uniqid();
+            pg_prepare($conn, $stmtN, $sqlCheck);
+            $resCheck = pg_execute($conn, $stmtN, [$m['id_moneda']]);
+            $isManualToday = (pg_fetch_result($resCheck, 0, 0) > 0);
+
+            if ($isManualToday) {
+                // Si el usuario ya puso una manual hoy, la API NO la sobreescribe.
+                continue;
+            }
+
+            $valor = null;
+            if ($codigo == 'USD') {
+                // Si la moneda es Dólar, su valor en Bs es la tasa base que obtuvimos.
+                $valor = $baseBs;
+            } elseif (isset($tasasExternas[$codigo])) {
+                // CALCULO DE TASA CRUZADA (Cross Rate) para mostrar valor en Bs
+                // API retorna: 1 USD = X EUR (ej: 0.86)
+                // Nosotros queremos: 1 EUR = Y Bs
+                // Formula: tasaVES / tasaAPI = (Bs/USD) / (EUR/USD) = Bs/EUR
+
+                $apiRate = $tasasExternas[$codigo];
+                if ($apiRate > 0) {
+                    $valor = $baseBs / $apiRate;
+                }
+            }
+
+            if ($valor !== null) {
+                // EVITAR DUPLICADOS "el dolar se actualiza muchas veces"
+                // Verificar si la ULTIMA tasa registrada para esta moneda es de HOY y tiene el MISMO valor.
+                $sqlDup = "SELECT tasa FROM finanzas.tasa_cambio WHERE id_moneda = $1 AND fecha = CURRENT_DATE ORDER BY id_tasa DESC LIMIT 1";
+                $stmtDup = "checkDup_" . $m['id_moneda'] . "_" . uniqid();
+                pg_prepare($conn, $stmtDup, $sqlDup);
+                $resDup = pg_execute($conn, $stmtDup, [$m['id_moneda']]);
+
+                if ($resDup && pg_num_rows($resDup) > 0) {
+                    $lastValToday = pg_fetch_result($resDup, 0, 0);
+                    // Si el valor es casí idéntico (float comparison), no insertamos.
+                    // Usamos una pequeña tolerancia epsilon o comparación directa si son strings de BD.
+                    if (abs($lastValToday - $valor) < 0.00001) {
+                        $actualizadas++; // Contamos como "actualizada" (checked)
+                        continue;
+                    }
+                }
+
                 if (self::registrarTasa($m['id_moneda'], $valor, 'API')) {
                     $actualizadas++;
                 }
             }
         }
 
-        return ["status" => "success", "msg" => "Se actualizaron $actualizadas monedas."];
+        return ["status" => "success", "msg" => "Tasas sincronizadas correctamente."];
     }
 
-    public static function obtenerHistorial($limit = 50)
+    public static function obtenerHistorial($limit = 50, $offset = 0)
     {
         $conn = parent::conectar_base_datos();
         $sql = "
@@ -114,11 +151,11 @@ class TasaCambio extends mainModel
             JOIN finanzas.moneda m ON m.id_moneda = t.id_moneda
             WHERE t.activo = true
             ORDER BY t.fecha DESC, t.id_tasa DESC
-            LIMIT $1
+            LIMIT $1 OFFSET $2
         ";
         $stmt = "getHistorial_" . uniqid();
         pg_prepare($conn, $stmt, $sql);
-        $res = pg_execute($conn, $stmt, [$limit]);
+        $res = pg_execute($conn, $stmt, [$limit, $offset]);
 
         return pg_fetch_all($res) ?: [];
     }

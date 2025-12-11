@@ -45,18 +45,46 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Variable para almacenar el ID del Bolívar (VES) para el proxy de USD
+    let id_ves_guardado = null;
+
     if (formManual) {
         // Cargar select de monedas al inicio
         cargarSelectMonedas();
 
         formManual.addEventListener("submit", (e) => {
             e.preventDefault();
-            const id_moneda = document.getElementById("select_moneda_manual").value;
+            let id_moneda = document.getElementById("select_moneda_manual").value;
             const tasa = document.getElementById("valor_manual").value;
 
             if (!id_moneda || !tasa) {
                 alert("Seleccione moneda e ingrese tasa.");
                 return;
+            }
+
+            // Lógica Proxy: Si el usuario seleccionó "Dólar (USD)", en realidad quiere definir
+            // cuántos Bs cuesta 1 Dólar. En nuestro sistema Base USD, esto significa actualizar
+            // la tasa del Bolívar (VES). 
+            // Ejemplo: Usurio pone USD = 60. Sistema guarda VES = 60.
+            // Calculo visual: 60 (VES) / 1 (USD) = 60 Bs. Correcto.
+            
+            // Verificamos si la opción seleccionada es USD (buscando texto o flag, pero mejor usamos el ID si lo capturamos)
+            // Como permitimos USD en el select, su ID vendrá en id_moneda.
+            // Pero necesitamos saber si ESE id corresponde a USD.
+            // Lo resolvemos simple: Si el value del select coincide con el ID de USD que cargamos, hacemos el switch.
+            
+            // Mejor enfoque: En el select guardamos el codigo como data-attribute
+            const selectedOption = document.getElementById("select_moneda_manual").options[document.getElementById("select_moneda_manual").selectedIndex];
+            const codigoMoneda = selectedOption.getAttribute("data-codigo");
+
+            if (codigoMoneda === 'USD') {
+                if (id_ves_guardado) {
+                    id_moneda = id_ves_guardado; // Switcheamos a VES
+                    // Nota: No cambiamos la tasa, porque si puso 60, guarda 60 en VES.
+                } else {
+                    alert("Error: No se encontró la moneda base (VES) para realizar la conversión.");
+                    return;
+                }
             }
 
             if (confirm(`¿Confirmar cambio de tasa manual?`)) {
@@ -109,30 +137,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
 
-                // 1. Encontrar la tasa del VES (Moneda Nativa)
-                const vesItem = data.find(m => m.codigo === 'VES');
-                const tasaVES = vesItem ? parseFloat(vesItem.tasa) : 1;
-
                 data.forEach(item => {
-                    // Ocultar VES (Nativa)
+                    // Ocultar VES (Moneda Nativa - no se muestra en tarjetas)
                     if (item.codigo === 'VES') return;
 
-                    // Item: { moneda: "USD", codigo: "USD", simbolo: "$", tasa: 1.0000, fecha: "...", origen: "API" }
                     const card = document.createElement("div");
                     card.className = "col-12 col-sm-6 col-md-4 col-lg-3 mb-4";
                     
                     const isApi = (item.origen === 'API');
                     const badgeClass = isApi ? "bg-info text-dark" : "bg-warning text-dark";
-                    
-                    // Formatear fecha (si existe)
-                    const fechaTxt = item.fecha ? new Date(item.fecha).toLocaleString() : "Sin fecha";
 
-                    // CALCULO DE TASA VISUAL (Precio en Bs.)
-                    // Si Base es USD=1, entonces Precio = TasaVES / TasaMoneda
-                    // Ej: USD: 257 / 1 = 257 Bs.
-                    // Ej: EUR: 257 / 0.85 = 302 Bs.
-                    const tasaRaw = parseFloat(item.tasa);
-                    const tasaVisual = (tasaVES / tasaRaw);
+                    // El backend ya devuelve la tasa en Bolívares directamente
+                    // No se requiere cálculo adicional
+                    const tasaVisual = parseFloat(item.tasa);
 
                     card.innerHTML = `
                         <div class="card h-100 shadow-sm border-0">
@@ -141,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 <h2 class="display-6 my-3 text-dark">Bs. ${tasaVisual.toFixed(4)}</h2>
                                 <p class="card-text text-muted small">
                                     <span class="badge ${badgeClass}">${item.origen || 'Manual'}</span><br>
-                                    Actualizado: ${fechaTxt}
+                                    Actualizado: ${formatDate(item.fecha)}
                                 </p>
                             </div>
                         </div>
@@ -155,6 +172,20 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     }
 
+    // Solución al problema de fechas: Parsear manualmente YYYY-MM-DD para evitar conversión UTC->Local que resta un día
+    function formatDate(dateString) {
+        if (!dateString) return "Sin fecha";
+        const parts = dateString.split('-'); // [YYYY, MM, DD]
+        if (parts.length !== 3) return dateString; 
+        
+        // Crear fecha en hora local (Media noche local)
+        // Mes en JS es 0-indexado
+        const date = new Date(parts[0], parts[1] - 1, parts[2]); 
+        
+        // Formatear a string local amigable
+        return date.toLocaleDateString(); 
+    }
+
     function cargarSelectMonedas() {
         const select = document.getElementById("select_moneda_manual");
         if (!select) return;
@@ -165,11 +196,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 select.innerHTML = '<option value="">Seleccione una moneda...</option>';
                 if (res.data) {
                     res.data.forEach(m => {
-                        // Evitar seleccionar USD si es base (opcional, pero USD siempre es 1)
-                        if (m.codigo === 'USD') return; 
+                        // Capturar ID de VES para el proxy
+                        if (m.codigo === 'VES') {
+                            id_ves_guardado = m.id_moneda;
+                            return; // Ocultar VES del dropdown
+                        }
+
+                        // Permitir USD (Eliminamos el return que lo escondía)
+                        // if (m.codigo === 'USD') return; 
 
                         const opt = document.createElement("option");
-                        opt.value = m.id_moneda; // Necesitamos ID moneda, obtener_resumen_tasas debe devolver id_moneda
+                        opt.value = m.id_moneda; 
+                        opt.setAttribute("data-codigo", m.codigo); // Importante para la detección
                         opt.textContent = `${m.nombre} (${m.codigo})`;
                         select.appendChild(opt);
                     });

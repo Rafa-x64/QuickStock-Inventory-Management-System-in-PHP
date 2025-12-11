@@ -26,7 +26,7 @@
                                     <th>Moneda</th>
                                     <th>Tasa</th>
                                     <th>Origen</th>
-                                    <th>ID</th>
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -36,6 +36,12 @@
                             </tbody>
                         </table>
                     </div>
+                    <!-- Botón Cargar Más -->
+                    <div class="d-flex justify-content-center mt-3">
+                        <button id="btn-cargar-mas" class="btn btn-outline-primary" style="display: none;">
+                            <i class="bi bi-chevron-down"></i> Cargar más historial
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -43,4 +49,4 @@
     </div>
 </div>
 
-<script type="module" src="view/js/monedas.js"></script>
+<script type="module" src="view/js/monedas-historial.js"></script>

@@ -1,42 +1,106 @@
-import { api } from "../../api/client/api.js";
+import { api } from "/DEV/PHP/QuickStock/src/api/client/index.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-    const tableBody = document.querySelector("#tabla_historial tbody");
+    const tableBody = document.querySelector("#tabla_historial_tasas tbody");
     const filtroMoneda = document.getElementById("tipo-moneda-historial");
     const btnFiltro = document.querySelector(".btn-primary"); // Mejorar selección
+    
+    let offset = 0;
+    const limit = 50;
+    let loading = false;
+
+    // Elementos UI
+    const btnCargarMas = document.getElementById("btn-cargar-mas");
     
     // Cargar historial al inicio
     cargarHistorial();
 
     if (btnFiltro) {
         btnFiltro.addEventListener("click", () => {
-             cargarHistorial(filtroMoneda.value);
+             offset = 0; // Reset offset on filter
+             cargarHistorial(filtroMoneda.value, true);
         });
     }
 
-    async function cargarHistorial(moneda = "") {
-        tableBody.innerHTML = '<tr><td colspan="6" class="text-center">Cargando...</td></tr>';
+    if (btnCargarMas) {
+        btnCargarMas.addEventListener("click", () => {
+            cargarHistorial(filtroMoneda ? filtroMoneda.value : "", false);
+        });
+    }
+
+    async function cargarHistorial(moneda = "", reset = false) {
+        if (loading) return;
+        loading = true;
+
+        if (reset) {
+            tableBody.innerHTML = '<tr><td colspan="6" class="text-center">Cargando...</td></tr>';
+            offset = 0;
+            // Ocultar botón mientras carga
+            if (btnCargarMas) btnCargarMas.style.display = 'none';
+        } else {
+             // Loading state en botón
+             if (btnCargarMas) btnCargarMas.textContent = "Cargando...";
+        }
         
         try {
-            const res = await api({ accion: "obtener_historial_tasas" });
+            // Enviamos offset y limit a la API
+            const res = await api({ 
+                accion: "obtener_historial_tasas",
+                offset: offset,
+                limit: limit
+            });
+
             if (res && res.historial) {
                 let data = res.historial;
+                
+                // Si hay filtro en JS (aunque lo ideal sería en BDD, por ahora mantenemos híbrido o BDD si el backend lo soportara)
+                // NOTA: Si filtramos acá, la paginación de BDD se descuadra. 
+                // Asumiremos que el backend trae TODO mezclado y aquí filtramos visualmente 
+                // O mejor aún, pasamos el filtro al backend? 
+                // El usuario pidió "mostrar boton para los siguientes 50".
+                // Asumiremos paginación real de BDD.
+                
                 if (moneda) {
                     data = data.filter(h => h.codigo === moneda);
                 }
-                renderHistorial(data);
+
+                renderHistorial(data, reset);
+
+                if (data.length < limit) {
+                    // No hay más datos
+                    if (btnCargarMas) btnCargarMas.style.display = 'none';
+                } else {
+                    if (btnCargarMas) {
+                        btnCargarMas.style.display = 'block';
+                        btnCargarMas.textContent = "Cargar más historial";
+                    }
+                    offset += limit; // Preparar siguiente offset
+                }
+
+                if (data.length === 0 && reset) {
+                     tableBody.innerHTML = '<tr><td colspan="6" class="text-center">No hay historial disponible.</td></tr>';
+                }
+
             } else {
-                tableBody.innerHTML = '<tr><td colspan="6" class="text-center">No hay historial disponible.</td></tr>';
+                if (reset) tableBody.innerHTML = '<tr><td colspan="6" class="text-center">No hay historial disponible.</td></tr>';
+                if (btnCargarMas) btnCargarMas.style.display = 'none';
             }
         } catch (e) {
             console.error(e);
-            tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Error cargando historial.</td></tr>';
+            if (reset) tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Error cargando historial.</td></tr>';
+        } finally {
+            loading = false;
+             if (btnCargarMas && btnCargarMas.textContent === "Cargando...") btnCargarMas.textContent = "Cargar más historial";
         }
     }
 
-    function renderHistorial(historial) {
-        tableBody.innerHTML = "";
+    function renderHistorial(historial, reset) {
+        if (reset) tableBody.innerHTML = "";
+        
         historial.forEach(h => {
+             // Filtro: No mostrar historial de Bolívares (VES)
+            if (h.codigo === 'VES') return;
+
             const row = document.createElement("tr");
             
             const badgeOrigen = h.origen === 'API' 
@@ -48,12 +112,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${h.moneda} (${h.codigo})</td>
                 <td>${parseFloat(h.tasa).toFixed(4)}</td>
                 <td>${badgeOrigen}</td>
-                <td>
-                    <span class="text-muted">N/A</span> 
-                </td>
-                <td>
-                    <button class="btn btn-sm btn-info text-white" disabled>Detalles</button>
-                </td>
             `;
             tableBody.appendChild(row);
         });

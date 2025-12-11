@@ -16,18 +16,22 @@ class Notificador
         $mail = new PHPMailer(true); // Argumento true habilita excepciones
 
         try {
+            // Cargar configuración centralizada
+            $config = include __DIR__ . "/../api/server/email_config.php";
+
             // Configuración del servidor SMTP
             $mail->isSMTP();
-            $mail->Host       = 'smtp.gmail.com';
+            $mail->Host       = $config['host'];
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'alvarezrafaelat@gmail.com';
-            $mail->Password   = 'tu_contraseña_de_aplicacion'; // RECORDATORIO: El usuario debe configurar esto
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = 587;
+            $mail->Username   = $config['username'];
+            $mail->Password   = $config['password'];
+            // $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // Clase Exception ya importada arriba, pero ENCRYPTION_SMTPS es const de clase PHPMailer
+            $mail->SMTPSecure = 'ssl'; // Usando string 'ssl' directo o constante si namespaces lo permiten
+            $mail->Port       = $config['port'];
 
             // Remitente y Destinatario
-            $mail->setFrom('alvarezrafaelat@gmail.com', 'QuickStock System');
-            $mail->addAddress('alvarezrafaelat@gmail.com', 'Rafael Alvarez');
+            $mail->setFrom($config['from_email'], $config['from_name']);
+            $mail->addAddress($config['username'], 'Rafael Alvarez');
 
             // Contenido
             $mail->isHTML(true);
