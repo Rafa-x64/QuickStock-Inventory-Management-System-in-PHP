@@ -441,6 +441,30 @@ try {
             $out = editarMoneda($peticion);
             break;
 
+        // ========== SISTEMA DE CORREOS / NOTIFICACIONES ==========
+        case "enviar_correo_prueba":
+            include_once __DIR__ . "/../../library/notificador.php";
+            $out = Notificador::enviarCorreoPrueba();
+            break;
+
+        case "enviar_alerta_stock_bajo":
+            include_once __DIR__ . "/../../library/notificador.php";
+            include_once __DIR__ . "/dashboard/gerente.php";
+            $id_sucursal = $_SESSION["sesion_usuario"]["sucursal"]["id_sucursal"] ?? null;
+            $productosData = obtenerProductosStockBajoCompleto($id_sucursal);
+            $productos = $productosData["productos"] ?? [];
+            if (empty($productos)) {
+                $out = ["status" => "info", "message" => "No hay productos con stock bajo para reportar."];
+            } else {
+                $resultado = Notificador::enviarAlertaStockBajo($productos);
+                if ($resultado) {
+                    $out = ["status" => "success", "message" => "Alerta de stock bajo enviada correctamente.", "productos_reportados" => count($productos)];
+                } else {
+                    $out = ["status" => "error", "message" => "Error al enviar la alerta de stock bajo."];
+                }
+            }
+            break;
+
         default:
             $out = ["error" => "Accion no reconocida"];
     }
