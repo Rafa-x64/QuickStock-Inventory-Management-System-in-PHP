@@ -1,7 +1,13 @@
 ﻿<?php
 // Obtener datos de sesión para sucursal
-$id_sucursal_sesion = $_SESSION['sesion_usuario']['id_sucursal'] ?? 5;
-$nombre_sucursal_sesion = $_SESSION['sesion_usuario']['sucursal']['nombre'] ?? null;
+// Según estructura de sesión: $_SESSION['sesion_usuario']['sucursal']['id_sucursal']
+$id_sucursal_sesion = $_SESSION['sesion_usuario']['sucursal']['id_sucursal'] ?? null;
+$nombre_sucursal_sesion = $_SESSION['sesion_usuario']['sucursal']['nombre_sucursal'] ?? null;
+
+// Si no hay id_sucursal en la sesión (ej: Gerente sin sucursal asignada), usar la sucursal 5 por defecto
+if (empty($id_sucursal_sesion)) {
+    $id_sucursal_sesion = 5;
+}
 
 // Si no hay nombre en sesión y es la ID 5, asignar nombre por defecto
 if (!$nombre_sucursal_sesion && $id_sucursal_sesion == 5) {
@@ -275,7 +281,7 @@ $fecha_actual = date('Y-m-d\TH:i');
                                     <span id="resumenCambio">$0.00</span>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-12 mt-2">
                                 <label class="form-label">Comentario General</label>
                                 <textarea id="pagoComentario" class="form-control" rows="2" placeholder="Opcional"></textarea>

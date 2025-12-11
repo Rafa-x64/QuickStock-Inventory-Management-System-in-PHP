@@ -1,12 +1,16 @@
 import { api } from "/DEV/PHP/QuickStock/src/api/client/index.js";
 
+// Obtener id_sucursal de la sesión (viene de la variable global inyectada por PHP)
+// Si es null, el usuario ve productos de todas las sucursales (ej: Gerente)
+const sucursalSesion = window.ID_SUCURSAL_SESION || "";
+
 // 📦 OBJETO GLOBAL PARA GUARDAR EL ESTADO DE LOS FILTROS
 let filtrosActivos = {
     nombre: "",
     codigo: "",
     categoria: "",
     proveedor: "",
-    sucursal: "",
+    sucursal: sucursalSesion ? String(sucursalSesion) : "",
     estado: "" // Valores posibles: "", "true", "false"
 };
 
@@ -104,13 +108,13 @@ function inicializarFiltros() {
 
     // 🗑️ BOTÓN REESTABLECER FILTROS (ID CORREGIDO: "btn-reestablecer")
     document.getElementById("btn-reestablecer")?.addEventListener("click", () => {
-        // 1. Resetear el objeto de filtros
+        // 1. Resetear el objeto de filtros (manteniendo la sucursal de sesión si existe)
         filtrosActivos = {
             nombre: "",
             codigo: "",
             categoria: "",
             proveedor: "",
-            sucursal: "",
+            sucursal: sucursalSesion ? String(sucursalSesion) : "",
             estado: ""
         };
 
@@ -118,13 +122,13 @@ function inicializarFiltros() {
         document.getElementById("filtro_nombre").value = "";
         document.getElementById("filtro_codigo").value = "";
 
-        // Asignar el valor de la opción por defecto ("") a los selects
+        // Asignar el valor de la opción por defecto a los selects
         document.getElementById("filtro_categoria").value = "";
         document.getElementById("filtro_proveedor").value = "";
-        document.getElementById("filtro_sucursal").value = "";
+        document.getElementById("filtro_sucursal").value = sucursalSesion ? String(sucursalSesion) : "";
         document.getElementById("filtro_estado").value = "";
 
-        // 3. Recargar productos sin filtros
+        // 3. Recargar productos
         cargarProductos();
     });
 }
@@ -159,5 +163,14 @@ function cargarOpcionesSelects() {
 document.addEventListener("DOMContentLoaded", () => {
     cargarOpcionesSelects(); // Llenar los selects
     inicializarFiltros();    // Configurar los listeners
+    
+    // Preseleccionar la sucursal de sesión en el select (si existe)
+    if (sucursalSesion) {
+        const selectSucursal = document.getElementById("filtro_sucursal");
+        if (selectSucursal) {
+            selectSucursal.value = String(sucursalSesion);
+        }
+    }
+    
     cargarProductos();       // Cargar la lista inicial de productos
 });

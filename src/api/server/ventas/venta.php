@@ -4,7 +4,7 @@ function obtenerVentasFiltradas($fecha_desde = null, $fecha_hasta = null, $id_us
 {
     $conn = conectar_base_datos();
 
-    $sucursal_sesion = $_SESSION['sesion_usuario']['id_sucursal'] ?? null;
+    $sucursal_sesion = $_SESSION['sesion_usuario']['sucursal']['id_sucursal'] ?? null;
 
     $sql = "SELECT DISTINCT
                 v.id_venta,
@@ -175,7 +175,7 @@ function obtenerDetalleVentaPorId($id_venta)
 function obtenerProductosPopulares($limite = 10, $fecha_desde = null, $fecha_hasta = null)
 {
     $conn = conectar_base_datos();
-    $sucursal_sesion = $_SESSION['sesion_usuario']['id_sucursal'] ?? null;
+    $sucursal_sesion = $_SESSION['sesion_usuario']['sucursal']['id_sucursal'] ?? null;
 
     $sql = "SELECT 
                 p.id_producto,
@@ -229,7 +229,7 @@ function obtenerProductosPopulares($limite = 10, $fecha_desde = null, $fecha_has
 function obtenerCategoriasPopulares($limite = 10, $fecha_desde = null, $fecha_hasta = null)
 {
     $conn = conectar_base_datos();
-    $sucursal_sesion = $_SESSION['sesion_usuario']['id_sucursal'] ?? null;
+    $sucursal_sesion = $_SESSION['sesion_usuario']['sucursal']['id_sucursal'] ?? null;
 
     $sql = "SELECT 
                 cat.id_categoria,
@@ -281,7 +281,7 @@ function obtenerCategoriasPopulares($limite = 10, $fecha_desde = null, $fecha_ha
 function obtenerVentasPorSucursal($fecha_desde = null, $fecha_hasta = null)
 {
     $conn = conectar_base_datos();
-    $sucursal_sesion = $_SESSION['sesion_usuario']['id_sucursal'] ?? null;
+    $sucursal_sesion = $_SESSION['sesion_usuario']['sucursal']['id_sucursal'] ?? null;
 
     $sql = "SELECT 
                 s.id_sucursal,
@@ -329,7 +329,7 @@ function obtenerVentasPorSucursal($fecha_desde = null, $fecha_hasta = null)
 function obtenerTendenciaMensual($meses = 12)
 {
     $conn = conectar_base_datos();
-    $sucursal_sesion = $_SESSION['sesion_usuario']['id_sucursal'] ?? null;
+    $sucursal_sesion = $_SESSION['sesion_usuario']['sucursal']['id_sucursal'] ?? null;
 
     $sql = "SELECT 
                 TO_CHAR(v.fecha, 'YYYY-MM') AS mes,
@@ -366,7 +366,7 @@ function obtenerTendenciaMensual($meses = 12)
 function obtenerCierreCaja($fecha = null)
 {
     $conn = conectar_base_datos();
-    $sucursal_sesion = $_SESSION['sesion_usuario']['id_sucursal'] ?? 5; // Default to 5 if not set
+    $sucursal_sesion = $_SESSION['sesion_usuario']['sucursal']['id_sucursal'] ?? 5; // Default to 5 if not set
     $fecha_filtro = $fecha ?? date('Y-m-d');
 
     // 1. Resumen General de Ventas (Conteo y Totales Base)

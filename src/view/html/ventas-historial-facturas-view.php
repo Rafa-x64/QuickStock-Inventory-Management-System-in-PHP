@@ -1,7 +1,15 @@
 <?php
 $accion = $_POST["accion"] ?? null;
 $id_venta = $_POST["id_venta"] ?? null;
+
+// Obtener id_sucursal de la sesión (estructura correcta: sucursal.id_sucursal)
+// Si no hay sucursal asignada (ej: Gerente), será null y se mostrarán todas las ventas
+$id_sucursal_sesion = $_SESSION['sesion_usuario']['sucursal']['id_sucursal'] ?? null;
 ?>
+<!-- Variable global para que JavaScript use la sucursal de la sesión -->
+<script>
+    window.ID_SUCURSAL_SESION = <?php echo json_encode($id_sucursal_sesion); ?>;
+</script>
 <div class="container-fluid" id="mainContent">
     <div class="row d-flex flex-column justify-content-center align-items-center">
         <div class="col-12 p-3 p-lg-5">

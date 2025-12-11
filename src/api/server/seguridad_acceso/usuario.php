@@ -20,7 +20,7 @@ function obtenerEmpleados()
 
     $peticion = json_decode(file_get_contents("php://input"), true);
 
-    $sucursal_sesion = $_SESSION['sesion_usuario']['id_sucursal'] ?? 5;
+    $sucursal_sesion = $_SESSION['sesion_usuario']['sucursal']['id_sucursal'] ?? null;
     $sucursal = $peticion["sucursal"] ?? $sucursal_sesion;
     $rol = $peticion["rol"] ?? null;
 
