@@ -7,25 +7,21 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 
 function enviarCorreoAlerta($producto, $stock_actual, $minimo, $sucursal_nombre)
 {
+    $config = include __DIR__ . "/email_config.php";
     $mail = new PHPMailer(true);
 
     try {
-        // Configuración del servidor (Placeholder - Ajustar con credenciales reales si existen)
-        // Por ahora usaremos mail() nativo de PHP si no hay SMTP configurado, 
-        // o configuramos un SMTP de prueba si el usuario lo provee.
-        // Asumiremos que el servidor local puede enviar correos o que se configurará luego.
+        $mail->isSMTP();
+        $mail->Host       = $config['host'];
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $config['username'];
+        $mail->Password   = $config['password'];
+        $mail->SMTPSecure = $config['smtp_secure'];
+        $mail->Port       = $config['port'];
 
-        // $mail->isSMTP(); 
-        // $mail->Host       = 'smtp.gmail.com';
-        // $mail->SMTPAuth   = true;
-        // $mail->Username   = 'tu_correo@gmail.com';
-        // $mail->Password   = 'tu_contraseña_de_aplicacion';
-        // $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-        // $mail->Port       = 465;
-
-        // Configuración básica para envío local (o SMTP si se descomenta arriba)
-        $mail->setFrom('no-reply@quickstock.com', 'QuickStock');
-        $mail->addAddress('alvarezrafaelat@gmail.com', 'Administrador');
+        // Configuración básica
+        $mail->setFrom($config['from_email'], $config['from_name']);
+        $mail->addAddress($config['username']); // Enviar al mismo admin por defecto
 
         $mail->isHTML(true);
         $mail->Subject = "ALERTA: Stock Bajo - $producto";

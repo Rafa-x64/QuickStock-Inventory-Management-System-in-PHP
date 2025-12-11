@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+
     if (formManual) {
         // Cargar select de monedas al inicio
         cargarSelectMonedas();
@@ -59,6 +60,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+            // Guardar directamente la tasa de la moneda seleccionada
+            // Si es USD, se guarda en USD. Si es EUR, se guarda en EUR.
             if (confirm(`¿Confirmar cambio de tasa manual?`)) {
                 api({
                     accion: "guardar_tasa_manual",
@@ -109,30 +112,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
 
-                // 1. Encontrar la tasa del VES (Moneda Nativa)
-                const vesItem = data.find(m => m.codigo === 'VES');
-                const tasaVES = vesItem ? parseFloat(vesItem.tasa) : 1;
-
                 data.forEach(item => {
-                    // Ocultar VES (Nativa)
+                    // Ocultar VES (Moneda Nativa - no se muestra en tarjetas)
                     if (item.codigo === 'VES') return;
 
-                    // Item: { moneda: "USD", codigo: "USD", simbolo: "$", tasa: 1.0000, fecha: "...", origen: "API" }
                     const card = document.createElement("div");
                     card.className = "col-12 col-sm-6 col-md-4 col-lg-3 mb-4";
                     
                     const isApi = (item.origen === 'API');
                     const badgeClass = isApi ? "bg-info text-dark" : "bg-warning text-dark";
-                    
-                    // Formatear fecha (si existe)
-                    const fechaTxt = item.fecha ? new Date(item.fecha).toLocaleString() : "Sin fecha";
 
-                    // CALCULO DE TASA VISUAL (Precio en Bs.)
-                    // Si Base es USD=1, entonces Precio = TasaVES / TasaMoneda
-                    // Ej: USD: 257 / 1 = 257 Bs.
-                    // Ej: EUR: 257 / 0.85 = 302 Bs.
-                    const tasaRaw = parseFloat(item.tasa);
-                    const tasaVisual = (tasaVES / tasaRaw);
+                    // El backend ya devuelve la tasa en Bolívares directamente
+                    // No se requiere cálculo adicional
+                    const tasaVisual = parseFloat(item.tasa);
 
                     card.innerHTML = `
                         <div class="card h-100 shadow-sm border-0">
@@ -141,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 <h2 class="display-6 my-3 text-dark">Bs. ${tasaVisual.toFixed(4)}</h2>
                                 <p class="card-text text-muted small">
                                     <span class="badge ${badgeClass}">${item.origen || 'Manual'}</span><br>
-                                    Actualizado: ${fechaTxt}
+                                    Actualizado: ${formatDate(item.fecha)}
                                 </p>
                             </div>
                         </div>
@@ -155,6 +147,20 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     }
 
+    // Solución al problema de fechas: Parsear manualmente YYYY-MM-DD para evitar conversión UTC->Local que resta un día
+    function formatDate(dateString) {
+        if (!dateString) return "Sin fecha";
+        const parts = dateString.split('-'); // [YYYY, MM, DD]
+        if (parts.length !== 3) return dateString; 
+        
+        // Crear fecha en hora local (Media noche local)
+        // Mes en JS es 0-indexado
+        const date = new Date(parts[0], parts[1] - 1, parts[2]); 
+        
+        // Formatear a string local amigable
+        return date.toLocaleDateString(); 
+    }
+
     function cargarSelectMonedas() {
         const select = document.getElementById("select_moneda_manual");
         if (!select) return;
@@ -165,11 +171,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 select.innerHTML = '<option value="">Seleccione una moneda...</option>';
                 if (res.data) {
                     res.data.forEach(m => {
-                        // Evitar seleccionar USD si es base (opcional, pero USD siempre es 1)
-                        if (m.codigo === 'USD') return; 
+                        // Ocultar VES del dropdown (es la moneda base)
+                        if (m.codigo === 'VES') return;
 
                         const opt = document.createElement("option");
-                        opt.value = m.id_moneda; // Necesitamos ID moneda, obtener_resumen_tasas debe devolver id_moneda
+                        opt.value = m.id_moneda;
                         opt.textContent = `${m.nombre} (${m.codigo})`;
                         select.appendChild(opt);
                     });

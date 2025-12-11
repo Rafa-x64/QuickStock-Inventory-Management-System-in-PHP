@@ -43,7 +43,7 @@ $accion = $_POST["accion"] ?? null;
                                     </select>
                                 </div>
                                 <div class="col-12 col-md-6 py-2">
-                                    <label class="form-label Quick-title">Nueva Tasa (vs USD)</label>
+                                    <label class="form-label Quick-title">Valor de la Tasa</label>
                                     <input type="number" step="0.0001" class="form-control Quick-form-input" id="valor_manual" required placeholder="Ej: 50.1234">
                                 </div>
                                 <div class="col-12 py-3 text-end">

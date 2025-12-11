@@ -15,19 +15,8 @@ header('Content-Type: application/json');
 
 //se procesan las peticiones
 try {
-    // --- LAZY CRON: Actualización Diaria (Solo corre 1 vez/día después de 4:02 PM) ---
-    // Esto asegura que las tasas se mantengan frescas sin configurar crontab en el SO
-    try {
-        if ($accion !== 'verificar_actualizacion_diaria') { // Evitar recursión si se llamara explícitamente
-            include_once __DIR__ . "/../../model/finanzas.tasa.php";
-            include_once __DIR__ . "/../../model/finanzas.moneda.php";
-            // La función verifica la hora y si ya se corrió hoy antes de hacer nada pesado
-            TasaCambio::verificarActualizacionDiaria();
-        }
-    } catch (Throwable $cronErr) {
-        error_log("Warn: Lazy Cron Tasas falló: " . $cronErr->getMessage());
-    }
-    // ----------------------------------------------------------------------------------
+    // NOTA: La sincronización de tasas se realiza ÚNICAMENTE cuando el usuario
+    // presiona el botón "Sincronizar Tasas (API)" para evitar sobrescribir valores manuales.
 
     switch ($accion) {
 
@@ -197,7 +186,7 @@ try {
         case "registrar_tasa":
             include_once __DIR__ . "/../../model/finanzas.tasa.php";
             include_once __DIR__ . "/../../model/finanzas.moneda.php";
-            $res = TasaCambio::registrarTasa($peticion["id_moneda"], $peticion["valor"], 'MANUAL');
+            $res = TasaCambio::registrarTasa($peticion["id_moneda"], $peticion["valor"], 'Manual');
             $out = ["status" => $res ? true : false, "mensaje" => $res ? "Tasa actualizada" : "Error al actualizar"];
             break;
 
@@ -210,7 +199,9 @@ try {
         case "obtener_historial_tasas":
             include_once __DIR__ . "/../../model/finanzas.tasa.php";
             include_once __DIR__ . "/../../model/finanzas.moneda.php";
-            $out = ["historial" => TasaCambio::obtenerHistorial()];
+            $limit = $peticion["limit"] ?? 50;
+            $offset = $peticion["offset"] ?? 0;
+            $out = ["historial" => TasaCambio::obtenerHistorial($limit, $offset)];
             break;
 
         case "verificar_actualizacion_diaria":
@@ -432,10 +423,7 @@ try {
             );
             break;
 
-        case "obtener_historial_tasas":
-            include_once __DIR__ . "/finanzas/tasa.php";
-            $out = obtener_historial();
-            break;
+
 
         // ========== FINANZAS / GESTION MONEDAS ==========
         case "obtener_todas_monedas":
