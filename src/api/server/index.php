@@ -15,19 +15,8 @@ header('Content-Type: application/json');
 
 //se procesan las peticiones
 try {
-    // --- LAZY CRON: Actualización Diaria (Solo corre 1 vez/día después de 4:02 PM) ---
-    // Esto asegura que las tasas se mantengan frescas sin configurar crontab en el SO
-    try {
-        if ($accion !== 'verificar_actualizacion_diaria') { // Evitar recursión si se llamara explícitamente
-            include_once __DIR__ . "/../../model/finanzas.tasa.php";
-            include_once __DIR__ . "/../../model/finanzas.moneda.php";
-            // La función verifica la hora y si ya se corrió hoy antes de hacer nada pesado
-            TasaCambio::verificarActualizacionDiaria();
-        }
-    } catch (Throwable $cronErr) {
-        error_log("Warn: Lazy Cron Tasas falló: " . $cronErr->getMessage());
-    }
-    // ----------------------------------------------------------------------------------
+    // NOTA: La sincronización de tasas se realiza ÚNICAMENTE cuando el usuario
+    // presiona el botón "Sincronizar Tasas (API)" para evitar sobrescribir valores manuales.
 
     switch ($accion) {
 

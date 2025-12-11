@@ -6,14 +6,10 @@ require_once __DIR__ . "/../index.functions.php";
 
 function obtener_resumen_tasas()
 {
-    // Reutilizamos lógica similar al controlador o llamamos directo a modelos
-    // Lo ideal es tener lógica en modelos.
-    // Para "Resumen", necesitamos iterar monedas.
+    // Obtener todas las monedas activas y sus tasas actuales
+    // La sincronización con API se hace SOLO al presionar el botón "Sincronizar Tasas (API)"
     $monedas = Moneda::obtenerTodas();
     $data = [];
-
-    // Verificar si toca actualización automatica (Lazy Cron)
-    TasaCambio::verificarActualizacionDiaria();
 
     $conn = conectar_base_datos();
 

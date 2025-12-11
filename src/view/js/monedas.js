@@ -45,8 +45,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Variable para almacenar el ID del Bolívar (VES) para el proxy de USD
-    let id_ves_guardado = null;
 
     if (formManual) {
         // Cargar select de monedas al inicio
@@ -54,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         formManual.addEventListener("submit", (e) => {
             e.preventDefault();
-            let id_moneda = document.getElementById("select_moneda_manual").value;
+            const id_moneda = document.getElementById("select_moneda_manual").value;
             const tasa = document.getElementById("valor_manual").value;
 
             if (!id_moneda || !tasa) {
@@ -62,31 +60,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Lógica Proxy: Si el usuario seleccionó "Dólar (USD)", en realidad quiere definir
-            // cuántos Bs cuesta 1 Dólar. En nuestro sistema Base USD, esto significa actualizar
-            // la tasa del Bolívar (VES). 
-            // Ejemplo: Usurio pone USD = 60. Sistema guarda VES = 60.
-            // Calculo visual: 60 (VES) / 1 (USD) = 60 Bs. Correcto.
-            
-            // Verificamos si la opción seleccionada es USD (buscando texto o flag, pero mejor usamos el ID si lo capturamos)
-            // Como permitimos USD en el select, su ID vendrá en id_moneda.
-            // Pero necesitamos saber si ESE id corresponde a USD.
-            // Lo resolvemos simple: Si el value del select coincide con el ID de USD que cargamos, hacemos el switch.
-            
-            // Mejor enfoque: En el select guardamos el codigo como data-attribute
-            const selectedOption = document.getElementById("select_moneda_manual").options[document.getElementById("select_moneda_manual").selectedIndex];
-            const codigoMoneda = selectedOption.getAttribute("data-codigo");
-
-            if (codigoMoneda === 'USD') {
-                if (id_ves_guardado) {
-                    id_moneda = id_ves_guardado; // Switcheamos a VES
-                    // Nota: No cambiamos la tasa, porque si puso 60, guarda 60 en VES.
-                } else {
-                    alert("Error: No se encontró la moneda base (VES) para realizar la conversión.");
-                    return;
-                }
-            }
-
+            // Guardar directamente la tasa de la moneda seleccionada
+            // Si es USD, se guarda en USD. Si es EUR, se guarda en EUR.
             if (confirm(`¿Confirmar cambio de tasa manual?`)) {
                 api({
                     accion: "guardar_tasa_manual",
@@ -196,18 +171,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 select.innerHTML = '<option value="">Seleccione una moneda...</option>';
                 if (res.data) {
                     res.data.forEach(m => {
-                        // Capturar ID de VES para el proxy
-                        if (m.codigo === 'VES') {
-                            id_ves_guardado = m.id_moneda;
-                            return; // Ocultar VES del dropdown
-                        }
-
-                        // Permitir USD (Eliminamos el return que lo escondía)
-                        // if (m.codigo === 'USD') return; 
+                        // Ocultar VES del dropdown (es la moneda base)
+                        if (m.codigo === 'VES') return;
 
                         const opt = document.createElement("option");
-                        opt.value = m.id_moneda; 
-                        opt.setAttribute("data-codigo", m.codigo); // Importante para la detección
+                        opt.value = m.id_moneda;
                         opt.textContent = `${m.nombre} (${m.codigo})`;
                         select.appendChild(opt);
                     });

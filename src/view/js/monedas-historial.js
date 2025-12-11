@@ -12,8 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Elementos UI
     const btnCargarMas = document.getElementById("btn-cargar-mas");
     
-    // Cargar historial al inicio
-    cargarHistorial();
+    // Cargar historial al inicio (reset=true para limpiar el "Cargando..." del HTML)
+    cargarHistorial("", true);
 
     if (btnFiltro) {
         btnFiltro.addEventListener("click", () => {

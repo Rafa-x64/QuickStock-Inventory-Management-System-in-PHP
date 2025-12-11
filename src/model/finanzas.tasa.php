@@ -82,23 +82,8 @@ class TasaCambio extends mainModel
             $codigo = $m['codigo'];
             if ($codigo == 'VES') continue; // VES no se toca directo (es base derivada)
 
-            // PROTECCION MANUAL:
-            // "logicamente solo se deberia actualizar el $ y el euro al darle a boton de actualizar tasas
-            // si no obviamente se pierde lo que el usuario registra manualmente"
-            // Verificamos si YA existe una tasa MANUAL para hoy.
-            // Usamos ILIKE para ignorar mayusculas/minusculas por seguridad
-
-            $sqlCheck = "SELECT COUNT(*) FROM finanzas.tasa_cambio WHERE id_moneda = $1 AND fecha = CURRENT_DATE AND origen ILIKE 'Manual'";
-            $stmtN = "checkMan_" . $m['id_moneda'] . "_" . uniqid();
-            pg_prepare($conn, $stmtN, $sqlCheck);
-            $resCheck = pg_execute($conn, $stmtN, [$m['id_moneda']]);
-            $isManualToday = (pg_fetch_result($resCheck, 0, 0) > 0);
-
-            if ($isManualToday) {
-                // Si el usuario ya puso una manual hoy, la API NO la sobreescribe.
-                continue;
-            }
-
+            // Al sincronizar manualmente (botón "Sincronizar Tasas API"), 
+            // SIEMPRE se obtienen los valores de la API sin restricciones
             $valor = null;
             if ($codigo == 'USD') {
                 // Si la moneda es Dólar, su valor en Bs es la tasa base que obtuvimos.
