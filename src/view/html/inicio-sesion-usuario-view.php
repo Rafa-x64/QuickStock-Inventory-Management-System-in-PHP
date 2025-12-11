@@ -54,25 +54,42 @@
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     include_once "controller/inicio_sesion_C.php";
 
-    switch (inicioSesionC::validarAccesso($_POST)) {
-        case "error de correo":
-            echo "<script>alert('Correo invalido. Por favor, intente nuevamente.');</script>";
-            exit();
-            break;
-        case "error de contraseña":
-            echo "<script>alert('Contraseña invalida. Por favor, intente nuevamente.');</script>";
-            exit();
-            break;
-        case "error al iniciar sesion":
-            echo "<script>alert('Error durante inicio de sesion. Por favor, intente nuevamente.');</script>";
-            exit();
-            break;
-        case "sisa mano":
-            echo "<script>window.location.href = 'dashboard-gerente';</script>";
-            break;
-        default:
-            echo "<script>alert('Error desconocido. Por favor, intente nuevamente.');</script>";
-            exit();
+    $resultado = inicioSesionC::validarAccesso($_POST);
+
+    // Verificar si el login fue exitoso (formato: "exito:NombreRol")
+    if (strpos($resultado, "exito:") === 0) {
+        $nombre_rol = substr($resultado, 6); // Extraer el nombre del rol
+
+        // Redirigir según el rol
+        switch ($nombre_rol) {
+            case "Gerente":
+                echo "<script>window.location.href = 'dashboard-gerente';</script>";
+                break;
+            case "Administrador":
+            case "Cajero":
+            case "Encargado":
+            case "Vendedor":
+            case "Depositario":
+            default:
+                echo "<script>window.location.href = 'dashboard-empleado';</script>";
+                break;
+        }
+    } else {
+        // Manejar errores
+        switch ($resultado) {
+            case "error de correo":
+                echo "<script>alert('Correo invalido. Por favor, intente nuevamente.');</script>";
+                break;
+            case "error de contraseña":
+                echo "<script>alert('Contraseña invalida. Por favor, intente nuevamente.');</script>";
+                break;
+            case "error al iniciar sesion":
+                echo "<script>alert('Error durante inicio de sesion. Por favor, intente nuevamente.');</script>";
+                break;
+            default:
+                echo "<script>alert('Error desconocido. Por favor, intente nuevamente.');</script>";
+                break;
+        }
     }
 };
 ?>

@@ -6,11 +6,11 @@ class inicioSesionC extends mainModel
         $correo = trim($formulario["usuario_correo"]);
         $contraseña = trim($formulario["usuario_contraseña"]);
 
-        if(!self::validarCorreo($correo)){
+        if (!self::validarCorreo($correo)) {
             return "error de correo";
         }
 
-        if(!self::validarContraseña($correo, $contraseña)){
+        if (!self::validarContraseña($correo, $contraseña)) {
             return "error de contraseña";
         }
 
@@ -18,7 +18,9 @@ class inicioSesionC extends mainModel
             return "error al iniciar sesion";
         }
 
-        return "sisa mano";
+        // Retornar el nombre del rol para redirigir al dashboard correcto
+        $nombre_rol = $_SESSION["sesion_usuario"]["rol"]["nombre_rol"] ?? "";
+        return "exito:" . $nombre_rol;
     }
 
     public static function validarCorreo($correo)
@@ -49,7 +51,7 @@ class inicioSesionC extends mainModel
             return false;
         }
 
-        if(!parent::verificar_contraseña($contraseña, $fila["contraseña"])){
+        if (!parent::verificar_contraseña($contraseña, $fila["contraseña"])) {
             return false;
         }
 
