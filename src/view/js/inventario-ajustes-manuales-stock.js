@@ -1,13 +1,17 @@
 import { api } from "/DEV/PHP/QuickStock/src/api/client/index.js";
 import { realizarAjusteStock } from "/DEV/PHP/QuickStock/src/api/client/inventario-ajustes-manuales-stock.js";
 
-// Estado de filtros
+// Obtener sucursal de sesión (inyectada desde PHP)
+// Si es null, el usuario (Gerente) ve todas las sucursales
+const sucursalSesion = window.ID_SUCURSAL_SESION || null;
+
+// Estado de filtros - inicializar con sucursal de sesión
 let filtrosActivos = {
     nombre: "",
     codigo: "",
     categoria: "",
     proveedor: "",
-    sucursal: "",
+    sucursal: sucursalSesion || "", // Vacío = todas las sucursales
     estado: "true" // Solo activos por defecto
 };
 
@@ -51,10 +55,15 @@ function inicializarFiltros() {
             codigo: "",
             categoria: "",
             proveedor: "",
-            sucursal: "",
+            sucursal: sucursalSesion || "", // Volver a la sucursal de sesión
             estado: "true"
         };
         document.getElementById("form-filtros").reset();
+        // Reseleccionar la sucursal de sesión en el select
+        const selectSucursal = document.getElementById("filtro_sucursal");
+        if (selectSucursal && sucursalSesion) {
+            selectSucursal.value = sucursalSesion;
+        }
         cargarProductos();
     });
 }
@@ -71,11 +80,9 @@ function cargarOpcionesSelects() {
                 select.appendChild(opt);
             });
             
-            // Si es sucursal y hay una sola (o viene preseleccionada por sesión en backend logic que no vemos aquí pero asumimos), 
-            // podríamos seleccionarla. Por ahora, si es sucursal, seleccionamos la 5 por defecto si no hay otra lógica.
-            if (id === 'filtro_sucursal') {
-                // Lógica simple: si hay opciones y ninguna seleccionada, seleccionar la primera o la 5 si existe
-                // (Mejor dejamos que el usuario seleccione o que el backend filtre por defecto si se envía vacío)
+            // Si es sucursal y hay una sucursal de sesión, preseleccionarla
+            if (id === 'filtro_sucursal' && sucursalSesion) {
+                select.value = sucursalSesion;
             }
         });
     };
@@ -83,9 +90,16 @@ function cargarOpcionesSelects() {
     cargar("filtro_categoria", "obtener_categorias", "categorias", "id_categoria", "nombre");
     cargar("filtro_proveedor", "obtener_proveedores", "proveedor", "id_proveedor", "nombre");
     
-    // Solo cargar sucursales si el elemento es un SELECT (Admin/Gerente Global)
+    // Cargar sucursales con opción "Todas" para Gerente
     const sucursalEl = document.getElementById("filtro_sucursal");
     if (sucursalEl && sucursalEl.tagName === 'SELECT') {
+        // Agregar opción "Todas las sucursales" solo si no hay sucursal de sesión (Gerente)
+        if (!sucursalSesion) {
+            const optTodas = document.createElement("option");
+            optTodas.value = "";
+            optTodas.textContent = "Todas las sucursales";
+            sucursalEl.appendChild(optTodas);
+        }
         cargar("filtro_sucursal", "obtener_sucursales", "filas", "id_sucursal", "nombre");
     }
 }
@@ -94,27 +108,20 @@ function cargarProductos() {
     const tbody = document.getElementById("tbody_productos");
     tbody.innerHTML = '<tr><td colspan="8">Cargando...</td></tr>';
 
-    // Si no hay sucursal seleccionada en el filtro, usamos la 5 por defecto para la visualización
-    // OJO: El backend 'obtenerTodosLosProductos' filtra por sucursal si se le pasa.
-    // Si no se le pasa, trae de todas. Pero para ajustes, necesitamos saber la sucursal específica.
-    // Vamos a forzar que si no hay sucursal seleccionada, se use la 5 (Global Sport) o la primera disponible.
-    
+    // Usar la sucursal del filtro activo (que se inicializa con la sesión)
+    // Si está vacío, el backend trae productos de todas las sucursales
     let sucursalParaConsulta = filtrosActivos.sucursal;
-    if (!sucursalParaConsulta) {
-        // Intentar leer del select si ya cargó
-        const selectSucursal = document.getElementById("filtro_sucursal");
-        if (selectSucursal && selectSucursal.value) {
-            sucursalParaConsulta = selectSucursal.value;
-        } else {
-            // Fallback a 5
-            sucursalParaConsulta = "5"; 
-        }
+    
+    // Si no hay filtro pero sí hay sesión, usar la sesión
+    if (!sucursalParaConsulta && sucursalSesion) {
+        sucursalParaConsulta = sucursalSesion;
     }
+    // Si no hay sucursal (Gerente sin sucursal), envía vacío = todas las sucursales
 
     api({
         accion: "obtener_todos_los_productos",
         ...filtrosActivos,
-        sucursal: sucursalParaConsulta // Forzamos la sucursal para ver el stock correcto
+        sucursal: sucursalParaConsulta || "" // Vacío = todas las sucursales
     }).then(res => {
         const productos = res.data || [];
         tbody.innerHTML = "";

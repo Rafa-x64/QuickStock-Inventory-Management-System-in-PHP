@@ -1,3 +1,12 @@
+<?php
+// Obtener id_sucursal de la sesión para filtrar productos
+// Si el usuario tiene sucursal asignada, filtra por ella; si no (ej: Gerente), muestra todas
+$id_sucursal_sesion = $_SESSION['sesion_usuario']['sucursal']['id_sucursal'] ?? null;
+?>
+<script>
+    // Variable global para el filtro inicial de sucursal
+    window.ID_SUCURSAL_SESION = <?php echo $id_sucursal_sesion ? "\"$id_sucursal_sesion\"" : "null"; ?>;
+</script>
 <div class="container-fluid" id="mainContent">
     <div class="row d-flex flex-column justify-content-center align-items-center">
         <div class="col-12 p-3 p-lg-5">

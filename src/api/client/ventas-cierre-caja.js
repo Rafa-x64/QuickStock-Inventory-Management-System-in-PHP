@@ -62,68 +62,118 @@ function renderizarCierre(data) {
     document.getElementById("resumen_total_ventas").textContent = data.resumen.total_ventas || 0;
     document.getElementById("resumen_anuladas").textContent = data.resumen.ventas_anuladas || 0;
     
-    // 2. Tabla de Métodos de Pago
+    // 2. Tabla de Métodos de Pago (Desglose)
     const tbodyPagos = document.querySelector("#tabla_pagos tbody");
     tbodyPagos.innerHTML = "";
     
-    let totalBs = 0;
-    let totalUsd = 0;
+    // Contadores para estadísticas por método de pago
+    const estadisticasMetodos = {};
     let totalTransacciones = 0;
-
-    // Agrupar por método de pago para mostrar filas consolidadas si es necesario
-    // Pero el backend ya devuelve agrupado por metodo y moneda.
-    // Vamos a mostrar una fila por combinación Método - Moneda o intentar agrupar visualmente.
-    // Para simplificar y ser explícitos, listamos todo lo que llega.
     
     if (data.desglose_pagos && data.desglose_pagos.length > 0) {
         data.desglose_pagos.forEach(pago => {
             const tr = document.createElement("tr");
+            const simbolo = pago.simbolo_moneda || '';
             tr.innerHTML = `
                 <td>${pago.metodo_pago}</td>
                 <td class="text-center">${pago.moneda}</td>
-                <td class="text-end">${formatCurrency(pago.monto, pago.moneda)}</td>
+                <td class="text-end">${formatCurrency(pago.monto, pago.moneda, simbolo)}</td>
                 <td class="text-center">${pago.transacciones}</td>
             `;
             tbodyPagos.appendChild(tr);
             
+            // Acumular estadísticas por método
+            const metodo = pago.metodo_pago;
+            if (!estadisticasMetodos[metodo]) {
+                estadisticasMetodos[metodo] = { transacciones: 0 };
+            }
+            estadisticasMetodos[metodo].transacciones += parseInt(pago.transacciones);
             totalTransacciones += parseInt(pago.transacciones);
         });
     } else {
         tbodyPagos.innerHTML = `<tr><td colspan="4" class="text-center">No hay pagos registrados</td></tr>`;
     }
 
-    // Totales en el footer de la tabla
-    // Usamos data.totales_moneda para el resumen global
+    // Totales en el footer de la tabla (por cada moneda)
     const tfootPagos = document.querySelector("#tabla_pagos tfoot");
     tfootPagos.innerHTML = "";
     
     if (data.totales_moneda && data.totales_moneda.length > 0) {
+        // Agregar separador
+        const trSeparador = document.createElement("tr");
+        trSeparador.innerHTML = `<td colspan="4" class="bg-secondary text-white text-center fw-bold">💰 TOTALES POR MONEDA</td>`;
+        tfootPagos.appendChild(trSeparador);
+        
         data.totales_moneda.forEach(moneda => {
             const tr = document.createElement("tr");
+            const simbolo = moneda.simbolo || '';
             tr.innerHTML = `
-                <td colspan="2" class="text-end fw-bold">Total ${moneda.nombre} (${moneda.simbolo}):</td>
-                <td class="text-end fw-bold">${formatCurrency(moneda.total_recaudado, moneda.codigo)}</td>
-                <td></td>
+                <td colspan="2" class="text-end fw-bold">Total ${moneda.nombre}:</td>
+                <td class="text-end fw-bold text-success">${formatCurrency(moneda.total_recaudado, moneda.codigo, simbolo)}</td>
+                <td class="text-center">${moneda.total_transacciones || '-'}</td>
             `;
             tfootPagos.appendChild(tr);
         });
+        
+        // Agregar total de transacciones
+        const trTotalTx = document.createElement("tr");
+        trTotalTx.innerHTML = `
+            <td colspan="3" class="text-end fw-bold">Total Transacciones:</td>
+            <td class="text-center fw-bold text-primary">${totalTransacciones}</td>
+        `;
+        tfootPagos.appendChild(trTotalTx);
     }
 
-    // 3. Balance Final (Lista)
+    // 3. Balance Final (Lista con más detalle)
     const listaBalance = document.getElementById("lista_balance");
     listaBalance.innerHTML = "";
     
-    // Total Recaudado (Ventas)
     if (data.totales_moneda && data.totales_moneda.length > 0) {
+        // Título
+        const liTitulo = document.createElement("li");
+        liTitulo.className = "list-group-item bg-primary text-white fw-bold text-center";
+        liTitulo.innerHTML = `💵 TOTAL RECAUDADO POR MONEDA`;
+        listaBalance.appendChild(liTitulo);
+        
+        // Totales por moneda
         data.totales_moneda.forEach(moneda => {
-             const li = document.createElement("li");
-             li.className = "list-group-item d-flex justify-content-between align-items-center";
-             li.innerHTML = `
-                Total Recaudado (${moneda.nombre}):
-                <span class="fw-bold">${formatCurrency(moneda.total_recaudado, moneda.codigo)}</span>
-             `;
-             listaBalance.appendChild(li);
+            const li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            const simbolo = moneda.simbolo || '';
+            li.innerHTML = `
+                <span><strong>${moneda.nombre}</strong> (${moneda.codigo})</span>
+                <span class="badge bg-success fs-6">${formatCurrency(moneda.total_recaudado, moneda.codigo, simbolo)}</span>
+            `;
+            listaBalance.appendChild(li);
         });
+        
+        // Estadísticas por método de pago
+        if (Object.keys(estadisticasMetodos).length > 0) {
+            const liMetodosTitulo = document.createElement("li");
+            liMetodosTitulo.className = "list-group-item bg-info text-white fw-bold text-center mt-3";
+            liMetodosTitulo.innerHTML = `💳 TRANSACCIONES POR MÉTODO DE PAGO`;
+            listaBalance.appendChild(liMetodosTitulo);
+            
+            for (const [metodo, stats] of Object.entries(estadisticasMetodos)) {
+                const li = document.createElement("li");
+                li.className = "list-group-item d-flex justify-content-between align-items-center";
+                li.innerHTML = `
+                    <span>${metodo}</span>
+                    <span class="badge bg-primary">${stats.transacciones} transacciones</span>
+                `;
+                listaBalance.appendChild(li);
+            }
+        }
+        
+        // Total general de transacciones
+        const liTotal = document.createElement("li");
+        liTotal.className = "list-group-item d-flex justify-content-between align-items-center bg-dark text-white";
+        liTotal.innerHTML = `
+            <span class="fw-bold">TOTAL TRANSACCIONES DEL DÍA</span>
+            <span class="badge bg-warning text-dark fs-6">${totalTransacciones}</span>
+        `;
+        listaBalance.appendChild(liTotal);
+        
     } else {
         listaBalance.innerHTML = `<li class="list-group-item text-center">Sin movimientos de caja</li>`;
     }
@@ -132,11 +182,26 @@ function renderizarCierre(data) {
     renderizarGraficos(data);
 }
 
-function formatCurrency(amount, currencyCode) {
-    return new Intl.NumberFormat('es-VE', { 
-        style: 'currency', 
-        currency: currencyCode === 'BS' ? 'VES' : 'USD' 
-    }).format(amount);
+function formatCurrency(amount, currencyCode, simbolo = null) {
+    const num = parseFloat(amount) || 0;
+    
+    // Usar el símbolo proporcionado o uno por defecto según el código
+    if (simbolo) {
+        return `${simbolo} ${num.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    
+    // Fallback según código de moneda
+    switch (currencyCode) {
+        case 'USD':
+            return `$ ${num.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        case 'EUR':
+            return `€ ${num.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        case 'VES':
+        case 'BS':
+            return `Bs. ${num.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        default:
+            return `${currencyCode} ${num.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
 }
 
 let chartMetodos = null;
