@@ -35,7 +35,7 @@ class reportes_C extends mainModel
 
         // Lógica de Sucursal: Prioridad a la sesión
         // Usamos null coalescing operator de forma segura
-        $id_sucursal = $_SESSION['sesion_usuario']['id_sucursal'] ?? null;
+        $id_sucursal = $_SESSION['sesion_usuario']['sucursal']['id_sucursal'] ?? null;
 
         if (empty($id_sucursal)) {
             $id_sucursal = $params['id_sucursal'] ?? null;

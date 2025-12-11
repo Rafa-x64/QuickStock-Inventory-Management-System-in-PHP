@@ -1,12 +1,16 @@
 import { api } from "/DEV/PHP/QuickStock/src/api/client/index.js";
 
+// Obtener id_sucursal de la sesión (viene de la variable global inyectada por PHP)
+// Si es null, el usuario ve todas las sucursales (ej: Gerente)
+const sucursalSesion = window.ID_SUCURSAL_SESION || "";
+
 let filtrosActivos = {
     fecha_desde: "",
     fecha_hasta: "",
     id_usuario: "",
     monto_min: "",
     monto_max: "",
-    id_sucursal: "",
+    id_sucursal: sucursalSesion ? String(sucursalSesion) : "",
     id_metodo_pago: "",
     id_moneda: ""
 };
@@ -119,13 +123,14 @@ function inicializarFiltros() {
     addEventListener("filtro_moneda", "change", "id_moneda");
 
     document.getElementById("btn_reestablecer_filtros")?.addEventListener("click", () => {
+        // Al restablecer, mantener la sucursal de sesión si existe
         filtrosActivos = {
             fecha_desde: "",
             fecha_hasta: "",
             id_usuario: "",
             monto_min: "",
             monto_max: "",
-            id_sucursal: "",
+            id_sucursal: sucursalSesion ? String(sucursalSesion) : "",
             id_metodo_pago: "",
             id_moneda: ""
         };
@@ -135,7 +140,7 @@ function inicializarFiltros() {
         document.getElementById("filtro_vendedor").value = "";
         document.getElementById("filtro_monto_min").value = "";
         document.getElementById("filtro_monto_max").value = "";
-        document.getElementById("filtro_sucursal").value = "";
+        document.getElementById("filtro_sucursal").value = sucursalSesion ? String(sucursalSesion) : "";
         document.getElementById("filtro_metodo_pago").value = "";
         document.getElementById("filtro_moneda").value = "";
 
@@ -146,5 +151,14 @@ function inicializarFiltros() {
 document.addEventListener("DOMContentLoaded", () => {
     cargarOpcionesSelects();
     inicializarFiltros();
+    
+    // Preseleccionar la sucursal de sesión en el select (si existe)
+    if (sucursalSesion) {
+        const selectSucursal = document.getElementById("filtro_sucursal");
+        if (selectSucursal) {
+            selectSucursal.value = String(sucursalSesion);
+        }
+    }
+    
     cargarVentas();
 });
