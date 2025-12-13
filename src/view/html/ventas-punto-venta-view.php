@@ -217,7 +217,7 @@ $fecha_actual = date('Y-m-d\TH:i');
                                                 </div>
                                                 <div class="col-md-2">
                                                     <label class="form-label small">Tasa</label>
-                                                    <input type="number" step="0.0001" id="tasaConversion" class="form-control form-control-sm" placeholder="1.00">
+                                                    <input type="text" id="tasaConversion" class="form-control form-control-sm" placeholder="1.00" readonly>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <label class="form-label small">Monto</label>
