@@ -70,13 +70,13 @@ class venta extends mainModel
             $idUsuario = $datosVenta['id_usuario'];
             $totalVenta = $datosVenta['total'];
 
-            $queryVenta = "INSERT INTO ventas.venta (id_cliente, id_usuario, total, fecha, activo) 
-                           VALUES ($1, $2, $3, NOW(), 't') RETURNING id_venta";
+            $queryVenta = "INSERT INTO ventas.venta (id_cliente, id_usuario, fecha, activo) 
+                           VALUES ($1, $2, NOW(), 't') RETURNING id_venta";
             pg_prepare($conn, "insert_venta_header", $queryVenta);
-            $resVenta = pg_execute($conn, "insert_venta_header", [$idCliente, $idUsuario, $totalVenta]);
+            $resVenta = pg_execute($conn, "insert_venta_header", [$idCliente, $idUsuario]);
 
             if (!$resVenta) {
-                throw new Exception("Error al registrar la cabecera de la venta.");
+                throw new Exception("Error al registrar la cabecera de la venta. Detalle: " . pg_last_error($conn));
             }
 
             $rowVenta = pg_fetch_assoc($resVenta);
@@ -91,8 +91,8 @@ class venta extends mainModel
             }
 
             // Preparar queries repetitivos
-            $queryInsertDetalle = "INSERT INTO ventas.detalle_venta (id_venta, id_producto, cantidad, precio_unitario, subtotal, activo) 
-                                   VALUES ($1, $2, $3, $4, $5, 't')";
+            $queryInsertDetalle = "INSERT INTO ventas.detalle_venta (id_venta, id_producto, cantidad, precio_unitario, activo) 
+                                   VALUES ($1, $2, $3, $4, 't')";
             pg_prepare($conn, "insert_detalle_item", $queryInsertDetalle);
 
             // Query seguro de descuento de stock: Solo actualiza si cantidad >= descuento
@@ -112,9 +112,9 @@ class venta extends mainModel
                 $subtotal = $item['subtotal'];
 
                 // A. Insertar Detalle
-                $resDetalle = pg_execute($conn, "insert_detalle_item", [$idVenta, $idProducto, $cantidad, $precio, $subtotal]);
+                $resDetalle = pg_execute($conn, "insert_detalle_item", [$idVenta, $idProducto, $cantidad, $precio]);
                 if (!$resDetalle) {
-                    throw new Exception("Error al guardar detalle del producto ID: $idProducto");
+                    throw new Exception("Error al guardar detalle del producto ID: $idProducto. Detalle: " . pg_last_error($conn));
                 }
 
                 // B. Descontar Inventario

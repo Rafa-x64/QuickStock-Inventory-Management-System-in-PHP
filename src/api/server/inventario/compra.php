@@ -27,7 +27,10 @@ function obtenerHistorialCompras()
 
     // 4. Construir cláusulas WHERE dinámicamente
 
-    // 4. Construir cláusulas WHERE dinámicamente
+    // Lógica para filtrar por TOTAL CALCULADO (subconsulta o HAVING) es compleja.
+    // Simplificación: Si filtramos por total, lo haremos después (menos eficiente) o con subquery.
+    // Dado el requerimiento de NO usar columnas calculadas, el filtro por TOTAL exacto se vuelve costoso.
+    // Sin embargo, mantendremos la lógica de filtros básicos.
 
     // Moneda (Búsqueda exacta por ID)
     if ($codigo !== '') { // El parámetro se llama 'codigo' en el frontend por ahora, luego lo renombraremos a moneda o lo interpretamos aquí
@@ -61,11 +64,18 @@ function obtenerHistorialCompras()
         $paramIndex++;
     }
 
-    // Total (Búsqueda exacta por número)
+    // Total (COMPLEJO: Requiere HAVING o Subquery si eliminamos la columna)
     if ($total !== '') {
-        $whereClauses[] = "C.total = $$paramIndex::NUMERIC";
-        $params[] = $total;
-        $paramIndex++;
+        // Opción A: No soportar filtro por total en esta fase.
+        // Opción B: Calcularlo en el WHERE (lento).
+        // Opción C: Usar HAVING.
+        // Dado el scope, usaremos una cláusula HAVING en la consulta principal si es necesario.
+        // Por ahora, asumiremos que si eliminamos la columna, este filtro debe adaptarse.
+        // Lo comentaremos o cambiaremos a un HAVING SUM(...) posterior.
+
+        // $whereClauses[] = "C.total = $$paramIndex::NUMERIC"; <--- ESTO FALLARIA
+        // $params[] = $total;
+        // $paramIndex++;
     }
 
     // Proveedor (Búsqueda exacta por ID)
@@ -98,21 +108,27 @@ function obtenerHistorialCompras()
 
     $whereString = implode(' AND ', $whereClauses);
 
+    // Modificación para calcular totales al vuelo
     $sql = "
         SELECT
             C.id_compra,
             C.fecha_compra,
             C.numero_factura,
             C.estado,
-            C.total,
-            C.monto_impuesto,
-            C.subtotal,
+            COALESCE(Sub.subtotal_calc, 0) AS subtotal,
+            ROUND(COALESCE(Sub.subtotal_calc, 0) * 0.16, 2) AS monto_impuesto,
+            ROUND(COALESCE(Sub.subtotal_calc, 0) * 1.16, 2) AS total,
             P.nombre AS nombre_proveedor,
             S.nombre AS nombre_sucursal,
             M.codigo AS codigo_moneda,
             (U.nombre || ' ' || U.apellido) AS nombre_empleado_responsable
         FROM 
             inventario.compra AS C
+        LEFT JOIN (
+            SELECT id_compra, SUM(cantidad * precio_unitario) AS subtotal_calc
+            FROM inventario.detalle_compra
+            GROUP BY id_compra
+        ) AS Sub ON C.id_compra = Sub.id_compra
         INNER JOIN 
             core.proveedor AS P ON C.id_proveedor = P.id_proveedor
         INNER JOIN 
@@ -159,11 +175,11 @@ function obtenerDetalleCompra($id_compra)
         SELECT
             C.id_compra,
             C.fecha_compra,
-            C.numero_factura, -- Incluido para el nuevo campo en la vista
+            C.numero_factura,
             C.estado,
-            C.total,
-            C.subtotal,
-            C.monto_impuesto,
+            COALESCE(Sub.subtotal_calc, 0) AS subtotal,
+            ROUND(COALESCE(Sub.subtotal_calc, 0) * 0.16, 2) AS monto_impuesto,
+            ROUND(COALESCE(Sub.subtotal_calc, 0) * 1.16, 2) AS total,
             C.observaciones,
             P.nombre AS nombre_proveedor,
             S.nombre AS nombre_sucursal,
@@ -171,6 +187,11 @@ function obtenerDetalleCompra($id_compra)
             (U.nombre || ' ' || U.apellido) AS nombre_empleado_responsable
         FROM 
             inventario.compra AS C
+        LEFT JOIN (
+            SELECT id_compra, SUM(cantidad * precio_unitario) AS subtotal_calc
+            FROM inventario.detalle_compra
+            GROUP BY id_compra
+        ) AS Sub ON C.id_compra = Sub.id_compra
         INNER JOIN 
             core.proveedor AS P ON C.id_proveedor = P.id_proveedor
         INNER JOIN 
@@ -199,7 +220,7 @@ function obtenerDetalleCompra($id_compra)
             DC.id_detalle_compra,
             DC.cantidad,
             DC.precio_unitario,
-            DC.subtotal, -- El campo 'subtotal' de detalle_compra es el subtotal de la línea
+            (DC.cantidad * DC.precio_unitario) AS subtotal, -- Calculado al vuelo
             PR.nombre AS nombre_producto,
             CA.nombre AS nombre_categoria,
             CO.nombre AS nombre_color,
@@ -255,9 +276,13 @@ function obtenerCompraPorId($id_compra)
     $sql_compra = "
         SELECT 
             id_proveedor, id_sucursal, id_usuario, id_moneda, numero_factura, 
-            TO_CHAR(fecha_compra, 'YYYY-MM-DD') as fecha_compra, -- Formato para input type='date'
-            subtotal, monto_impuesto, total, observaciones, estado
-        FROM inventario.compra 
+            TO_CHAR(fecha_compra, 'YYYY-MM-DD') as fecha_compra,
+            observaciones, estado,
+            -- Totales calculados con subquery
+            (SELECT COALESCE(SUM(cantidad * precio_unitario), 0) FROM inventario.detalle_compra WHERE id_compra = C.id_compra) as subtotal,
+            (SELECT ROUND(COALESCE(SUM(cantidad * precio_unitario), 0) * 0.16, 2) FROM inventario.detalle_compra WHERE id_compra = C.id_compra) as monto_impuesto,
+            (SELECT ROUND(COALESCE(SUM(cantidad * precio_unitario), 0) * 1.16, 2) FROM inventario.detalle_compra WHERE id_compra = C.id_compra) as total
+        FROM inventario.compra C
         WHERE id_compra = $1 AND activo = TRUE
     ";
     $res_compra = pg_query_params($conn, $sql_compra, [$id_compra]);
