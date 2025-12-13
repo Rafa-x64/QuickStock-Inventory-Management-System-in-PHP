@@ -159,7 +159,11 @@ try {
 
         case "obtener_metodos_pago":
             include_once __DIR__ . "/finanzas/metodo_pago.php";
-            $out = obtenerMetodosPago($peticion["filtro"] ?? null);
+            $out = obtenerMetodosPago(
+                $peticion["filtro"] ?? null,
+                $peticion["referencia"] ?? null,
+                $peticion["estado"] ?? null
+            );
             break;
 
         case "obtener_metodo_pago_detalle":

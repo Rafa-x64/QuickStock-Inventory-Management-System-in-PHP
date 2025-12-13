@@ -108,6 +108,11 @@ class compras_añadir_C extends mainModel
 
                 // Si la talla es opcional, deberías cambiar $productoLimpio['tipo_talla'] === 'error' por una lógica 'opcional' similar a la del color.
 
+                // Validación de Precios Lógica
+                if ($productoLimpio['precio_venta'] < $productoLimpio['precio_compra']) {
+                    return ["error" => "El precio de venta no puede ser menor al precio de compra para el producto: " . $productoLimpio['nombre']];
+                }
+
                 $productosAdquiridos[] = $productoLimpio;
             }
         }

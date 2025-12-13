@@ -520,23 +520,30 @@ document.addEventListener("DOMContentLoaded", () => {
       if (res && res.status && res.producto) {
         const p = res.producto;
 
-        // Rellenar campos para verificación
+        // Rellenar campos para verificación (visual)
         prodCategoria.value = p.categoria || "Sin Categoría";
 
-        // Seleccionar Color
+        // Seleccionar Color si el producto lo trae definido
         if (p.id_color) {
           prodColor.value = p.id_color;
         }
 
-        // Seleccionar Talla
+        // Seleccionar Talla si el producto lo trae definido
         if (p.id_talla) {
           prodTalla.value = p.id_talla;
         }
 
         // Agregar al carrito automáticamente
         agregarAlCarrito(p);
+
+        // --- LIMPIEZA DE CAMPOS (Solicitado) ---
         prodCodigoBarra.value = "";
+        prodCategoria.value = "";
+        prodColor.value = ""; // Reset select
+        prodTalla.value = ""; // Reset select
+        
         prodCodigoBarra.focus();
+
       } else {
         // Manejo de errores específicos
         if (res && res.mensaje) {
@@ -545,7 +552,7 @@ document.addEventListener("DOMContentLoaded", () => {
           alert("Producto no encontrado.");
         }
 
-        // Limpiar campos
+        // Limpiar campos si falla
         prodCategoria.value = "";
         prodColor.value = "";
         prodTalla.value = "";
@@ -580,13 +587,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
     detalleVentaTableBody.innerHTML = "";
     let total = 0;
+    
+    // Obtener datos de moneda destino
     const monedaVenta = idMonedaSelect.options[idMonedaSelect.selectedIndex].text;
-    const tasa = obtenerTasa(monedaVenta);
+    const tasaDestino = parseFloat(obtenerTasa(monedaVenta));
+    const tasaUSD = parseFloat(obtenerTasa("USD"));
+
+    // Factor de Conversión: (Bs/$ / Bs/Destino)
+    // Ejemplo USD->VES: (50 / 1) = 50. Precio$ * 50 = PrecioBs.
+    // Ejemplo USD->USD: (50 / 50) = 1. Precio$ * 1 = Precio$.
+    const factorConversion = (tasaDestino > 0) ? (tasaUSD / tasaDestino) : 1;
 
     carrito.forEach((item, index) => {
-      const precioBase = parseFloat(item.precio_venta);
-      const precioConvertido = precioBase * tasa;
-      const subtotal = precioConvertido * item.cantidad * (1 - item.descuento / 100);
+      // Parseos explícitos para evitar errores de concatenación o NaN
+      const precioBaseUSD = parseFloat(item.precio_venta) || 0;
+      const cantidad = parseFloat(item.cantidad) || 0;
+      const descuento = parseFloat(item.descuento) || 0;
+
+      // Conversión Correcta
+      const precioConvertido = precioBaseUSD * factorConversion;
+
+      // Subtotal de línea
+      const subtotal = precioConvertido * cantidad * (1 - descuento / 100);
+      
       total += subtotal;
 
       const tr = document.createElement("tr");
@@ -600,7 +623,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <small>Color: ${item.color || "-"}</small>
                 </td>
                 <td>
-                    <input type="number" min="1" value="${item.cantidad}" class="form-control form-control-sm cant-input" data-index="${index}" style="width: 70px;">
+                    <input type="number" min="1" value="${cantidad}" class="form-control form-control-sm cant-input" data-index="${index}" style="width: 70px;">
                 </td>
                 <td>${formatCurrency(precioConvertido, monedaVenta)}</td>
                 <td>${formatCurrency(subtotal, monedaVenta)}</td>
@@ -613,6 +636,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     totalVentaDisplay.textContent = formatCurrency(total, monedaVenta);
 
+    // Reasignar listeners
     document.querySelectorAll(".cant-input").forEach((input) => {
       input.addEventListener("change", (e) => {
         const idx = e.target.dataset.index;
@@ -636,34 +660,51 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Lógica de Pagos ---
 
   function obtenerTasa(codigoMoneda) {
+    // Si es VES, la tasa es 1 (Base)
+    if (codigoMoneda === 'VES' || codigoMoneda === 'Bolivares') return 1;
     return tasasCambio[codigoMoneda] || 1;
   }
 
   // Calcula totales generales para la venta en curso
   function calcularTotalesGenerales() {
       const monedaVenta = idMonedaSelect.options[idMonedaSelect.selectedIndex].text;
-      const tasaVenta = obtenerTasa(monedaVenta);
+      const tasaDestino = parseFloat(obtenerTasa(monedaVenta));
+      const tasaUSD = parseFloat(obtenerTasa("USD"));
+      
+      const factorConversion = (tasaDestino > 0) ? (tasaUSD / tasaDestino) : 1;
       
       // 1. Calcular TOTAL DE LA VENTA (en moneda seleccionada)
-      // Basado en el carrito, iteramos para sumar precios base convertidos
       let totalVentaUSD = 0;
       carrito.forEach(item => {
           totalVentaUSD += parseFloat(item.precio_venta) * item.cantidad * (1 - item.descuento / 100);
       });
       
-      const totalVenta = totalVentaUSD * tasaVenta;
+      const totalVenta = totalVentaUSD * factorConversion;
 
       // 2. Calcular TOTAL PAGADO (en moneda seleccionada)
       // Iteramos listaPagos, convertimos cada pago a USD y luego a monedaVenta
       let totalPagadoVenta = 0;
       listaPagos.forEach(p => {
           let montoPagoUSD = 0;
+          
+          // Convertir el pago original a USD primero
+          // Si pagó en USD, es directo.
+          // Si pagó en otra cosa (ej: VES), convertimos a USD usando SU Tasa (la del momento del pago)
+          // OJO: La tasa guardada en el pago p.tasa es "Bs por MonedaPago".
+          // Entonces (MontoPago * TasaPago) = MontoBs.
+          // MontoBs / TasaUSD = MontoUSD.
+          
           if (p.moneda_nombre === 'USD') {
               montoPagoUSD = p.monto;
           } else {
-              montoPagoUSD = p.monto / p.tasa;
+             // Tasa del pago (Bs/Moneda) * Cantidad = Total Bs
+             const montoBs = p.monto * p.tasa; 
+             // Total Bs / Tasa USD (Bs/USD) = Total USD
+             montoPagoUSD = montoBs / tasaUSD;
           }
-          totalPagadoVenta += montoPagoUSD * tasaVenta;
+          
+          // Ahora convertir de USD a Moneda Venta
+          totalPagadoVenta += montoPagoUSD * factorConversion;
       });
 
       const restante = totalVenta - totalPagadoVenta;

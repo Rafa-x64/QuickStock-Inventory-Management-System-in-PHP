@@ -107,7 +107,7 @@
                                 </div>
 
                                 <div class="col-md-4 d-flex flex-column py-3 position-relative">
-                                    <label for="precio_compra" class="form-label Quick-title">Precio Compra (Bs.)</label>
+                                    <label for="precio_compra" class="form-label Quick-title">Precio Compra ($)</label>
                                     <input type="number" id="precio_compra" name="precio_compra" class="Quick-form-input" step="0.01" min="0.01" required>
                                     <div class="invalid-tooltip">
                                         El precio de compra es obligatorio y debe ser mayor que 0.
@@ -169,28 +169,28 @@
     </div>
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    include_once "controller/inventario_añadir_producto_C.php";
+        include_once "controller/inventario_añadir_producto_C.php";
 
-    $mensaje = inventario_añadir_producto_C::agregarProducto($_POST);
+        $mensaje = inventario_añadir_producto_C::agregarProducto($_POST);
 
-    $es_exito = (strpos($mensaje, "Producto agregado correctamente") !== false);
-    $alerta_tipo = $es_exito ? 'success' : 'error';
-    
-    $mensaje_a_mostrar = $mensaje;
-    if (!$es_exito && strpos($mensaje, "Error al agregar producto:") !== false) {
-        $mensaje_a_mostrar = "Error interno. Detalles: " . $mensaje; // Mejorar la forma en que se presenta el error DB al usuario
-    }
-    
-    $mensaje_js = htmlspecialchars($mensaje_a_mostrar, ENT_QUOTES, 'UTF-8');
+        $es_exito = (strpos($mensaje, "Producto agregado correctamente") !== false);
+        $alerta_tipo = $es_exito ? 'success' : 'error';
 
-    echo "<script>
+        $mensaje_a_mostrar = $mensaje;
+        if (!$es_exito && strpos($mensaje, "Error al agregar producto:") !== false) {
+            $mensaje_a_mostrar = "Error interno. Detalles: " . $mensaje; // Mejorar la forma en que se presenta el error DB al usuario
+        }
+
+        $mensaje_js = htmlspecialchars($mensaje_a_mostrar, ENT_QUOTES, 'UTF-8');
+
+        echo "<script>
         alert('{$mensaje_js}');
         if ('{$alerta_tipo}' === 'success') {
             // Opcional: limpiar el formulario automáticamente solo si es éxito
             document.getElementById('formProducto').reset();
         }
     </script>";
-}
+    }
     ?>
 </div>
 

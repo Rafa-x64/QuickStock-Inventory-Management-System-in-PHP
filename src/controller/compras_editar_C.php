@@ -105,6 +105,10 @@ class compras_editar_C extends mainModel
                     continue;
                 }
 
+                if ($productoLimpio['precio_venta'] < $productoLimpio['precio_compra']) {
+                    return ["error" => "El precio de venta no puede ser menor al precio de compra para el producto: " . $productoLimpio['nombre']];
+                }
+
                 $productosProcesados[] = $productoLimpio;
             }
         }

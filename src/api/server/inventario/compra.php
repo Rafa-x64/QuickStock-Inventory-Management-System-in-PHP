@@ -27,10 +27,23 @@ function obtenerHistorialCompras()
 
     // 4. Construir cláusulas WHERE dinámicamente
 
-    // Código de Compra (Búsqueda exacta por número)
-    if ($codigo !== '') {
-        $whereClauses[] = "C.id_compra = $$paramIndex::INT";
-        $params[] = $codigo;
+    // 4. Construir cláusulas WHERE dinámicamente
+
+    // Moneda (Búsqueda exacta por ID)
+    if ($codigo !== '') { // El parámetro se llama 'codigo' en el frontend por ahora, luego lo renombraremos a moneda o lo interpretamos aquí
+        // OJO: El frontend enviará el ID de la moneda en la variable 'codigo' o 'moneda'
+        // Adaptaremos el backend para leer 'moneda' si viene, o usar 'codigo' comofallback si no.
+        // Pero para ser limpios, leeremos $peticion['moneda'] abajo.
+    }
+
+    // RE-LECTURA DE PARÁMETROS CORRECTOS
+    $id_moneda = trim($peticion["moneda"] ?? ''); // Nuevo parámetro esperado
+    $id_proveedor = trim($peticion["proveedor"] ?? ''); // Ahora esperamos ID, no nombre
+
+    // Filtro por MONEDA
+    if ($id_moneda !== '') {
+        $whereClauses[] = "C.id_moneda = $$paramIndex::INT";
+        $params[] = $id_moneda;
         $paramIndex++;
     }
 
@@ -41,10 +54,10 @@ function obtenerHistorialCompras()
         $paramIndex++;
     }
 
-    // Fecha (Búsqueda exacta, idealmente)
+    // Fecha (Búsqueda exacta)
     if ($fecha !== '') {
-        $whereClauses[] = "C.fecha_compra::TEXT LIKE $$paramIndex";
-        $params[] = $fecha . '%'; // Permite buscar por año, año-mes, o fecha completa
+        $whereClauses[] = "C.fecha_compra::TEXT = $$paramIndex";
+        $params[] = $fecha;
         $paramIndex++;
     }
 
@@ -55,10 +68,10 @@ function obtenerHistorialCompras()
         $paramIndex++;
     }
 
-    // Proveedor (Búsqueda parcial por nombre - ILIKE)
-    if ($proveedor !== '') {
-        $whereClauses[] = "P.nombre ILIKE $$paramIndex";
-        $params[] = '%' . $proveedor . '%';
+    // Proveedor (Búsqueda exacta por ID)
+    if ($id_proveedor !== '') {
+        $whereClauses[] = "C.id_proveedor = $$paramIndex::INT";
+        $params[] = $id_proveedor;
         $paramIndex++;
     }
 
@@ -77,6 +90,7 @@ function obtenerHistorialCompras()
     }
 
     if ($estado !== '') {
+        // En BD el estado es string, asegurarse que coincida con los values del select
         $whereClauses[] = "C.estado = $$paramIndex";
         $params[] = $estado;
         $paramIndex++;

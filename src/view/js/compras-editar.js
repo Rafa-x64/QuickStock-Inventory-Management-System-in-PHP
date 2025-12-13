@@ -26,7 +26,7 @@ async function cargarDatosPrincipales(datosCompra, selectedIDs) {
     await Promise.all([
         cargarSelect("compra_id_proveedor", "obtener_proveedores", "proveedor", "id_proveedor", "nombre", "Seleccione un proveedor...", selectedIDs.id_proveedor),
         cargarSelect("compra_id_sucursal", "obtener_sucursales", "filas", "id_sucursal", "nombre", "Seleccione una sucursal...", selectedIDs.id_sucursal),
-        cargarSelect("compra_id_moneda", "obtener_monedas", "monedas", "id_moneda", "codigo", "Seleccione una moneda...", selectedIDs.id_moneda),
+        cargarSelect("compra_id_moneda", "obtener_todas_monedas", "monedas", "id_moneda", "codigo", "Seleccione una moneda...", selectedIDs.id_moneda),
         cargarSelect("compra_id_usuario", "obtener_empleados_responsables", "empleados", "id_usuario", "nombre_completo", "Seleccione un empleado...", selectedIDs.id_usuario),
     ]);
 
@@ -35,7 +35,64 @@ async function cargarDatosPrincipales(datosCompra, selectedIDs) {
     document.getElementById('compra_numero_factura').value = datosCompra.numero_factura || '';
     document.getElementById('compra_observaciones').value = datosCompra.observaciones || '';
     document.getElementById('compra_estado').value = datosCompra.estado || 'pendiente';
+
+    // 3. Inicializar listener de Moneda para símbolos dinámicos
+    const monedaSelect = document.getElementById("compra_id_moneda");
+    // Disparar evento change manualmente una vez para setear el símbolo inicial
+    if(monedaSelect) {
+        monedaSelect.addEventListener('change', actualizarSimbolosMoneda);
+        actualizarSimbolosMoneda(); // Llamada inicial
+    }
 }
+
+// Helper para actualizar símbolos
+async function actualizarSimbolosMoneda() {
+    const monedaSelect = document.getElementById("compra_id_moneda");
+    if(!monedaSelect) return;
+
+    let simbolo = "$"; // Default fallback
+
+    // Solo si el select tiene opciones cargadas
+    if(monedaSelect.options.length > 1) {
+        // Intentamos buscar el objeto moneda completo si es posible, 
+        // pero cargarSelect solo pone texto. 
+        // Si el texto es "USD ($)", podemos extraerlo.
+        // O si no, podemos hacer una llamada rápida o asumir que el usuario lo ve en el select.
+        // Para consistencia con Add, idealmente el backend 'obtener_todas_monedas' devuelve simbolo.
+        // Aquí asumiremos un default visual o intentaremos extraerlo si estuviera en el texto option.
+        
+        // OPCIÓN ROBUSTA: Hacer fetch de la moneda específica si queremos el símbolo exacto
+        // O simplemente dejarlo genérico si no es crítico.
+        // Pero el usuario pidió "parseo o conversión".
+        // Vamos a intentar obtener el símbolo del texto si tiene formato "Nombre (SIMBOLO)"
+        // Si no, usaremos un mapeo básico o default.
+        
+        // Hack rápido: Si el texto del option seleccionado contiene parentesis, usamos eso.
+        const selectedOption = monedaSelect.options[monedaSelect.selectedIndex];
+        if(selectedOption && selectedOption.text) {
+             const match = selectedOption.text.match(/\((.*?)\)/);
+             if (match) simbolo = match[1];
+        }
+    }
+
+    // Actualizar etiquetas
+    document.querySelectorAll('label[for^="productos"][for$="precio_compra]"]').forEach(lbl => {
+         // Buscamos labels que contengan "Precio Compra"
+         if(lbl.textContent.includes("Precio Compra")) lbl.textContent = `Precio Compra Unitario (${simbolo})`;
+    });
+    document.querySelectorAll('label[for^="productos"][for$="precio_venta]"]').forEach(lbl => {
+         if(lbl.textContent.includes("Precio Venta")) lbl.textContent = `Precio Venta Sugerido (${simbolo})`;
+    });
+    
+    // Método más directo usando clases o selectores específicos si existen
+    $productosContainer.querySelectorAll('.producto-detalle-fila').forEach(fila => {
+        const lblCompra = fila.querySelector('label.lbl-precio-compra');
+        const lblVenta = fila.querySelector('label.lbl-precio-venta');
+        if(lblCompra) lblCompra.textContent = `Precio Compra Unitario (${simbolo})`;
+        if(lblVenta) lblVenta.textContent = `Precio Venta Sugerido (${simbolo})`;
+    });
+}
+
 
 /**
  * Rellena los detalles de los productos existentes en el formulario.
@@ -56,6 +113,7 @@ function precargarDetalleProductos(detalles) {
     // Actualiza los eventos y recalcula los totales de los productos precargados
     actualizarEventosDinamicos();
     calcularTotalesGlobales();
+    actualizarSimbolosMoneda(); // Asegurar símbolos correctos
 }
 
 
@@ -125,12 +183,13 @@ function generarEstructuraProducto(index, detalle = null) {
 
             <div class="row align-items-end">
                 <div class="col-lg-4 col-md-4 py-2 position-relative">
-                    <label class="Quick-title">Precio Compra Unitario</label>
+                    <label class="Quick-title lbl-precio-compra">Precio Compra Unitario</label>
                     <input type="number" step="0.01" min="0" name="productos[${index}][precio_compra]" class="Quick-form-input producto-precio" value="${precioCompra}" required>
                 </div>
                 <div class="col-lg-4 col-md-4 py-2 position-relative">
-                    <label class="Quick-title">Precio Venta Sugerido</label>
-                    <input type="number" step="0.01" min="0" name="productos[${index}][precio_venta]" class="Quick-form-input" value="${precioVenta}" required>
+                    <label class="Quick-title lbl-precio-venta">Precio Venta Sugerido</label>
+                    <input type="number" step="0.01" min="0" name="productos[${index}][precio_venta]" class="Quick-form-input producto-precio-venta" value="${precioVenta}" required>
+                    <div class="invalid-tooltip">El precio de venta no puede ser menor al de compra.</div>
                 </div>
                 <div class="col-lg-4 col-md-4 py-2 d-flex justify-content-between align-items-center">
                     <div>
@@ -177,6 +236,7 @@ function agregarNuevoProducto() {
     const htmlProducto = generarEstructuraProducto(productoIndex, null);
     $productosContainer.insertAdjacentHTML('beforeend', htmlProducto);
     actualizarEventosDinamicos();
+    actualizarSimbolosMoneda(); // Actualizar símbolo en el nuevo producto
 }
 
 /**
@@ -319,10 +379,36 @@ async function inicializarFormularioEdicion() {
     $btnAgregarProducto.addEventListener('click', agregarNuevoProducto);
 
     // 7. Inicializar el listener para la eliminación de productos (delegado)
+    // Nota: Aunque ya delegamos en actualizarEventosDinamicos, tenerlo aquí refuerza la carga inicial
     $productosContainer.addEventListener('click', eliminarProducto);
 
-    // 8. Inicializar la validación de Bootstrap (si no está ya en la vista)
-    // (Generalmente es mejor dejar esto en la vista si es código Bootstrap estándar)
+    // 8. INTERCEPTAR ENVÍO PARA VALIDACIONES FINALES
+    $form.addEventListener('submit', function(e) {
+        let isValid = true;
+        let msjError = "";
+        
+        // Validar Precios de Venta vs Compra
+        const filas = $productosContainer.querySelectorAll('.producto-detalle-fila');
+        filas.forEach(fila => {
+            const precioCompra = parseFloat(fila.querySelector('.producto-precio').value) || 0;
+            const inputVenta = fila.querySelector('.producto-precio-venta');
+            const precioVenta = parseFloat(inputVenta.value) || 0;
+
+            if (precioVenta < precioCompra) {
+                isValid = false;
+                inputVenta.classList.add('is-invalid');
+                msjError = "El precio de venta no puede ser menor al precio de compra.";
+            } else {
+                inputVenta.classList.remove('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            alert("Error de validación: " + msjError);
+        }
+    });
+
 }
 
 // Ejecución al cargar el DOM

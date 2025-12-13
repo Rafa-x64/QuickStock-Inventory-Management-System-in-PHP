@@ -50,9 +50,35 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        if (!regla) {
+        /* 
+           VALIDACIÓN ESPECIAL: PRECIO VENTA >= PRECIO COMPRA 
+           Solo si ambos tienen valor válido numérico
+        */
+        if (campo.id === 'precio' || campo.id === 'precio_compra') {
+            const precioCompraVal = parseFloat(document.getElementById('precio_compra').value);
+            const precioVentaVal  = parseFloat(document.getElementById('precio').value);
+
+            if (!isNaN(precioCompraVal) && !isNaN(precioVentaVal)) {
+                const precioVentaInput = document.getElementById('precio');
+                
+                // Si estamos editando compra o venta, verificamos la relación
+                if (precioVentaVal < precioCompraVal) {
+                    if (campo.id === 'precio') {
+                        // Si estoy en precio venta y es menor, error aquí
+                        valido = false;
+                        regla = { mensaje: "El precio de venta no puede ser menor al de compra." }; // Override msg temporal
+                    }
+                    // NOTA: Si edito compra y es mayor que venta, técnicamente venta es el invalido, pero 
+                    // para UX simple, mostramos error en el que se está tocando o marcamos venta como error.
+                    // Para simplificar, marcaremos venta como error si la condición falla.
+                }
+            }
+        }
+
+        if (!regla && campo.id !== 'precio' && campo.id !== 'precio_compra') { // Excluir precios de "sin regla" logic si queremos custom msg
             valido = true;
         }
+
 
         campo.classList.toggle("is-invalid", !valido);
         campo.classList.toggle("is-valid", valido);
@@ -80,6 +106,19 @@ document.addEventListener("DOMContentLoaded", () => {
             campo.addEventListener(evento, () => validar(campo, reglas[id]));
         }
     });
+    
+    // Listeners cruzados para precios
+    const pCompra = document.getElementById('precio_compra');
+    const pVenta  = document.getElementById('precio');
+    if(pCompra && pVenta){
+        pCompra.addEventListener('input', () => { 
+             validar(pCompra, reglas['precio_compra']);
+             if(pVenta.value !== '') validar(pVenta, reglas['precio']); // Re-validar venta al cambiar compra
+        });
+        pVenta.addEventListener('input', () => { 
+             validar(pVenta, reglas['precio']);
+        });
+    }
 
     const descripcionCampo = document.getElementById('descripcion');
     if (descripcionCampo) {
@@ -102,8 +141,16 @@ document.addEventListener("DOMContentLoaded", () => {
             const regla = reglas[campo.id] || null;
             return validar(campo, regla);
         });
+        
+        // Validación final explícita de precios al submit
+        const precioCompraVal = parseFloat(pCompra.value);
+        const precioVentaVal  = parseFloat(pVenta.value);
+        if(!isNaN(precioCompraVal) && !isNaN(precioVentaVal) && precioVentaVal < precioCompraVal){
+             validar(pVenta, { mensaje: "El precio de venta no puede ser menor al de compra." });
+             todoValido = false;
+        }
 
-        todoValido = validaciones.every(v => v);
+        todoValido = todoValido && validaciones.every(v => v);
 
 
         if (!todoValido) {

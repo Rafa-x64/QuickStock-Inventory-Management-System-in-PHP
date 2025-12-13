@@ -5,7 +5,8 @@ session_start();
 $paginas_publicas = [
     "inicio-view.php",
     "inicio-sesion-usuario-view.php",
-    "registro-usuario-view.php"
+    "registro-usuario-view.php",
+    "logout-view.php"
 ];
 
 $paginas_existentes = [
