@@ -102,13 +102,26 @@ class usuario extends mainModel
         $emailNuevo  = $data["emailNuevo"];
         $direccion   = $data["direccion"];
         $sucursal    = $data["id_sucursal"];
-        $estadoTexto = strtolower($data["estado"]);
+        $estadoTexto = isset($data["estado"]) ? strtolower(trim($data["estado"])) : '';
         $emailViejo  = $data["emailViejo"];
 
-        if ($estadoTexto !== "activo" && $estadoTexto !== "inactivo") {
-            $estadoTexto = self::obtenerEstadoActual($emailViejo) ? "activo" : "inactivo";
+        // Normalizar estado a booleano PostgreSQL
+        // Acepta: 'activo'/'inactivo', 'true'/'false', '1'/'0', true/false, 1/0
+        $estado = true; // Default: activo
+
+        if ($estadoTexto === "inactivo" || $estadoTexto === "false" || $estadoTexto === "0" || $estadoTexto === "f") {
+            $estado = false;
+        } elseif ($estadoTexto === "activo" || $estadoTexto === "true" || $estadoTexto === "1" || $estadoTexto === "t") {
+            $estado = true;
+        } elseif ($estadoTexto === '') {
+            // Si está vacío, mantener el estado actual
+            $estado = self::obtenerEstadoActual($emailViejo);
+            // Si obtenerEstadoActual falla, default a true
+            $estado = ($estado === true || $estado === 't' || $estado === '1') ? true : false;
         }
-        $estado = ($estadoTexto === "activo");
+
+        // Convertir explícitamente a booleano PostgreSQL ('t' o 'f')
+        $estadoPG = $estado ? 't' : 'f';
 
         $conn = parent::conectar_base_datos();
 
@@ -136,7 +149,7 @@ class usuario extends mainModel
             $emailNuevo,
             $direccion,
             $sucursal,
-            $estado,
+            $estadoPG,  // ← Ahora siempre será 't' o 'f'
             $emailViejo
         ];
 
