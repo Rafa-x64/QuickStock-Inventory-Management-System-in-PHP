@@ -9,12 +9,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function normalizeBoolean(value) {
         if (value === true || value === 1) return true;
-        if (value === false || value === 0) return false;
+        if (value === false || value === 0 || value === null || value === undefined) return false;
         if (typeof value === "string") {
             const v = value.trim().toLowerCase();
             return (v === "t" || v === "true" || v === "1" || v === "yes" || v === "y");
         }
-        return Boolean(value);
+        return false;
     }
 
     function renderizarProveedores(proveedores) {
