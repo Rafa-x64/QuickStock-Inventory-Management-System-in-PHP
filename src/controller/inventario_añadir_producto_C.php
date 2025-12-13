@@ -31,8 +31,9 @@ class inventario_añadir_producto_C extends mainModel
             if (empty($codigo_barra)) return "Código de barras obligatorio";
             if (empty($nombre)) return "Nombre obligatorio";
             // if (empty($descripcion)) return "Descripción obligatoria"; // Opcional
-            if ($precio_compra < 0.01) return "Precio de compra mínimo 0.01"; // <-- VALIDACIÓN NUEVA
-            if ($precio < 0.01) return "Precio de venta mínimo 0.01"; // Ajustado a 0.01 para ser consistente con compra y vista
+            if ($precio_compra < 0.01) return "Precio de compra mínimo 0.01";
+            if ($precio < 0.01) return "Precio de venta mínimo 0.01";
+            if ($precio_compra > $precio) return "El precio de venta no puede ser menor al precio de compra.";
             if ($cantidad < 0) return "Stock inicial no puede ser negativo";
             if ($minimo < 1) return "Stock mínimo debe ser ≥ 1";
             if (!$id_sucursal) return "Debe seleccionar una sucursal";

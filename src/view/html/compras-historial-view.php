@@ -7,7 +7,7 @@
                 </div>
             </div>
 
-            
+
 
             <div class="row g-2 mb-4 p-3">
                 <div class="col-12">
@@ -16,12 +16,10 @@
                     <div class="row g-2">
 
                         <div class="col-6 col-md-3 col-lg-2">
-                            <label for="filtro-codigo" class="form-label visually-hidden">Código</label>
-                            <input type="number"
-                                class=" form-control"
-                                id="filtro-codigo"
-                                placeholder="Cód. Compra"
-                                title="Código de Compra">
+                            <label for="filtro-moneda" class="form-label visually-hidden">Moneda</label>
+                            <select class="form-select" id="filtro-moneda" title="Filtrar por Moneda">
+                                <option value="">Moneda</option>
+                            </select>
                         </div>
 
                         <div class="col-6 col-md-3 col-lg-2">
@@ -35,11 +33,10 @@
 
                         <div class="col-6 col-md-3 col-lg-2">
                             <label for="filtro-fecha" class="form-label visually-hidden">Fecha</label>
-                            <input type="text"
+                            <input type="date"
                                 class=" form-control"
                                 id="filtro-fecha"
-                                placeholder="AAAA-MM-DD"
-                                title="Fecha de Compra (formato AAAA-MM-DD)">
+                                title="Fecha de Compra">
                         </div>
 
                         <div class="col-6 col-md-3 col-lg-2">
@@ -54,11 +51,9 @@
 
                         <div class="col-12 col-md-6 col-lg-4">
                             <label for="filtro-proveedor" class="form-label visually-hidden">Proveedor</label>
-                            <input type="text"
-                                class=" form-control"
-                                id="filtro-proveedor"
-                                placeholder="Proveedor (Nombre)"
-                                title="Filtrar por Nombre de Proveedor">
+                            <select class="form-select" id="filtro-proveedor" title="Filtrar por Proveedor">
+                                <option value="">Seleccione Proveedor</option>
+                            </select>
                         </div>
                     </div>
 

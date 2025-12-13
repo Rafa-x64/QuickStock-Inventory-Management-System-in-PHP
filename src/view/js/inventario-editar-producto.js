@@ -39,8 +39,51 @@ document.addEventListener("DOMContentLoaded", () => {
             (regla.regex ? regla.regex.test(valor) : true) &&
             (regla.min != null ? parseFloat(valor) >= regla.min : true);
 
+        // VALIDACIÓN DE PRECIOS CRUZADA
+        if (campo.id === 'precio' || campo.id === 'precio_compra') {
+            const pCompra = document.getElementById('precio_compra');
+            const pVenta = document.getElementById('precio');
+            if (pCompra && pVenta) {
+                const valCompra = parseFloat(pCompra.value);
+                const valVenta = parseFloat(pVenta.value);
+                
+                if (!isNaN(valCompra) && !isNaN(valVenta)) {
+                    if (valVenta < valCompra) {
+                        if (campo.id === 'precio') {
+                             // Si estamos validando precio venta y es menor, es inválido
+                             campo.classList.add("is-invalid");
+                             campo.classList.remove("is-valid");
+                             // Actualizar mensaje
+                             let feedback = campo.parentElement.querySelector(".invalid-tooltip");
+                             if(feedback) feedback.textContent = "El precio de venta no puede ser menor al de compra.";
+                             return false;
+                        }
+                    } else {
+                        // Si la relación es correcta, nos aseguramos de limpiar el error del OTRO campo si estaba marcado por esto
+                        // PERO cuidado de no limpiar errores de formato/minimo propios.
+                        // Simplificación: al corregir uno, revalidamos el otro si tenía error.
+                        if(campo.id === 'precio_compra' && pVenta.classList.contains('is-invalid')){
+                             // Disparar evento input en pVenta para revalidarlo
+                             // pVenta.dispatchEvent(new Event('input')); 
+                             // Mejor no causar recursión infinita, simplemente asumimos que el usuario lo arreglará o el submit lo atrapará.
+                        }
+                    }
+                }
+            }
+        }
+
         campo.classList.toggle("is-invalid", !valido);
         campo.classList.toggle("is-valid", valido);
+
+        // Restaurar mensaje original si es válido o si el error no fue de precio cruzado (manejado arriba)
+        let feedback = campo.parentElement.querySelector(".invalid-tooltip");
+        if(feedback && !valido && regla.mensaje) {
+             // Solo restaurar si no es el error de precio cruzado (que ya seteamos)
+             // Como es difícil saber cual fue, lo restauramos siempre que validemos "normal"
+             // Arriba retornamos false si era precio cruzado, así que aquí es error normal.
+             feedback.textContent = regla.mensaje;
+        }
+
 
         return valido;
     };
@@ -52,6 +95,16 @@ document.addEventListener("DOMContentLoaded", () => {
         campo.addEventListener("input", () => validar(campo, reglas[id]));
     });
 
+    // Listeners extra para precios
+    const pCompra = document.getElementById('precio_compra');
+    const pVenta  = document.getElementById('precio');
+    if(pCompra && pVenta){
+        pCompra.addEventListener('input', () => { 
+             if(pVenta.value !== '') validar(pVenta, reglas['precio']); // Re-validar venta al cambiar compra
+        });
+    }
+
+
     // --- VALIDACIÓN FINAL EN SUBMIT ---
     form.addEventListener("submit", e => {
         const resultado = Object.keys(reglas).map(id => {
@@ -59,9 +112,19 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!campo) return true; // si no existe, ignorar
             return validar(campo, reglas[id]);
         });
+        
+        // Check final explícito precios
+        if(pCompra && pVenta){
+             const vc = parseFloat(pCompra.value);
+             const vv = parseFloat(pVenta.value);
+             if(!isNaN(vc) && !isNaN(vv) && vv < vc){
+                 validar(pVenta, reglas['precio']); // Esto marcará error
+                 resultado.push(false);
+             }
+        }
 
         const todoValido = resultado.every(v => v);
-
+        
         if (!todoValido) {
             e.preventDefault();
             e.stopPropagation();

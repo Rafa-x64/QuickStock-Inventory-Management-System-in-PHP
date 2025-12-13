@@ -4,15 +4,50 @@ document.addEventListener("DOMContentLoaded", () => {
     const tbody_compras = document.getElementById("comprasRegistradas");
 
     // 1. Referencias a los elementos de filtro
-    const filtro_codigo = document.getElementById("filtro-codigo");
+    const filtro_moneda = document.getElementById("filtro-moneda");
     const filtro_factura = document.getElementById("filtro-factura");
     const filtro_fecha = document.getElementById("filtro-fecha");
     const filtro_total = document.getElementById("filtro-total");
     const filtro_proveedor = document.getElementById("filtro-proveedor");
-    const filtro_empleado = document.getElementById("filtro-empleado");
-    const filtro_sucursal = document.getElementById("filtro-sucursal");
+    // const filtro_empleado = document.getElementById("filtro-empleado"); // Se mantiene si existe en HTML
+    // const filtro_sucursal = document.getElementById("filtro-sucursal"); // Se mantiene si existe en HTML
     const filtro_estado = document.getElementById("filtro-estado");
     const reestablecer_filtros = document.getElementById("reestablecer-filtros");
+    
+    // NOTA: Si en el HTML siguen existiendo input empleado/sucursal, referenciarlos
+    const filtro_empleado = document.getElementById("filtro-empleado") || { value: "" }; 
+    const filtro_sucursal = document.getElementById("filtro-sucursal") || { value: "" };
+
+    // --- CARGA INICIAL DE DATOS PARA FILTROS (Monedas y Proveedores) ---
+    function cargarDatosFiltros() {
+        // Monedas
+        api({ accion: "obtener_monedas" }).then(res => {
+            if (res.monedas) {
+                res.monedas.forEach(m => {
+                    const op = document.createElement("option");
+                    op.value = m.id_moneda;
+                    op.textContent = `${m.nombre} (${m.simbolo})`;
+                    filtro_moneda.appendChild(op);
+                });
+            }
+        });
+
+        // Proveedores (asumiendo que devuelve lista simple)
+        api({ accion: "obtener_proveedores" }).then(res => {
+             // La respuesta suele ser { proveedor: [...] } o { proveedores: [...] } según implementación
+             const list = res.proveedor || res.proveedores || [];
+             list.forEach(p => {
+                 if (p.activo === 't' || p.activo === true || p.activo === 1) {
+                     const op = document.createElement("option");
+                     op.value = p.id_proveedor;
+                     op.textContent = p.nombre;
+                     filtro_proveedor.appendChild(op);
+                 }
+             });
+        });
+    }
+    cargarDatosFiltros();
+
 
     function crearFilaCompra(compra) {
         const fila = document.createElement("tr");
@@ -48,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const totalConMoneda = `$ ${parseFloat(compra.total || 0).toFixed(2)} ${compra.codigo_moneda || ''}`;
 
         fila.innerHTML = `
-        <td>${compra.id_compra ?? ''}</td>
+        <td>${compra.codigo_moneda ?? ''}</td> <!-- Mostrando la moneda en la col Codigo, o el ID si se prefiere -->
         <td>${compra.fecha_compra ?? ''}</td>
         <td>${compra.numero_factura ?? ''}</td>
         <td>${compra.nombre_proveedor ?? ''}</td>
@@ -82,7 +117,6 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
         </td>
     `;
-
         return fila;
     }
 
@@ -90,16 +124,9 @@ document.addEventListener("DOMContentLoaded", () => {
         tbody_compras.innerHTML = "";
 
         if (!compras || compras.length === 0) {
-            // Mensaje específico cuando no hay resultados con filtros
-            const mensajeFiltro = (
-                filtro_codigo.value || filtro_factura.value || filtro_fecha.value ||
-                filtro_total.value || filtro_proveedor.value || filtro_empleado.value ||
-                filtro_sucursal.value || filtro_estado.value
-            ) ? "No se encontraron compras con estas especificaciones." : "No se encontraron compras registradas.";
-
             tbody_compras.innerHTML = `
                 <tr>
-                    <td colspan="9" class="text-center p-3">${mensajeFiltro}</td>
+                    <td colspan="9" class="text-center p-3">No se encontraron compras.</td>
                 </tr>
             `;
             return;
@@ -110,6 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
             tbody_compras.appendChild(fila);
         });
 
+        // Re-adjuntar listeners de eliminar si fuera el caso, aqui no hay eliminar en HTML de filaCompra pero por si acaso
         document.querySelectorAll(".eliminar-compra-form").forEach(form => {
             form.addEventListener("submit", function (e) {
                 const id_compra = this.querySelector('input[name="id_compra"]').value;
@@ -120,7 +148,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Función de Debounce para limitar la frecuencia de llamadas a la API
     const debounce = (func, delay) => {
         let timeoutId;
         return (...args) => {
@@ -131,72 +158,69 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     };
 
-    /**
-     * @function cargarCompras
-     * Realiza la petición al backend, enviando los filtros actuales.
-     */
     function cargarCompras() {
         const filtros = {
             accion: "obtener_historial_compras",
-            codigo: filtro_codigo.value.trim(),
+            moneda: filtro_moneda.value,       // Nuevo param ID
             factura: filtro_factura.value.trim(),
-            fecha: filtro_fecha.value.trim(),
+            fecha: filtro_fecha.value,         // Fecha YYYY-MM-DD del input date
             total: filtro_total.value.trim(),
-            proveedor: filtro_proveedor.value.trim(),
-            empleado: filtro_empleado.value.trim(),
-            sucursal: filtro_sucursal.value.trim(),
-            estado: filtro_estado.value.trim()
+            proveedor: filtro_proveedor.value, // Nuevo param ID
+            empleado: filtro_empleado.value ? filtro_empleado.value.trim() : "",
+            sucursal: filtro_sucursal.value ? filtro_sucursal.value.trim() : "",
+            estado: filtro_estado.value
         };
 
         tbody_compras.innerHTML = `
             <tr>
-                <td colspan="9" class="text-center p-3">Cargando historial de compras...</td>
+                <td colspan="9" class="text-center p-3">Cargando historial...</td>
             </tr>
         `;
 
         api(filtros)
             .then(res => {
-                // El backend devuelve 'compras', usamos eso para compatibilidad
                 const compras = (res && (res.compras || res.data)) ? (res.compras || res.data) : [];
-
                 if (res && res.error) {
-                    console.error("Error desde PHP:", res.error || res.message || res.detalle);
+                    console.error("Error PHP:", res.error);
                     renderizarCompras([]);
                     return;
                 }
-
                 renderizarCompras(compras);
             })
             .catch(err => {
-                console.error("Error API al cargar compras:", err);
+                console.error("Error API:", err);
                 renderizarCompras([]);
             });
     }
 
-    // Función debounced para la aplicación asíncrona de filtros
     const aplicarFiltrosDebounced = debounce(cargarCompras, 300);
 
-    // 2. Adjuntar Listeners para la aplicación asíncrona de filtros
-    [filtro_codigo, filtro_factura, filtro_fecha, filtro_total, filtro_proveedor, filtro_empleado, filtro_sucursal].forEach(input => {
-        input.addEventListener("keyup", aplicarFiltrosDebounced);
-    });
-
+    // Adjuntar listeners (Change para selects/dates, Keyup para texto)
+    filtro_moneda.addEventListener("change", cargarCompras);
+    filtro_proveedor.addEventListener("change", cargarCompras);
+    filtro_fecha.addEventListener("change", cargarCompras); // Input Date dispara change
     filtro_estado.addEventListener("change", cargarCompras);
 
-    // 3. Listener para restablecer filtros
+    filtro_factura.addEventListener("keyup", aplicarFiltrosDebounced);
+    filtro_total.addEventListener("keyup", aplicarFiltrosDebounced);
+    
+    // Si existen los inputs texto opcionales
+    if(filtro_empleado.addEventListener) filtro_empleado.addEventListener("keyup", aplicarFiltrosDebounced);
+    if(filtro_sucursal.addEventListener) filtro_sucursal.addEventListener("keyup", aplicarFiltrosDebounced);
+
+
     reestablecer_filtros.addEventListener("click", () => {
-        filtro_codigo.value = "";
+        filtro_moneda.value = "";
         filtro_factura.value = "";
         filtro_fecha.value = "";
         filtro_total.value = "";
         filtro_proveedor.value = "";
-        filtro_empleado.value = "";
-        filtro_sucursal.value = "";
+        if(filtro_empleado.value !== undefined) filtro_empleado.value = "";
+        if(filtro_sucursal.value !== undefined) filtro_sucursal.value = "";
         filtro_estado.value = "";
-
-        cargarCompras(); // Llama a la carga sin debounce para una respuesta inmediata
+        cargarCompras();
     });
 
-    // Cargar las compras al inicio
+    // Carga inicial
     cargarCompras();
 });

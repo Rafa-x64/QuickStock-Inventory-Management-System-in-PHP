@@ -27,6 +27,14 @@ class inventario_editar_producto_C extends mainModel
             }
         }
 
+        // Validación de precios
+        $precio_compra = (float)$formulario["precio_compra"];
+        $precio_venta  = (float)$formulario["precio"];
+
+        if ($precio_compra < 0.01) return ["error" => "Precio de compra mínimo 0.01"];
+        if ($precio_venta < 0.01) return ["error" => "Precio de venta mínimo 0.01"];
+        if ($precio_compra > $precio_venta) return ["error" => "El precio de venta no puede ser menor al precio de compra."];
+
         $data = $formulario;
         $id_color_final = null;
         $id_talla_final = null;
@@ -66,15 +74,15 @@ class inventario_editar_producto_C extends mainModel
         $descripcion_final = trim($data["descripcion"]) !== "" ? trim($data["descripcion"]) : null;
 
         // Convertir el string "true"/"false" del formulario a booleano PHP
-        $activo_final = filter_var($data["activo"], FILTER_VALIDATE_BOOLEAN); 
+        $activo_final = filter_var($data["activo"], FILTER_VALIDATE_BOOLEAN);
 
         $producto_data = [
             "id_producto"   => (int)$data["id_producto"],
             "codigo_barra"  => trim($data["codigo_barra"]),
             "nombre"        => trim($data["nombre"]),
-            "descripcion"   => $descripcion_final, 
+            "descripcion"   => $descripcion_final,
             "id_categoria"  => (int)$data["id_categoria"],
-            "id_proveedor"  => $id_proveedor_final, 
+            "id_proveedor"  => $id_proveedor_final,
             "id_color"      => $id_color_final,
             "id_talla"      => $id_talla_final,
             "precio_compra" => (float)$data["precio_compra"],
