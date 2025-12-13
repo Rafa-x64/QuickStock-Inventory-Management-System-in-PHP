@@ -31,8 +31,7 @@ class venta extends mainModel
 
                 // Verificar si ya existe por cédula para evitar duplicados
                 $queryCheckCli = "SELECT id_cliente FROM core.cliente WHERE cedula = $1 LIMIT 1";
-                pg_prepare($conn, "check_cliente_existente", $queryCheckCli);
-                $resCheck = pg_execute($conn, "check_cliente_existente", [$cedula]);
+                $resCheck = pg_query_params($conn, $queryCheckCli, [$cedula]);
 
                 if (pg_num_rows($resCheck) > 0) {
                     // Ya existe, usamos su ID
@@ -42,8 +41,7 @@ class venta extends mainModel
                     // No existe, lo creamos
                     $queryInsertCli = "INSERT INTO core.cliente (cedula, nombre, apellido, correo, telefono, direccion, activo) 
                                        VALUES ($1, $2, $3, $4, $5, $6, 't') RETURNING id_cliente";
-                    pg_prepare($conn, "insert_cliente_nuevo", $queryInsertCli);
-                    $resInsertCli = pg_execute($conn, "insert_cliente_nuevo", [
+                    $resInsertCli = pg_query_params($conn, $queryInsertCli, [
                         $cedula,
                         $cli['nombre'],
                         $cli['apellido'],
@@ -72,8 +70,7 @@ class venta extends mainModel
 
             $queryVenta = "INSERT INTO ventas.venta (id_cliente, id_usuario, fecha, activo) 
                            VALUES ($1, $2, NOW(), 't') RETURNING id_venta";
-            pg_prepare($conn, "insert_venta_header", $queryVenta);
-            $resVenta = pg_execute($conn, "insert_venta_header", [$idCliente, $idUsuario]);
+            $resVenta = pg_query_params($conn, $queryVenta, [$idCliente, $idUsuario]);
 
             if (!$resVenta) {
                 throw new Exception("Error al registrar la cabecera de la venta. Detalle: " . pg_last_error($conn));
@@ -90,20 +87,17 @@ class venta extends mainModel
                 throw new Exception("Sucursal no definida para el descuento de inventario.");
             }
 
-            // Preparar queries repetitivos
+            // Definir queries (sin preparar, usaremos pg_query_params directamente)
             $queryInsertDetalle = "INSERT INTO ventas.detalle_venta (id_venta, id_producto, cantidad, precio_unitario, activo) 
                                    VALUES ($1, $2, $3, $4, 't')";
-            pg_prepare($conn, "insert_detalle_item", $queryInsertDetalle);
 
             // Query seguro de descuento de stock: Solo actualiza si cantidad >= descuento
             $queryUpdateStock = "UPDATE inventario.inventario 
                                  SET cantidad = cantidad - $1 
                                  WHERE id_producto = $2 AND id_sucursal = $3 AND cantidad >= $1";
-            pg_prepare($conn, "update_stock_seguro", $queryUpdateStock);
 
             // Query para verificar existencia si falla el update (para dar mejor error)
             $queryCheckStock = "SELECT cantidad FROM inventario.inventario WHERE id_producto = $1 AND id_sucursal = $2";
-            pg_prepare($conn, "check_stock_actual", $queryCheckStock);
 
             foreach ($detalles as $item) {
                 $idProducto = $item['id_producto'];
@@ -112,13 +106,13 @@ class venta extends mainModel
                 $subtotal = $item['subtotal'];
 
                 // A. Insertar Detalle
-                $resDetalle = pg_execute($conn, "insert_detalle_item", [$idVenta, $idProducto, $cantidad, $precio]);
+                $resDetalle = pg_query_params($conn, $queryInsertDetalle, [$idVenta, $idProducto, $cantidad, $precio]);
                 if (!$resDetalle) {
                     throw new Exception("Error al guardar detalle del producto ID: $idProducto. Detalle: " . pg_last_error($conn));
                 }
 
                 // B. Descontar Inventario
-                $resStock = pg_execute($conn, "update_stock_seguro", [$cantidad, $idProducto, $idSucursal]);
+                $resStock = pg_query_params($conn, $queryUpdateStock, [$cantidad, $idProducto, $idSucursal]);
                 $affected = pg_affected_rows($resStock);
 
                 if ($affected == 0) {
@@ -126,7 +120,7 @@ class venta extends mainModel
                     // 1. No existe el registro en inventario para esa sucursal.
                     // 2. El stock es insuficiente.
 
-                    $resCheck = pg_execute($conn, "check_stock_actual", [$idProducto, $idSucursal]);
+                    $resCheck = pg_query_params($conn, $queryCheckStock, [$idProducto, $idSucursal]);
                     if (pg_num_rows($resCheck) == 0) {
                         throw new Exception("El producto ID $idProducto no está registrado en el inventario de esta sucursal.");
                     } else {
@@ -142,10 +136,9 @@ class venta extends mainModel
             // =================================================================================
             $queryPago = "INSERT INTO ventas.pago_venta (id_venta, id_metodo_pago, monto, id_moneda, tasa, referencia, activo) 
                           VALUES ($1, $2, $3, $4, $5, $6, 't')";
-            pg_prepare($conn, "insert_pago_item", $queryPago);
 
             foreach ($pagos as $pago) {
-                $resPago = pg_execute($conn, "insert_pago_item", [
+                $resPago = pg_query_params($conn, $queryPago, [
                     $idVenta,
                     $pago['id_metodo_pago'],
                     $pago['monto'],

@@ -41,12 +41,13 @@ document.addEventListener("DOMContentLoaded", () => {
         // Normaliza distintos formatos posibles que vienen desde PG / PHP
         // Accepts: true, false, "t", "f", "true", "false", "1", "0", 1, 0
         if (value === true || value === 1) return true;
-        if (value === false || value === 0) return false;
+        if (value === false || value === 0 || value === null || value === undefined) return false;
         if (typeof value === "string") {
             const v = value.trim().toLowerCase();
             return (v === "t" || v === "true" || v === "1" || v === "yes" || v === "y");
         }
-        return Boolean(value);
+        // Default: false (más seguro que Boolean() que convierte cualquier string a true)
+        return false;
     }
 
     function renderizarEmpleados(empleados) {
