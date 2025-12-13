@@ -126,50 +126,41 @@ composer install
 
 ### 4. Configuración de Base de Datos (PostgreSQL)
 
-El sistema utiliza PostgreSQL. Debes crear la base de datos e importar el esquema inicial.
+El sistema utiliza PostgreSQL. A continuación, se detalla el proceso paso a paso utilizando **pgAdmin 4**, la herramienta gráfica más común, para evitar errores de importación.
 
-#### Paso A: Crear la Base de Datos
+#### Paso A: Crear la Base de Datos en pgAdmin 4
 
-Puedes usar **pgAdmin 4** o la línea de comandos (`psql`).
+1.  Abre **pgAdmin 4** y conéctate a tu servidor local.
+2.  Haz clic derecho en `Databases` > `Create` > `Database...`.
+3.  En el campo **Name**, escribe exactamente: `QuickStock`.
+4.  Haz clic en **Save** para crearla.
 
-**Opción Terminal (psql):**
+#### Paso B: Importar el Esquema SQL
 
-```bash
-# Inicia sesión como superusuario (generalmente 'postgres')
-psql -U postgres
-```
-
-```sql
--- Dentro de la consola psql:
-CREATE DATABASE "QuickStock";
-\q
-```
-
-#### Paso B: Importar el Esquema
-
-El archivo SQL se encuentra en `src/config/quickstock.sql`.
-
-```powershell
-# Desde PowerShell / Terminal en la raíz del proyecto
-psql -U postgres -d QuickStock -f src/config/quickstock.sql
-```
-
-> **Nota:** Si tu usuario `postgres` tiene contraseña, el sistema te la solicitará.
+1.  En el panel izquierdo, haz clic derecho sobre la nueva base de datos `QuickStock` que acabas de crear.
+2.  Selecciona la opción **Query Tool** (Herramienta de Consultas) en el menú.
+3.  En la barra de herramientas superior, haz clic en el icono de **"Open File"** (📂) o presiona `Ctrl + O` (Cmd + O en Mac).
+4.  Navega hasta la carpeta donde clonaste el proyecto y abre el archivo SQL ubicado en:
+    `.../QuickStock/src/config/quickstock.sql`
+5.  Haz clic en el botón **Execute/Run** (▶️) o presiona `F5`.
+6.  Verás mensajes en la consola inferior indicando que las tablas se han creado correctamente ("CREATE TABLE", "INSERT 0 1", etc.).
 
 #### Paso C: Configurar la Conexión (SERVER.php)
 
-Debes decirle a la aplicación cómo conectarse a tu base de datos local.
+Por último, configura las credenciales en el archivo de conexión para que PHP pueda acceder a la base de datos.
 
-1.  Abre el archivo `src/config/SERVER.php`.
-2.  Localiza la definición de conexión y ajusta los valores (host, puerto, dbname, user, password).
+1.  Abre el archivo `src/config/SERVER.php` en tu editor de código.
+2.  Asegúrate de que las constantes coincidan con tu configuración (usuario `postgres` y contraseña `postgres`):
 
 ```php
-// Ejemplo de configuración típica en local
+// src/config/SERVER.php
 const DB_SERVER = "localhost";
 const DB_NAME = "QuickStock";
 const DB_USER = "postgres";
-const DB_PASS = "tu_contraseña_aqui"; // Déjalo vacío "" si no tienes contraseña
+const DB_PASS = "postgres"; // ⚠️ IMPORTANTE: Coloca aquí tu contraseña real de PostgreSQL
 ```
+
+> **Tip:** Si al instalar PostgreSQL definiste una contraseña diferente a "postgres", debes poner esa contraseña en `DB_PASS`.
 
 ---
 
@@ -208,15 +199,18 @@ El núcleo del sistema sigue el patrón **Modelo-Vista-Controlador (MVC)**, gara
 QuickStock implementa dos patrones de arquitectura que conviven para ofrecer una experiencia moderna y robusta:
 
 ### 1. MVC Tradicional (Navegación)
+
 Utilizado para la carga de vistas, gestión de sesiones y renderizado de plantillas HTML.
-*   **Front Controller**: `src/index.php` gestiona todas las rutas amigables.
-*   **Vistas**: Renderizadas desde el servidor con PHP.
+
+- **Front Controller**: `src/index.php` gestiona todas las rutas amigables.
+- **Vistas**: Renderizadas desde el servidor con PHP.
 
 ### 2. Cliente-Servidor (API RESTful)
+
 Utilizado para la interactividad dinámica sin recargas de página (AJAX/Fetch).
 
-*   **Cliente (Frontend)**: Archivos JS en `src/api/client/` consumen la API.
-*   **Servidor (Backend)**: Endpoints en `src/api/server/index.php` procesan solicitudes JSON y responden datos estructurados.
+- **Cliente (Frontend)**: Archivos JS en `src/api/client/` consumen la API.
+- **Servidor (Backend)**: Endpoints en `src/api/server/index.php` procesan solicitudes JSON y responden datos estructurados.
 
 **Flujo de Datos:**
 `Vista (JS)` ➡️ `Fetch (JSON)` ➡️ `API (PHP)` ➡️ `Base de Datos` ➡️ `Respuesta JSON` ➡️ `DOM Update`
