@@ -15,7 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(t => console.log(t));*/
 
     api({ accion: "existe_gerente" }).then(res => {
-        if (res.existe == true) {
+        const existeGerente = !!(res.existe);
+        
+        if (existeGerente) {
             registrarse_btn.style.display = "none";
             iniciar_sesion_btn.classList.remove("w-4");
             iniciar_sesion_btn.classList.add("w-50");
@@ -24,6 +26,10 @@ document.addEventListener("DOMContentLoaded", () => {
             registrarse_btn.classList.remove("w-4");
             registrarse_btn.classList.add("w-50");
         }
+    }).catch(err => {
+        console.error("Error al verificar gerente:", err);
+        iniciar_sesion_btn.style.display = "inline-block";
+        registrarse_btn.style.display = "inline-block";
     });
 
 });

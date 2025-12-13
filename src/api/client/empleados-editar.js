@@ -30,6 +30,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const emp = res.empleado;
 
+        // 🔒 PROTECCIÓN: No permitir editar al Gerente
+        if (emp.id_rol == 1) {
+            alert("No se puede editar el usuario Gerente. Este usuario tiene privilegios especiales.");
+            window.location.href = "empleados-listado";
+            return;
+        }
+
         // 2️⃣ Rellenar campos simples
         nombreInput.value = emp.nombre ?? "";
         apellidoInput.value = emp.apellido ?? "";
