@@ -63,8 +63,10 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+
         empleados.forEach(emp => {
             const activoBool = normalizeBoolean(emp.activo);
+            const esGerente = (emp.id_rol == 1); // Protección para Gerente
 
             const fila = document.createElement("tr");
             fila.innerHTML = `
@@ -88,6 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 <i class="bi bi-eye"></i>
                             </button>
                         </form>
+                        ${!esGerente ? `
                         <form action="empleados-editar" method="POST" class="d-inline">
                             <input type="hidden" name="accion" value="editar">
                             <input type="hidden" name="email" value="${emp.email ?? ""}">
@@ -102,6 +105,9 @@ document.addEventListener("DOMContentLoaded", () => {
                                 <i class="bi bi-person-x"></i>
                             </button>
                         </form>
+                        ` : `
+                        <span class="badge bg-secondary">Protegido</span>
+                        `}
                     </div>
                 </td>
             `;

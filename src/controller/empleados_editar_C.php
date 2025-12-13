@@ -25,6 +25,19 @@ class empleados_editar_C extends mainModel
             }
         }
 
+        // 🔒 PROTECCIÓN BACKEND: Verificar que no se esté intentando editar al Gerente
+        $emailViejo = trim($formulario["id_email"]);
+        $conn = parent::conectar_base_datos();
+        $queryCheckGerente = "SELECT id_rol FROM seguridad_acceso.usuario WHERE email = $1";
+        $resCheck = pg_query_params($conn, $queryCheckGerente, [$emailViejo]);
+
+        if ($resCheck && pg_num_rows($resCheck) > 0) {
+            $userData = pg_fetch_assoc($resCheck);
+            if ($userData['id_rol'] == 1) {
+                return ["error" => "No se puede editar el usuario Gerente. Este usuario tiene privilegios especiales."];
+            }
+        }
+
         // Formatear Cédula
         $c = trim($formulario["cedula_empleado"]);
         $clean_c = preg_replace('/[^a-zA-Z0-9]/', '', $c);
