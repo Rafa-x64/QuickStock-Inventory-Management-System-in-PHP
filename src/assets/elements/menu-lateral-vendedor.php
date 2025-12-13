@@ -36,7 +36,7 @@
                     </a>
                 </li>
                 <li class="list-group-item pt-2">
-                    <a href="inicio" class="d-flex flex-row align-items-center text-decoration-none Quick-white-link">
+                    <a href="logout" class="d-flex flex-row align-items-center text-decoration-none Quick-white-link">
                         <i class="bi bi-box-arrow-left fs-5"></i>
                         <p class="m-0 ms-2">Salir</p>
                     </a>
@@ -89,7 +89,7 @@
             </div>
 
             <div class="col-12 p-0 mt-2 menu-item">
-                <a href="inicio" class="d-flex flex-row align-items-center Quick-white-link menu-details-link">
+                <a href="logout" class="d-flex flex-row align-items-center Quick-white-link menu-details-link">
                     <i class="bi bi-box-arrow-left fs-5"></i>
                     <p class="texto-menu">Salir</p>
                 </a>

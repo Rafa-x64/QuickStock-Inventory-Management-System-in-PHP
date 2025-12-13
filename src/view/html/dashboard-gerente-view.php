@@ -31,7 +31,7 @@
                 </div>
                 <div class="col-12 col-md-12 p-0 mt-3 mt-md-0 py-2 m-0 d-flex flex-row justify-content-end align-items-center">
                     <button class="btn btn-success me-0 me-md-3">
-                        Descargar el Reporte Financiero Diario
+                        <a href="prueba-reporte" class="Quick-white-link">Descargar el Reporte Financiero Diario</a>
                     </button>
                 </div>
             </div>
@@ -56,7 +56,7 @@
                         </div>
                         <div class="col-12 p-0 py-1 px-1 py-md-2 px-md-0 m-0 d-flex flex-row justify-content-end align-items-center">
                             <button class="btn btn-success m-0 me-md-3">
-                                Imprimir Reporte de Rotacion
+                                <a href="ventas-productos-populares" class="Quick-white-link">Imprimir Reporte de Rotacion</a>
                             </button>
                         </div>
                     </div>
@@ -78,7 +78,7 @@
                         </div>
                         <div class="col-12 p-0 py-1 px-1 py-md-2 px-md-0 m-0 d-flex flex-row justify-content-end align-items-center">
                             <button class="btn btn-success m-0 me-md-3">
-                                Imprimir Reporte de Rotacion
+                                <a href="ventas-productos-populares" class="Quick-white-link">Imprimir Reporte de Rotacion</a>
                             </button>
                         </div>
                     </div>
