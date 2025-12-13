@@ -79,8 +79,8 @@ document.addEventListener("DOMContentLoaded", () => {
       msg: "Email inválido.",
     },
     cliente_telefono: {
-      regex: /^$|^(\+58|0)(412|414|424|416|426|2\d{2})[-\s]?\d{7}$/,
-      msg: "Teléfono inválido. Ej: 04121234567",
+      regex: /^(0(412|414|424|416|426|417|427)-\d{3}-\d{2}-\d{2}|\+58\s(412|414|424|416|426|417|427)-\d{3}-\d{2}-\d{2})$/,
+      msg: "Formato inválido. Ej: 0412-555-10-41 o +58 412-555-10-41",
     },
     cliente_direccion: {
       regex: /^.{5,200}$/,

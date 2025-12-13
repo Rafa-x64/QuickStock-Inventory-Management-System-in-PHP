@@ -9,7 +9,7 @@ function obtenerVentasFiltradas($fecha_desde = null, $fecha_hasta = null, $id_us
     $sql = "SELECT DISTINCT
                 v.id_venta,
                 v.fecha,
-                v.total,
+                (SELECT COALESCE(SUM(dv.cantidad * dv.precio_unitario), 0) FROM ventas.detalle_venta dv WHERE dv.id_venta = v.id_venta AND dv.activo = 't') AS total,
                 c.nombre AS cliente_nombre,
                 c.apellido AS cliente_apellido,
                 u.nombre || ' ' || u.apellido AS vendedor,
@@ -50,12 +50,12 @@ function obtenerVentasFiltradas($fecha_desde = null, $fecha_hasta = null, $id_us
     }
 
     if ($monto_min !== null && $monto_min !== '') {
-        $sql .= " AND v.total >= $" . $param_count++;
+        $sql .= " AND (SELECT COALESCE(SUM(dv.cantidad * dv.precio_unitario), 0) FROM ventas.detalle_venta dv WHERE dv.id_venta = v.id_venta AND dv.activo = 't') >= $" . $param_count++;
         $params[] = $monto_min;
     }
 
     if ($monto_max !== null && $monto_max !== '') {
-        $sql .= " AND v.total <= $" . $param_count++;
+        $sql .= " AND (SELECT COALESCE(SUM(dv.cantidad * dv.precio_unitario), 0) FROM ventas.detalle_venta dv WHERE dv.id_venta = v.id_venta AND dv.activo = 't') <= $" . $param_count++;
         $params[] = $monto_max;
     }
 
@@ -95,7 +95,7 @@ function obtenerDetalleVentaPorId($id_venta)
     $sql_venta = "SELECT 
                     v.id_venta,
                     v.fecha,
-                    v.total,
+                    (SELECT COALESCE(SUM(dv.cantidad * dv.precio_unitario), 0) FROM ventas.detalle_venta dv WHERE dv.id_venta = v.id_venta AND dv.activo = 't') AS total,
                     c.id_cliente,
                     c.cedula,
                     c.nombre AS cliente_nombre,
@@ -127,7 +127,7 @@ function obtenerDetalleVentaPorId($id_venta)
                         dv.id_detalle,
                         dv.cantidad,
                         dv.precio_unitario,
-                        dv.subtotal,
+                        (dv.cantidad * dv.precio_unitario) AS subtotal,
                         p.nombre AS producto_nombre,
                         p.codigo_barra,
                         cat.nombre AS categoria,
@@ -182,7 +182,7 @@ function obtenerProductosPopulares($limite = 10, $fecha_desde = null, $fecha_has
                 p.nombre AS producto_nombre,
                 p.codigo_barra,
                 SUM(dv.cantidad) AS total_vendido,
-                SUM(dv.subtotal) AS ingresos_totales,
+                SUM(dv.cantidad * dv.precio_unitario) AS ingresos_totales,
                 cat.nombre AS categoria
             FROM ventas.detalle_venta dv
             LEFT JOIN inventario.producto p ON dv.id_producto = p.id_producto
@@ -235,7 +235,7 @@ function obtenerCategoriasPopulares($limite = 10, $fecha_desde = null, $fecha_ha
                 cat.id_categoria,
                 cat.nombre AS categoria,
                 SUM(dv.cantidad) AS total_vendido,
-                SUM(dv.subtotal) AS ingresos_totales
+                SUM(dv.cantidad * dv.precio_unitario) AS ingresos_totales
             FROM ventas.detalle_venta dv
             LEFT JOIN inventario.producto p ON dv.id_producto = p.id_producto
             LEFT JOIN core.categoria cat ON p.id_categoria = cat.id_categoria
@@ -287,7 +287,7 @@ function obtenerVentasPorSucursal($fecha_desde = null, $fecha_hasta = null)
                 s.id_sucursal,
                 s.nombre AS sucursal,
                 COUNT(DISTINCT v.id_venta) AS total_ventas,
-                SUM(v.total) AS ingresos_totales
+                (SELECT COALESCE(SUM(dv.cantidad * dv.precio_unitario), 0) FROM ventas.detalle_venta dv JOIN ventas.venta v2 ON dv.id_venta = v2.id_venta WHERE v2.id_usuario IN (SELECT id_usuario FROM seguridad_acceso.usuario WHERE id_sucursal = s.id_sucursal) AND dv.activo = 't' AND v2.activo = 't') AS ingresos_totales
             FROM ventas.venta v
             LEFT JOIN seguridad_acceso.usuario u ON v.id_usuario = u.id_usuario
             LEFT JOIN core.sucursal s ON u.id_sucursal = s.id_sucursal
@@ -334,10 +334,11 @@ function obtenerTendenciaMensual($meses = 12)
     $sql = "SELECT 
                 TO_CHAR(v.fecha, 'YYYY-MM') AS mes,
                 COUNT(DISTINCT v.id_venta) AS total_ventas,
-                SUM(v.total) AS ingresos_totales
+                SUM(dv.cantidad * dv.precio_unitario) AS ingresos_totales
             FROM ventas.venta v
+            JOIN ventas.detalle_venta dv ON v.id_venta = dv.id_venta
             LEFT JOIN seguridad_acceso.usuario u ON v.id_usuario = u.id_usuario
-            WHERE v.activo = 't'
+            WHERE v.activo = 't' AND dv.activo = 't'
               AND v.fecha >= CURRENT_DATE - MAKE_INTERVAL(months => $1)";
 
     $params = [$meses];
@@ -373,7 +374,13 @@ function obtenerCierreCaja($fecha = null)
     $sql_resumen = "SELECT 
                         COUNT(*) FILTER (WHERE v.activo = 't') as total_ventas,
                         COUNT(*) FILTER (WHERE v.activo = 'f') as ventas_anuladas,
-                        COALESCE(SUM(total) FILTER (WHERE v.activo = 't'), 0) as total_esperado_base,
+                        COALESCE((
+                            SELECT SUM(dv.cantidad * dv.precio_unitario) 
+                            FROM ventas.detalle_venta dv 
+                            JOIN ventas.venta v2 ON dv.id_venta = v2.id_venta 
+                            LEFT JOIN seguridad_acceso.usuario u2 ON v2.id_usuario = u2.id_usuario
+                            WHERE DATE(v2.fecha) = $1 AND u2.id_sucursal = $2 AND v2.activo = 't' AND dv.activo = 't'
+                        ), 0) as total_esperado_base,
                         MIN(fecha) FILTER (WHERE v.activo = 't') as primera_venta,
                         MAX(fecha) FILTER (WHERE v.activo = 't') as ultima_venta
                     FROM ventas.venta v
@@ -435,13 +442,15 @@ function obtenerCierreCaja($fecha = null)
     // 4. Ventas por Hora (Tendencia)
     $sql_horas = "SELECT 
                     EXTRACT(HOUR FROM v.fecha) as hora,
-                    COUNT(*) as cantidad_ventas,
-                    SUM(v.total) as total_base
+                    COUNT(DISTINCT v.id_venta) as cantidad_ventas,
+                    SUM(dv.cantidad * dv.precio_unitario) as total_base
                   FROM ventas.venta v
+                  JOIN ventas.detalle_venta dv ON v.id_venta = dv.id_venta
                   LEFT JOIN seguridad_acceso.usuario u ON v.id_usuario = u.id_usuario
                   WHERE DATE(v.fecha) = $1 
                     AND u.id_sucursal = $2
                     AND v.activo = 't'
+                    AND dv.activo = 't'
                   GROUP BY EXTRACT(HOUR FROM v.fecha)
                   ORDER BY hora ASC";
 

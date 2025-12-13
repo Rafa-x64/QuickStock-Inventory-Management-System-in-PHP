@@ -119,9 +119,9 @@ class compra extends mainModel
     {
         $sql = "INSERT INTO inventario.compra (
             id_proveedor, id_sucursal, id_usuario, id_moneda, numero_factura, 
-            fecha_compra, subtotal, monto_impuesto, total, observaciones, estado
+            fecha_compra, observaciones, estado
         ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+            $1, $2, $3, $4, $5, $6, $7, $8
         ) RETURNING id_compra";
 
         $result = pg_query_params($conn, $sql, [
@@ -131,11 +131,8 @@ class compra extends mainModel
             $data['id_moneda'],         // $4
             $data['numero_factura'],    // $5
             $data['fecha_compra'],      // $6
-            $subtotal,                  // $7
-            $montoImpuesto,             // $8
-            $total,                     // $9
-            $data['observaciones'],     // $10
-            $data['estado']             // $11
+            $data['observaciones'],     // $7
+            $data['estado']             // $8
         ]);
 
         if (!$result || pg_num_rows($result) == 0) {
@@ -147,9 +144,9 @@ class compra extends mainModel
     protected function crearDetalleCompra($conn, int $id_compra, array $item): void
     {
         $sql = "INSERT INTO inventario.detalle_compra (
-            id_compra, id_producto, cantidad, precio_unitario, subtotal
+            id_compra, id_producto, cantidad, precio_unitario
         ) VALUES (
-            $1, $2, $3, $4, $5
+            $1, $2, $3, $4
         )";
 
         $result = pg_query_params($conn, $sql, [
@@ -157,7 +154,6 @@ class compra extends mainModel
             $item['id_producto'],       // $2
             $item['cantidad'],          // $3
             $item['precio_compra'],     // $4 (Precio Unitario)
-            $item['subtotal_detalle']   // $5
         ]);
 
         if (!$result) {
@@ -280,8 +276,8 @@ class compra extends mainModel
                     $cantidadAntigua = intval($datosAntiguos['cantidad']);
 
                     // Actualizar registro en detalle_compra
-                    $sql_upd_det = "UPDATE inventario.detalle_compra SET id_producto = $1, cantidad = $2, precio_unitario = $3, subtotal = $4 WHERE id_detalle_compra = $5";
-                    pg_query_params($conn, $sql_upd_det, [$id_producto, $cantidadNueva, $item['precio_compra'], $subtotalLinea, $id_detalle]);
+                    $sql_upd_det = "UPDATE inventario.detalle_compra SET id_producto = $1, cantidad = $2, precio_unitario = $3 WHERE id_detalle_compra = $4";
+                    pg_query_params($conn, $sql_upd_det, [$id_producto, $cantidadNueva, $item['precio_compra'], $id_detalle]);
 
                     // Actualizar Inventario (Diferencial)
                     // Si el producto cambió (raro en edición, pero posible), revertimos stock del viejo y sumamos al nuevo
@@ -336,9 +332,8 @@ class compra extends mainModel
 
             $sql_update_header = "UPDATE inventario.compra SET 
                 id_proveedor=$1, id_sucursal=$2, id_usuario=$3, id_moneda=$4, 
-                numero_factura=$5, fecha_compra=$6, subtotal=$7, monto_impuesto=$8, 
-                total=$9, observaciones=$10, estado=$11 
-                WHERE id_compra=$12";
+                numero_factura=$5, fecha_compra=$6, observaciones=$7, estado=$8 
+                WHERE id_compra=$9";
 
             $res_head = pg_query_params($conn, $sql_update_header, [
                 $datosCompra['id_proveedor'],
@@ -347,9 +342,6 @@ class compra extends mainModel
                 $datosCompra['id_moneda'],
                 $datosCompra['numero_factura'],
                 $datosCompra['fecha_compra'],
-                $subtotalGlobal,
-                $montoImpuesto,
-                $totalGlobal,
                 $datosCompra['observaciones'],
                 $datosCompra['estado'],
                 $id_compra
