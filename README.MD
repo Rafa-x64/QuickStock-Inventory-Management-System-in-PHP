@@ -115,6 +115,7 @@ QuickStock utiliza **Composer** para gestionar librerías críticas como `mPDF` 
 
 ```bash
 composer install
+composer dump-autoload
 ```
 
 > **¿Qué hace esto?**
