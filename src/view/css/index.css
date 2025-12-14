@@ -132,8 +132,22 @@
         box-shadow: none;
         color: inherit;
         border-radius: 0px;
-        transition: border-bottom 0.2 ease;
-        transition: border-radius 0.2 ease;
+        transition: border-bottom 0.2s ease;
+        transition: border-radius 0.2s ease;
+    }
+
+    .Quick-form-input::placeholder {
+        color: var(--font-color-light) !important
+    }
+
+    .Quick-form-input:-webkit-autofill,
+    .Quick-form-input:-webkit-autofill:hover,
+    .Quick-form-input:-webkit-autofill:focus,
+    .Quick-form-input:-webkit-autofill:active {
+
+        box-shadow: 0 0 0 1000px var(--red-Quick) inset !important;
+            -webkit-text-fill-color: var(--font-color-light) !important;
+            caret-color: var(--font-color-light) !important;
     }
 
     .Quick-form-input:focus {
@@ -180,6 +194,16 @@
         outline: none;
         box-shadow: none;
         color: inherit;
+    }
+
+    .Quick-form-input option{
+        background-color: var(--default-background-color);
+        color: var(--default-font-color);
+    }
+
+    .Quick-select option {
+        background-color: var(--default-background-color);
+        color: var(--default-font-color);
     }
 
     .Quick-custom-input:focus {
@@ -372,8 +396,6 @@
         color: inherit;
     }
 
-
-
     .Quick-form-input {
         background-color: var(--blue-Quick);
         border: none;
@@ -394,6 +416,16 @@
         outline: none;
         box-shadow: none;
         color: inherit;
+    }
+
+    .Quick-form-input:-webkit-autofill,
+    .Quick-form-input:-webkit-autofill:hover,
+    .Quick-form-input:-webkit-autofill:focus,
+    .Quick-form-input:-webkit-autofill:active {
+
+        box-shadow: 0 0 0 1000px var(--blue-Quick) inset !important;
+        -webkit-text-fill-color: var(--default-font-color) !important;
+        caret-color: var(--default-font-color) !important;
     }
 
     .Quick-select {
@@ -430,6 +462,16 @@
         outline: none;
         box-shadow: none;
         color: inherit;
+    }
+
+    .Quick-form-input option {
+        background-color: var(--default-background-color);
+        color: var(--default-font-color);
+    }
+
+    .Quick-select option {
+        background-color: var(--default-background-color);
+        color: var(--default-font-color);
     }
 
     .Quick-form {

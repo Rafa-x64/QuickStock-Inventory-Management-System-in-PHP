@@ -27,6 +27,17 @@
     transition: border-bottom 0.2 ease, border-radius 0.2 ease;
 }
 
+.inicio-sesion-usuario-custom-input:-webkit-autofill,
+.inicio-sesion-usuario-custom-input:-webkit-autofill:hover,
+.inicio-sesion-usuario-custom-input:-webkit-autofill:focus,
+.inicio-sesion-usuario-custom-input:-webkit-autofill:active {
+
+    box-shadow: 0 0 0 1000px var(--red-Quick) inset !important;
+    -webkit-text-fill-color: var(--font-color-light) !important;
+    caret-color: var(--font-color-light) !important;
+    border-bottom: 2px solid var(--font-color-light) !important;
+}
+
 .inicio-sesion-usuario-right .inicio-sesion-usuario-custom-input:focus {
     background-color: rgba(156, 30, 42, 0.5);
     border: none;
@@ -43,14 +54,14 @@
 
 .inicio-sesion-usuario-acceder-btn{
     background-color: var(--font-color-light);
-    color: var(--red-Quick);
+    color: var(--red-Quick) !important;
     border-radius: 0.5rem;
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .inicio-sesion-usuario-acceder-btn:hover {
     background-color: inherit;
-    color: var(--font-color-light);
+    color: var(--font-color-light) !important;
     border: 2px solid var(--font-color-light);
 }
 

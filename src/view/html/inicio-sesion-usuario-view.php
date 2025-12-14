@@ -36,16 +36,7 @@
                     </form>
                 </div>
             </div>
-            <div class="row w-75 mt-1 mt-md-3 px-1 px-md-0">
-                <div class="col-12 mt-3 pt-3 px-5 inicio-sesion-usuario-register">
-                    <h6 class="text-start">No tienes una cuenta?</h6>
-                </div>
-                <div class="col-12 mt-1 px-5 d-flex flex-row justify-content-center align-items-center">
-                    <button class="btn inicio-sesion-usuario-acceder-btn Quick-title w-100" id="link-registro">
-                        <p class="fs-6 fs-md-5 p-0 m-0">Crear una ahora</p>
-                    </button>
-                </div>
-            </div>
+            
         </div>
     </div>
 </div>
