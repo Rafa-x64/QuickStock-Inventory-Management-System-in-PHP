@@ -98,7 +98,7 @@ cd DEV\PHP
 Clona el repositorio dentro de la carpeta creada:
 
 ```powershell
-git clone https://ruta-a-tu-repo/QuickStock.git
+git clone https://github.com/Rafa-x64/QuickStock-Inventory-Management-System-in-PHP.git
 cd QuickStock
 ```
 
@@ -126,45 +126,75 @@ composer install
 
 ### 4. Configuración de Base de Datos (PostgreSQL)
 
-El sistema utiliza PostgreSQL. A continuación, se detalla el proceso paso a paso utilizando **pgAdmin 4**, la herramienta gráfica más común, para evitar errores de importación.
+El sistema utiliza PostgreSQL. Sigue estos pasos estrictamente para evitar errores de conexión.
 
-#### Paso A: Crear la Base de Datos en pgAdmin 4
+#### Paso A: Habilitar Extensiones en XAMPP
 
-1.  Abre **pgAdmin 4** y conéctate a tu servidor local.
-2.  Haz clic derecho en `Databases` > `Create` > `Database...`.
-3.  En el campo **Name**, escribe exactamente: `QuickStock`.
-4.  Haz clic en **Save** para crearla.
+Para que `Composer` pueda instalar librerías como `mpdf` (que requiere motor de imágenes **GD**) o `phpmailer`, y para que el sistema conecte con la base de datos, es **OBLIGATORIO** habilitar las siguientes extensiones en PHP.
 
-#### Paso B: Importar el Esquema SQL
+1.  Abre el **Panel de Control de XAMPP**.
+2.  En la fila de **Apache**, haz clic en el botón `Config` > `PHP (php.ini)`.
+3.  Se abrirá un archivo de texto. Presiona `Ctrl + B` y busca estas líneas:
+    ```ini
+    ;extension=gd
+    ;extension=pdo_pgsql
+    ;extension=pgsql
+    ```
+4.  **Descoméntalas** quitando el punto y coma (`;`) al inicio, para que queden así:
+    ```ini
+    extension=gd
+    extension=pdo_pgsql
+    extension=pgsql
+    ```
+5.  Guarda el archivo y **Reinicia el módulo Apache** en XAMPP (Stop -> Start).
 
-1.  En el panel izquierdo, haz clic derecho sobre la nueva base de datos `QuickStock` que acabas de crear.
-2.  Selecciona la opción **Query Tool** (Herramienta de Consultas) en el menú.
-3.  En la barra de herramientas superior, haz clic en el icono de **"Open File"** (📂) o presiona `Ctrl + O` (Cmd + O en Mac).
-4.  Navega hasta la carpeta donde clonaste el proyecto y abre el archivo SQL ubicado en:
-    `.../QuickStock/src/config/quickstock.sql`
-5.  Haz clic en el botón **Execute/Run** (▶️) o presiona `F5`.
-6.  Verás mensajes en la consola inferior indicando que las tablas se han creado correctamente ("CREATE TABLE", "INSERT 0 1", etc.).
+#### Paso B: Importar la Base de Datos con pgAdmin
 
-#### Paso C: Configurar la Conexión (SERVER.php)
+Usaremos la función de "Restaurar" para asegurar la integridad de la estructura.
 
-Por último, configura las credenciales en el archivo de conexión para que PHP pueda acceder a la base de datos.
+1.  Abre **pgAdmin 4**.
+2.  Crea la base de datos:
+    - Click derecho en `Databases` > `Create` > `Database...`.
+    - Nombre: `QuickStock`.
+    - Guardar.
+3.  Restaura el esquema:
+    - Click derecho sobre la nueva base de datos `QuickStock`.
+    - Selecciona **Restore** (Restaurar).
+    - En **Filename**, selecciona el archivo ubicado en: `.../QuickStock/src/config/quickstock.sql`.
+    - Ve a la pestaña **Data/Objects** (u Opciones Avanzadas dependiendo de tu versión) y asegúrate de asignar el **Role name** a `postgres`.
+    - Haz clic en **Restore**.
 
-1.  Abre el archivo `src/config/SERVER.php` en tu editor de código.
-2.  Asegúrate de que las constantes coincidan con tu configuración (usuario `postgres` y contraseña `postgres`):
+#### Paso C: Verificar la Base de Datos
+
+Para confirmar que todo está bien:
+
+1.  Haz clic derecho en la base de datos `QuickStock` > **Query Tool**.
+2.  Ejecuta esta consulta de prueba:
+    ```sql
+    SELECT * FROM core.sucursal;
+    ```
+3.  Si no da error y muestra resultados (o una tabla vacía con columnas), ¡estás listo!
+
+### 5. Configurar Credenciales (SERVER.php)
+
+Finalmente, conecta el sistema con tu base de datos local.
+
+1.  Ve a la carpeta `src/config/` y abre el archivo `SERVER.php`.
+2.  Verifica y edita las credenciales:
 
 ```php
 // src/config/SERVER.php
 const DB_SERVER = "localhost";
 const DB_NAME = "QuickStock";
-const DB_USER = "postgres";
-const DB_PASS = "postgres"; // ⚠️ IMPORTANTE: Coloca aquí tu contraseña real de PostgreSQL
+const DB_USER = "postgres";  // Usuario por defecto de PG
+const DB_PASS = "postgres";  // ⚠️ TU CONTRASEÑA REAL AQUÍ
 ```
 
-> **Tip:** Si al instalar PostgreSQL definiste una contraseña diferente a "postgres", debes poner esa contraseña en `DB_PASS`.
+> **Nota Crítica:** Si tu contraseña de PostgreSQL no es "postgres", cámbiala en `DB_PASS` o el sistema no conectará.
 
 ---
 
-### 5. Verificar Servidor Web (Apache)
+### 6. Verificar Servidor Web (Apache)
 
 Para que el enrutamiento amigable (URLs limpias) funcione, Apache debe tener habilitado el módulo `mod_rewrite` y permitir la lectura del archivo `.htaccess`.
 
