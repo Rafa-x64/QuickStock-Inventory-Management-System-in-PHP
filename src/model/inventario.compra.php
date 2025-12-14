@@ -72,6 +72,7 @@ class compra extends mainModel
                 $productosParaDetalle[] = [
                     'id_producto'       => $id_producto,
                     'cantidad'          => (int) $producto['cantidad'],
+                    'minimo'            => (int) ($producto['minimo'] ?? 0),
                     'precio_compra'     => (float) $producto['precio_compra'],
                     'subtotal_detalle'  => (float) $producto['cantidad'] * (float) $producto['precio_compra']
                 ];
@@ -104,7 +105,7 @@ class compra extends mainModel
                 $this->crearDetalleCompra($conn, $id_compra, $item);
 
                 // 3.2 Actualizar Inventario (función que maneja INSERT/UPDATE)
-                $this->actualizarInventario($conn, $item['id_producto'], $id_sucursal, $item['cantidad']);
+                $this->actualizarInventario($conn, $item['id_producto'], $id_sucursal, $item['cantidad'], $item['minimo']);
             }
 
             pg_query($conn, "COMMIT"); // ⬅️ FINALIZAR TRANSACCIÓN (ÉXITO)
@@ -161,15 +162,27 @@ class compra extends mainModel
         }
     }
 
-    protected function actualizarInventario($conn, int $id_producto, int $id_sucursal, int $cantidad): void
+    protected function actualizarInventario($conn, int $id_producto, int $id_sucursal, int $cantidad, ?int $minimo = null): void
     {
         // 1. Intentar actualizar (si ya existe)
-        $sql_update = "
-            UPDATE inventario.inventario
-            SET cantidad = cantidad + $1
-            WHERE id_producto = $2 AND id_sucursal = $3
-        ";
-        $result = pg_query_params($conn, $sql_update, [$cantidad, $id_producto, $id_sucursal]);
+        if ($minimo !== null) {
+            // Si pasamos un mínimo, actualizamos cantidad y SOBRESCRIBIMOS el mínimo
+            $sql_update = "
+                UPDATE inventario.inventario
+                SET cantidad = cantidad + $1, minimo = $4
+                WHERE id_producto = $2 AND id_sucursal = $3
+            ";
+            $result = pg_query_params($conn, $sql_update, [$cantidad, $id_producto, $id_sucursal, $minimo]);
+        } else {
+            // Solo actualizar cantidad (ej: al revertir stock)
+            $sql_update = "
+                UPDATE inventario.inventario
+                SET cantidad = cantidad + $1
+                WHERE id_producto = $2 AND id_sucursal = $3
+            ";
+            $result = pg_query_params($conn, $sql_update, [$cantidad, $id_producto, $id_sucursal]);
+        }
+
 
         if (!$result) {
             throw new Exception("Error al intentar actualizar el inventario (UPDATE).");
@@ -177,11 +190,12 @@ class compra extends mainModel
 
         // 2. Si no se actualizó (no existía), insertar
         if (pg_affected_rows($result) === 0) {
+            $nuevoMinimo = $minimo ?? 0;
             $sql_insert = "
                 INSERT INTO inventario.inventario (id_producto, id_sucursal, cantidad, minimo, activo)
-                VALUES ($1, $2, $3, 0, true)
+                VALUES ($1, $2, $3, $4, true)
             ";
-            $result_insert = pg_query_params($conn, $sql_insert, [$id_producto, $id_sucursal, $cantidad]);
+            $result_insert = pg_query_params($conn, $sql_insert, [$id_producto, $id_sucursal, $cantidad, $nuevoMinimo]);
 
             if (!$result_insert) {
                 throw new Exception("Error al insertar el inventario (INSERT) para el producto ID: " . $id_producto);
@@ -282,16 +296,17 @@ class compra extends mainModel
                     // Actualizar Inventario (Diferencial)
                     // Si el producto cambió (raro en edición, pero posible), revertimos stock del viejo y sumamos al nuevo
                     if ($datosAntiguos['id_producto'] != $id_producto) {
-                        $this->actualizarInventario($conn, $datosAntiguos['id_producto'], $id_sucursal, - ($cantidadAntigua)); // Revertir antiguo
-                        $this->actualizarInventario($conn, $id_producto, $id_sucursal, $cantidadNueva); // Sumar nuevo
+                        $this->actualizarInventario($conn, $datosAntiguos['id_producto'], $id_sucursal, - ($cantidadAntigua)); // Revertir antiguo (sin tocar minimo)
+                        $this->actualizarInventario($conn, $id_producto, $id_sucursal, $cantidadNueva, (int)($item['minimo'] ?? 0)); // Sumar nuevo y actualizar minimo
                     } else {
                         // Mismo producto, solo ajustamos diferencia (Nueva - Antigua)
                         // Ej: Tenia 5, ahora 8. Diff = 3. Sumar 3.
                         // Ej: Tenia 5, ahora 2. Diff = -3. Restar 3.
                         $diferencia = $cantidadNueva - $cantidadAntigua;
-                        if ($diferencia != 0) {
-                            $this->actualizarInventario($conn, $id_producto, $id_sucursal, $diferencia);
-                        }
+
+                        // SIEMPRE llamamos a actualizarInventario para setear el nuevo MÍNIMO,
+                        // incluso si la diferencia de cantidad es 0.
+                        $this->actualizarInventario($conn, $id_producto, $id_sucursal, $diferencia, (int)($item['minimo'] ?? 0));
                     }
 
                     // Marcar ID como procesado
@@ -305,8 +320,8 @@ class compra extends mainModel
                         'subtotal_detalle' => $subtotalLinea
                     ]);
 
-                    // Sumar al inventario
-                    $this->actualizarInventario($conn, $id_producto, $id_sucursal, $item['cantidad']);
+                    // Sumar al inventario y setear minimo
+                    $this->actualizarInventario($conn, $id_producto, $id_sucursal, $item['cantidad'], (int)($item['minimo'] ?? 0));
                 }
             }
 

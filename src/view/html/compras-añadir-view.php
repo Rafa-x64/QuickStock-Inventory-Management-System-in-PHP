@@ -63,7 +63,7 @@
 
                                 <div class="col-md-3 py-2 position-relative">
                                     <label class="Quick-title" for="compra_numero_factura">Número de Factura</label>
-                                    <input type="text" id="compra_numero_factura" name="numero_factura" class="Quick-form-input" required>
+                                    <input type="text" id="compra_numero_factura" name="numero_factura" class="Quick-form-input" placeholder="(Opcional)">
                                     <div class="invalid-tooltip"></div>
                                 </div>
 
