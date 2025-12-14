@@ -149,7 +149,7 @@ class reportes_C extends mainModel
                     p.nombre as producto,
                     p.codigo_barra,
                     SUM(dv.cantidad) as total_vendido,
-                    SUM(dv.subtotal) as total_ingresos
+                    SUM(dv.cantidad * dv.precio_unitario) as total_ingresos
                 FROM ventas.detalle_venta dv
                 JOIN inventario.producto p ON dv.id_producto = p.id_producto
                 JOIN ventas.venta v ON dv.id_venta = v.id_venta
@@ -197,10 +197,11 @@ class reportes_C extends mainModel
                     TO_CHAR(v.fecha, 'DD/MM/YYYY HH12:MI AM') as fecha_hora,
                     COALESCE(c.nombre || ' ' || c.apellido, 'Cliente Genérico') as cliente,
                     u.nombre || ' ' || u.apellido as vendedor,
-                    v.total
+                    COALESCE(SUM(dv.cantidad * dv.precio_unitario), 0) as total
                 FROM ventas.venta v
                 LEFT JOIN core.cliente c ON v.id_cliente = c.id_cliente
                 JOIN seguridad_acceso.usuario u ON v.id_usuario = u.id_usuario
+                LEFT JOIN ventas.detalle_venta dv ON v.id_venta = dv.id_venta
                 WHERE v.fecha BETWEEN $1 AND $2
                 AND v.activo = true";
 
@@ -209,7 +210,7 @@ class reportes_C extends mainModel
             $params[] = $id_sucursal;
         }
 
-        $sql .= " ORDER BY v.fecha DESC";
+        $sql .= " GROUP BY v.id_venta, v.fecha, c.nombre, c.apellido, u.nombre, u.apellido ORDER BY v.fecha DESC";
 
         $prepare = pg_prepare(self::$conn, $consulta, $sql);
         if (!$prepare) {
