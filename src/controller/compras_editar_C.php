@@ -71,6 +71,7 @@ class compras_editar_C extends mainModel
                 $productoLimpio['cantidad']      = (int) $this->limpiar_cadena($producto['cantidad'] ?? 0);
                 $productoLimpio['precio_compra'] = (float) $this->limpiar_cadena($producto['precio_compra'] ?? 0);
                 $productoLimpio['precio_venta']  = (float) $this->limpiar_cadena($producto['precio_venta'] ?? 0);
+                $productoLimpio['minimo']        = (int) $this->limpiar_cadena($producto['minimo'] ?? 0);
 
                 // --- Lógica de Color ---
                 $id_color_existente = $this->limpiar_cadena($producto['id_color'] ?? '');
@@ -107,6 +108,10 @@ class compras_editar_C extends mainModel
 
                 if ($productoLimpio['precio_venta'] < $productoLimpio['precio_compra']) {
                     return ["error" => "El precio de venta no puede ser menor al precio de compra para el producto: " . $productoLimpio['nombre']];
+                }
+
+                if ($productoLimpio['minimo'] < 0) {
+                    return ["success" => false, "error" => "El stock mínimo no puede ser negativo para el producto: " . $productoLimpio['nombre']];
                 }
 
                 $productosProcesados[] = $productoLimpio;

@@ -137,70 +137,72 @@ function generarEstructuraProducto(index, detalle = null) {
     const precioCompra = isEditing ? detalle.precio_compra : '';
     const precioVenta = isEditing ? detalle.precio_venta : '';
     const cantidad = isEditing ? detalle.cantidad : '';
-    // El subtotal se calcula en JS, pero precargamos el valor inicial
-    const subtotalCalculado = isEditing ? (parseFloat(detalle.cantidad) * parseFloat(detalle.precio_compra)).toFixed(2) : '0.00';
+    const minimo = (isEditing && detalle.minimo !== null && detalle.minimo !== undefined) ? detalle.minimo : '1';
+    // El subtotal se calcula en JS (solo logicamente ahora)
 
     const html = `
-        <div class="Quick-form p-3 border-bottom producto-detalle-fila position-relative" data-index="${index}">
+        <div class="row Quick-form-product p-4 mb-4 border border-info rounded-3 producto-detalle-fila position-relative" data-index="${index}">
             <input type="hidden" name="productos[${index}][id_detalle_compra]" value="${idDetalle}">
             <input type="hidden" name="productos[${index}][id_producto_existente]" value="${isEditing ? detalle.id_producto : ''}">
             
-            <div class="row">
-                <div class="col-lg-4 col-md-4 py-2 position-relative">
-                    <label class="Quick-title">Código de Barras / SKU</label>
-                    <input type="text" name="productos[${index}][codigo_barra]" class="Quick-form-input" value="${codigoBarra}" required>
-                </div>
-                <div class="col-lg-4 col-md-4 py-2 position-relative">
-                    <label class="Quick-title">Nombre del Producto</label>
-                    <input type="text" name="productos[${index}][nombre]" class="Quick-form-input producto-nombre" value="${nombre}" required>
-                </div>
-                <div class="col-lg-4 col-md-4 py-2 position-relative">
-                    <label class="Quick-title">Categoría</label>
-                    <select name="productos[${index}][id_categoria]" class="Quick-form-input producto-categoria" required>
-                        ${generarOpcionesSelect(datosBaseProducto.categorias, 'id_categoria', 'nombre', idCategoria)}
-                    </select>
-                </div>
+            <div class="col-12 d-flex justify-content-between align-items-center">
+                <h5 class="Quick-title">Producto #${index}</h5>
+                <button type="button" class="btn btn-danger btn-sm btn-eliminar-producto" title="Eliminar Producto">
+                    <i class="bi bi-trash"></i> Eliminar
+                </button>
             </div>
+            <hr>
             
-            <div class="row">
-                <div class="col-lg-4 col-md-4 py-2 position-relative">
-                    <label class="Quick-title">Color</label>
-                    <select name="productos[${index}][id_color]" class="Quick-form-input" required>
-                        ${generarOpcionesSelect(datosBaseProducto.colores, 'id_color', 'nombre', idColor)}
-                    </select>
-                    </div>
-                <div class="col-lg-4 col-md-4 py-2 position-relative">
-                    <label class="Quick-title">Talla</label>
-                    <select name="productos[${index}][id_talla]" class="Quick-form-input" required>
-                        ${generarOpcionesSelect(datosBaseProducto.tallas, 'id_talla', 'rango_talla', idTalla)}
-                    </select>
-                    </div>
-                <div class="col-lg-4 col-md-4 py-2 position-relative">
-                    <label class="Quick-title">Cantidad a Comprar</label>
-                    <input type="number" min="1" name="productos[${index}][cantidad]" class="Quick-form-input producto-cantidad" value="${cantidad}" required>
-                </div>
+            <div class="col-md-3 d-flex flex-column py-2 position-relative">
+                <label class="Quick-title">Código de Barras / SKU</label>
+                <input type="text" name="productos[${index}][codigo_barra]" class="Quick-form-input" value="${codigoBarra}" required>
             </div>
 
-            <div class="row align-items-end">
-                <div class="col-lg-4 col-md-4 py-2 position-relative">
-                    <label class="Quick-title lbl-precio-compra">Precio Compra Unitario</label>
-                    <input type="number" step="0.01" min="0" name="productos[${index}][precio_compra]" class="Quick-form-input producto-precio" value="${precioCompra}" required>
-                </div>
-                <div class="col-lg-4 col-md-4 py-2 position-relative">
-                    <label class="Quick-title lbl-precio-venta">Precio Venta Sugerido</label>
-                    <input type="number" step="0.01" min="0" name="productos[${index}][precio_venta]" class="Quick-form-input producto-precio-venta" value="${precioVenta}" required>
-                    <div class="invalid-tooltip">El precio de venta no puede ser menor al de compra.</div>
-                </div>
-                <div class="col-lg-4 col-md-4 py-2 d-flex justify-content-between align-items-center">
-                    <div>
-                        <label class="Quick-title">Subtotal de Producto</label>
-                        <input type="text" class="Quick-form-input producto-subtotal" readonly value="${subtotalCalculado}">
-                    </div>
-                    
-                    <button type="button" class="btn btn-danger btn-sm btn-eliminar-producto ms-3" title="Eliminar Producto" style="align-self: flex-end;">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
+            <div class="col-md-5 d-flex flex-column py-2 position-relative">
+                <label class="Quick-title">Nombre del Producto</label>
+                <input type="text" name="productos[${index}][nombre]" class="Quick-form-input producto-nombre" value="${nombre}" required>
+            </div>
+            
+            <div class="col-md-4 d-flex flex-column py-2 position-relative">
+                <label class="Quick-title">Categoría</label>
+                <select name="productos[${index}][id_categoria]" class="Quick-form-input producto-categoria" required>
+                    ${generarOpcionesSelect(datosBaseProducto.categorias, 'id_categoria', 'nombre', idCategoria)}
+                </select>
+            </div>
+
+            <div class="col-md-4 d-flex flex-column py-2 position-relative">
+                <label class="Quick-title">Color</label>
+                <select name="productos[${index}][id_color]" class="Quick-form-input" required>
+                    ${generarOpcionesSelect(datosBaseProducto.colores, 'id_color', 'nombre', idColor)}
+                </select>
+            </div>
+
+            <div class="col-md-4 d-flex flex-column py-2 position-relative">
+                <label class="Quick-title">Talla</label>
+                <select name="productos[${index}][id_talla]" class="Quick-form-input" required>
+                    ${generarOpcionesSelect(datosBaseProducto.tallas, 'id_talla', 'rango_talla', idTalla)}
+                </select>
+            </div>
+
+            <div class="col-md-4 d-flex flex-column py-2 position-relative">
+                <label class="Quick-title">Cantidad a Comprar</label>
+                <input type="number" min="1" name="productos[${index}][cantidad]" class="Quick-form-input producto-cantidad" value="${cantidad}" required>
+            </div>
+
+            <div class="col-md-6 d-flex flex-column py-2 position-relative">
+                <label class="Quick-title lbl-precio-compra">Precio Compra Unitario</label>
+                <input type="number" step="0.01" min="0" name="productos[${index}][precio_compra]" class="Quick-form-input producto-precio" value="${precioCompra}" required>
+            </div>
+
+            <div class="col-md-6 d-flex flex-column py-2 position-relative">
+                <label class="Quick-title lbl-precio-venta">Precio Venta Sugerido</label>
+                <input type="number" step="0.01" min="0" name="productos[${index}][precio_venta]" class="Quick-form-input producto-precio-venta" value="${precioVenta}" required>
+                <div class="invalid-tooltip">El precio de venta no puede ser menor al de compra.</div>
+            </div>
+
+            <div class="col-md-6 d-flex flex-column py-2 position-relative">
+                <label class="Quick-title">Stock Mínimo</label>
+                <input type="number" min="0" step="1" name="productos[${index}][minimo]" class="Quick-form-input" value="${minimo}" required>
             </div>
         </div>
     `;
@@ -274,8 +276,8 @@ function calcularTotalesGlobales() {
 
         const subtotalFila = cantidad * precio;
 
-        // Actualizar el subtotal de la fila (solo visual)
-        fila.querySelector('.producto-subtotal').value = subtotalFila.toFixed(2);
+        // Actualizar el subtotal de la fila (solo visual) - FUNCION ELIMINADA (Ya no hay input subtotal por fila)
+        // fila.querySelector('.producto-subtotal').value = subtotalFila.toFixed(2);
 
         subtotalGlobal += subtotalFila;
     });

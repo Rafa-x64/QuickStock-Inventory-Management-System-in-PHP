@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         compra_id_proveedor: { min: 1, mensaje: "Debe seleccionar proveedor.", isSelect: true },
         compra_id_sucursal: { min: 1, mensaje: "Debe seleccionar sucursal.", isSelect: true },
         compra_id_usuario: { min: 1, mensaje: "Debe seleccionar empleado.", isSelect: true },
-        compra_numero_factura: { regex: /^[A-Za-z0-9\-]{1,}$/, mensaje: "Factura obligatoria." },
+        compra_numero_factura: { regex: /^[A-Za-z0-9\-]{0,}$/, mensaje: "Factura (Opcional)." },
         compra_id_moneda: { min: 1, mensaje: "Debe seleccionar moneda.", isSelect: true },
 
         // Reglas del Módulo de Producto (Las de color/talla aplican al campo activo)
@@ -84,6 +84,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         prod_rango_talla: { regex: /^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ\s\-\/]{1,}$/, mensaje: "Escriba una talla válida." },
 
         prod_cantidad: { min: 1, mensaje: "Cantidad mínima 1" },
+        prod_minimo: { min: 0, mensaje: "Mínimo debe ser >= 0 (0 = sin alerta)" },
         prod_precio_compra: { min: 0.01, mensaje: "Precio compra mínimo 0.01" },
         prod_precio_venta: { min: 0.01, mensaje: "Precio venta mínimo 0.01" }
     };
@@ -298,6 +299,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <input type="number" id="prod_precio_venta_${index}" name="productos[${index}][precio_venta]" class="Quick-form-input prod-campo-requerido" step="0.01" min="0.01" value="0.01" required>
                     <div class="invalid-tooltip">Precio de venta obligatorio y min 0.01.</div>
                 </div>
+
+                <div class="col-md-6 d-flex flex-column py-2 position-relative">
+                    <label for="prod_minimo_${index}" class="form-label Quick-title">Stock Mínimo</label>
+                    <input type="number" id="prod_minimo_${index}" name="productos[${index}][minimo]" class="Quick-form-input" step="1" min="0" value="1" required>
+                    <div class="invalid-tooltip">Mínimo debe ser >= 0.</div>
+                </div>
             </div>
         `;
     }
@@ -373,6 +380,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         module.querySelector(`#prod_id_categoria_${index}`).value = producto.id_categoria || '';
         module.querySelector(`#prod_precio_compra_${index}`).value = producto.precio_compra || '0.00';
         module.querySelector(`#prod_precio_venta_${index}`).value = producto.precio_venta || '0.00';
+        // Si el producto ya tiene un mínimo definido, úsalo, si no, default a 1 (pero editable)
+        module.querySelector(`#prod_minimo_${index}`).value = (producto.minimo !== undefined && producto.minimo !== null) ? producto.minimo : '1';
 
         // 2. Manejar Color (Si existe ID, cambiamos a modo SELECT y seleccionamos)
         if (producto.id_color) {
