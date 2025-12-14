@@ -31,8 +31,8 @@ $accion = $_POST["accion"] ?? null;
             <!-- Formulario Manual -->
             <div class="row d-flex flex-column justify-content-center align-items-center">
                 <div class="col-12 col-md-8 Quick-widget">
-                    <div class="col-12 Quick-form px-5 rounded-2">
-                        <h4 class="Quick-title mb-3">Establecer Tasa Manual</h4>
+                    <div class="col-12 Quick-form px-5 my-2 rounded-2">
+                        <h4 class="Quick-title mb-3 pt-3">Establecer Tasa Manual</h4>
 
                         <form id="form-tasa-manual" class="form">
                             <div class="row">
