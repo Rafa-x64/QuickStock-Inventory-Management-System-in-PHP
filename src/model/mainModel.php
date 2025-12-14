@@ -12,7 +12,7 @@ class mainModel
 
         if (!$con) {
             error_log("Error de conexión a la base de datos PostgreSQL.");
-            exit();
+            throw new Exception("Error Crítico de Base de Datos: No se pudo conectar a PostgreSQL. Verifique si el servicio está corriendo y las credenciales en SERVER.php");
         }
 
         return $con;
