@@ -15,7 +15,7 @@ import { api } from "/DEV/PHP/QuickStock/src/api/client/index.js";
  * @param {Object} [params={}] - Parámetros adicionales para la llamada API.
  * @returns {Promise<Array|null>} El arreglo de datos o null si hay error.
  */
-async function cargarSelect(selectId, apiAction, dataKey, idField, displayField, defaultOptionText, params = {}) {
+async function cargarSelect(selectId, apiAction, dataKey, idField, displayField, defaultOptionText, maxLength = 50, params = {}) {
     const selectElement = document.getElementById(selectId);
     if (!selectElement) {
         console.error(`Elemento Select no encontrado: #${selectId}`);
@@ -33,8 +33,13 @@ async function cargarSelect(selectId, apiAction, dataKey, idField, displayField,
         if (datos.length > 0) {
             datos.forEach(item => {
                 const displayText = item[displayField] || 'N/A';
+                let finalDisplay = displayText;
+                if (displayText.length > maxLength) {
+                    finalDisplay = displayText.substring(0, maxLength) + '...';
+                }
                 // CORRECTO: El ID de la BD se usa como valor numérico (value) para que PHP lo capture.
-                selectElement.innerHTML += `<option value="${item[idField]}">${displayText}</option>`;
+                // Usamos title para mostrar el nombre completo al pasar el mouse
+                selectElement.innerHTML += `<option value="${item[idField]}" title="${displayText}">${finalDisplay}</option>`;
             });
         }
 
@@ -54,7 +59,8 @@ async function cargarSelectsCompraPrincipal() {
         "proveedor", // <-- Confirmado por tu PHP
         "id_proveedor", // <-- Confirmado por tu DB
         "nombre",
-        "Seleccione un proveedor..."
+        "Seleccione un proveedor...",
+        40
     );
 
     // 2. Sucursales (compra_id_sucursal)
@@ -65,7 +71,8 @@ async function cargarSelectsCompraPrincipal() {
         "filas",
         "id_sucursal",
         "nombre",
-        "Seleccione una sucursal..."
+        "Seleccione una sucursal...",
+        40
     );
 
     // 3. Moneda (compra_id_moneda)
@@ -76,7 +83,8 @@ async function cargarSelectsCompraPrincipal() {
         "monedas",
         "id_moneda",
         "codigo", // Asumo que el campo a mostrar es 'codigo'
-        "Seleccione una moneda..."
+        "Seleccione una moneda...",
+        40
     );
 
     // [NUEVO] Listener para actualizar etiquetas de precio según moneda
@@ -111,6 +119,7 @@ async function cargarSelectsCompraPrincipal() {
         "id_usuario",
         "nombre_completo",
         "Seleccione un empleado...",
+        35
     );
 
     // NOTA: El Estado ("compra_estado") no necesita carga de API, ya está en el HTML.

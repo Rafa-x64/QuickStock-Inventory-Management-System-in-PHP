@@ -160,6 +160,13 @@
         color: inherit;
     }
 
+    select.Quick-form-input {
+        max-width: 100%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
     .Quick-select {
         /* --- Estilos Base replicando .Quick-form-input --- */
         background-color: var(--red-Quick);
@@ -426,6 +433,13 @@
         box-shadow: 0 0 0 1000px var(--blue-Quick) inset !important;
         -webkit-text-fill-color: var(--default-font-color) !important;
         caret-color: var(--default-font-color) !important;
+    }
+
+    select.Quick-form-input {
+        max-width: 100%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
     }
 
     .Quick-select {

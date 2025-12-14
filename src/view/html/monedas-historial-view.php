@@ -18,9 +18,9 @@
 
             <div class="row">
                 <div class="col-12 Quick-widget p-4 rounded-2">
-                    <div class="table-responsive">
-                        <table class="table table-hover" id="tabla_historial_tasas">
-                            <thead class="table-light">
+                    <div class="">
+                        <table class="Quick-table" id="tabla_historial_tasas">
+                            <thead class="">
                                 <tr>
                                     <th>Fecha</th>
                                     <th>Moneda</th>

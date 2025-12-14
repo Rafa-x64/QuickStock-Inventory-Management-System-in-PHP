@@ -39,7 +39,7 @@
 
                                 <div class="col-md-3 py-2 position-relative">
                                     <label class="Quick-title" for="compra_id_proveedor">Proveedor</label>
-                                    <select id="compra_id_proveedor" name="id_proveedor" class="Quick-form-input" required>
+                                    <select id="compra_id_proveedor" name="id_proveedor" class="Quick-form-input w-100" required>
                                         <option value="">Seleccione un proveedor...</option>
                                     </select>
                                     <div class="invalid-tooltip"></div>
@@ -47,7 +47,7 @@
 
                                 <div class="col-md-3 py-2 position-relative ">
                                     <label class="Quick-title" for="compra_id_sucursal">Sucursal</label>
-                                    <select id="compra_id_sucursal" name="id_sucursal" class="Quick-form-input" required>
+                                    <select id="compra_id_sucursal" name="id_sucursal" class="Quick-form-input w-100" required>
                                         <option value="">Seleccione una sucursal...</option>
                                     </select>
                                     <div class="invalid-tooltip"></div>
@@ -55,7 +55,7 @@
 
                                 <div class="col-md-3 py-2 position-relative">
                                     <label class="Quick-title" for="compra_id_usuario">Empleado Responsable</label>
-                                    <select id="compra_id_usuario" name="id_usuario" class="Quick-form-input" required>
+                                    <select id="compra_id_usuario" name="id_usuario" class="Quick-form-input w-100" required>
                                         <option value="">Seleccione un empleado...</option>
                                     </select>
                                     <div class="invalid-tooltip"></div>
@@ -69,7 +69,7 @@
 
                                 <div class="col-md-3 py-2 position-relative">
                                     <label class="Quick-title" for="compra_id_moneda">Moneda</label>
-                                    <select id="compra_id_moneda" name="id_moneda" class="Quick-form-input" required>
+                                    <select id="compra_id_moneda" name="id_moneda" class="Quick-form-input w-100" required>
                                         <option value="">Seleccione una moneda...</option>
                                     </select>
                                     <div class="invalid-tooltip"></div>

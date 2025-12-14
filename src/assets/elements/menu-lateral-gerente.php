@@ -153,8 +153,6 @@
                                 <a href="monedas-tasas-activas" class="ms-3">Ver Tasas Activas</a>
                                 <a href="monedas-añadir-tasas" class="ms-3">Añadir Tasas</a>
                                 <a href="monedas-historial" class="ms-3">Historial de Cambios en Tasas</a>
-                                <a href="monedas-añadir" class="ms-3">Añadir Monedas</a>
-                                <a href="monedas-listado" class="ms-3">Ver Lista de Monedas</a>
                             </div>
                         </details>
                     </div>
@@ -329,8 +327,6 @@
                         <a href="monedas-tasas-activas" class="ms-3">Ver Tasas Activas</a>
                         <a href="monedas-añadir-tasas" class="ms-3">Añadir Tasas</a>
                         <a href="monedas-historial" class="ms-3">Historial de Cambios en Tasas</a>
-                        <a href="monedas-añadir" class="ms-3">Añadir Monedas</a>
-                        <a href="monedas-listado" class="ms-3">Ver Lista de Monedas</a>
                     </div>
                 </details>
             </div>
