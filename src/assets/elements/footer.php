@@ -28,23 +28,33 @@
                         <p>Navegacion rapida</p>
                         <ul class="h-100">
                             <li class="list-group-item mt-4">
-                                <a href="" class="text-decoration-none p-concept">
+                                <a href="#bienvenida" class="text-decoration-none p-concept">
                                     <h6 class="">INICIO</h6>
                                 </a>
                             </li>
                             <li class="list-group-item mt-4">
-                                <a href="" class="text-decoration-none p-concept">
+                                <a href="#acerca-de-nosotros" class="text-decoration-none p-concept">
                                     <h6 class="">ACERCA DE NOSOTROS</h6>
                                 </a>
                             </li>
                             <li class="list-group-item mt-4">
-                                <a href="" class="text-decoration-none p-concept">
-                                    <h6 class="">GALERIA</h6>
+                                <a href="#beneficios" class="text-decoration-none p-concept">
+                                    <h6 class="">BENEFICIOS</h6>
                                 </a>
                             </li>
                             <li class="list-group-item mt-4">
-                                <a href="" class="text-decoration-none p-concept">
-                                    <h6 class="">CONTACTO</h6>
+                                <a href="#comparativa" class="text-decoration-none p-concept">
+                                    <h6 class="">COMPARATIVA</h6>
+                                </a>
+                            </li>
+                            <li class="list-group-item mt-4">
+                                <a href="#testimonios" class="text-decoration-none p-concept">
+                                    <h6 class="">TESTIMONIOS</h6>
+                                </a>
+                            </li>
+                            <li class="list-group-item mt-4">
+                                <a href="docs/manual_usuario.pdf" target="_blank" class="text-decoration-none p-concept">
+                                    <h6 class="">MANUAL DE USUARIO</h6>
                                 </a>
                             </li>
                         </ul>

@@ -137,41 +137,43 @@
                 <h2 class="text-uppercase text-center Quick-title">Testimonios</h2>
                 <p class="p-subtitle text-center">Aplicaciones reales, resultados medibles</p>
             </div>
-            <!--<div class="col-12 col-md-8 my-5">
-                <div id="carouselCombinado" class="carousel slide carousel-fade" data-bs-ride="carousel">
+
+            <div class="col-12 my-5">
+                <div id="carouselCombinado" class="carousel slide carousel-fade mx-3" data-bs-ride="carousel" data-bs-interval="3000">
                     <div class="carousel-indicators">
                         <button type="button" data-bs-target="#carouselCombinado" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
                         <button type="button" data-bs-target="#carouselCombinado" data-bs-slide-to="1" aria-label="Slide 2"></button>
                         <button type="button" data-bs-target="#carouselCombinado" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                        <button type="button" data-bs-target="#carouselCombinado" data-bs-slide-to="3" aria-label="Slide 4"></button>
                     </div>
 
-                    <div class="carousel-inner">
+                    <div class="carousel-inner rounded-3 shadow-lg">
                         <div class="carousel-item active">
-                            <img src="https://via.placeholder.com/800x400/94B49F/FFFFFF?text=Primera+Imagen" class="d-block w-100" alt="Descripción de la primera imagen">
-                            <div class="carousel-caption d-none d-md-block">
-                                <h5>Simulación de usuario académico</h5>
-                                <p>“<b>QuickStock</b> me permitió organizar el inventario sin errores y mejorar la comunicación con proveedores.”</p>
+                            <img src="assets/images/testimonios_1.png" class="d-block w-100" alt="Testimonio usuario académico">
+                            <div class="carousel-caption d-block text-start bg-dark bg-opacity-75 p-3 rounded">
+                                <h5 class="fs-6 fw-bold text-white">Simulación de usuario académico</h5>
+                                <p class="small m-0 text-white">“<b>QuickStock</b> me permitió organizar el inventario sin errores y mejorar la comunicación con proveedores.”</p>
                             </div>
                         </div>
                         <div class="carousel-item">
-                            <img src="https://via.placeholder.com/800x400/ECB390/FFFFFF?text=Segunda+Imagen" class="d-block w-100" alt="Descripción de la segunda imagen">
-                            <div class="carousel-caption d-none d-md-block">
-                                <h5>Caso de uso: módulo Reparto</h5>
-                                <p>“La automatización del reparto nos ahorró tiempo y redujo reclamos.”</p>
+                            <img src="assets/images/testimonios_2.png" class="d-block w-100" alt="Testimonio Módulo de Pago">
+                            <div class="carousel-caption d-block text-start bg-dark bg-opacity-75 p-3 rounded">
+                                <h5 class="fs-6 fw-bold text-white">Módulo de Pago y Confirmación</h5>
+                                <p class="small m-0 text-white">“El sistema de pagos fue <b>fundamental</b> para aceptar diferentes monedas y calcular las tasas automáticamente. Ahora cerramos ventas mucho más rápido."</p>
                             </div>
                         </div>
                         <div class="carousel-item">
-                            <img src="https://via.placeholder.com/800x400/DF7861/FFFFFF?text=Tercera+Imagen" class="d-block w-100" alt="Descripción de la tercera imagen">
-                            <div class="carousel-caption d-none d-md-block">
-                                <h5>Caso de uso: módulo Ventas</h5>
-                                <p>“Con el módulo de ventas, pudimos aplicar descuentos personalizados y controlar el stock sin interrupciones.”</p>
+                            <img src="assets/images/testimonios_3.png" class="d-block w-100" alt="Testimonio Gestión de Personal">
+                            <div class="carousel-caption d-block text-start bg-dark bg-opacity-75 p-3 rounded">
+                                <h5 class="fs-6 fw-bold text-white">Gestión de Personal y Roles</h5>
+                                <p class="small m-0 text-white">“Gestionar empleados, sus roles y toda su información desde un solo lugar es intuitivo y rápido. ¡Las operaciones diarias son mucho más fluidas!”</p>
                             </div>
                         </div>
                         <div class="carousel-item">
-                            <img src="https://via.placeholder.com/800x400/DF7861/FFFFFF?text=Cuarta+Imagen" class="d-block w-100" alt="Descripción de la tercera imagen">
-                            <div class="carousel-caption d-none d-md-block">
-                                <h5>Simulación de usuario técnico</h5>
-                                <p>“La integración con tasas oficiales nos facilitó la facturación multimoneda y evitó errores contables.”</p>
+                            <img src="assets/images/testimonios_4.png" class="d-block w-100" alt="Testimonio Tasas de Cambio">
+                            <div class="carousel-caption d-block text-start bg-dark bg-opacity-75 p-3 rounded">
+                                <h5 class="fs-6 fw-bold text-white">Tasas de Cambio Actualizadas</h5>
+                                <p class="small m-0 text-white">“La <b>sincronización automática</b> de las tasas oficiales garantizó que nuestros precios y facturación siempre estuvieran al día.”</p>
                             </div>
                         </div>
                     </div>
@@ -185,7 +187,8 @@
                         <span class="visually-hidden">Next</span>
                     </button>
                 </div>
-            </div>-->
+            </div>
+
             <div class="col-12 py-3">
                 <p class="p-concept text-center">Los resultados hablan por sí solos. En esta sección, verás cómo <b>QuickStock</b> ha transformado procesos reales: desde la automatización del reparto hasta la trazabilidad de pedidos y la gestión eficiente de proveedores. Cada caso de uso demuestra cómo el sistema se adapta a distintos perfiles y necesidades, mientras los testimonios reflejan mejoras concretas en tiempo, precisión y control. Es la evidencia viva de que <b>QuickStock</b> no solo funciona, sino que marca la diferencia.</p>
             </div>
