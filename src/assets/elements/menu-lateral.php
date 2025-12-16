@@ -46,6 +46,11 @@
                             <a href="#testimonios" class="text-decoration-none menu-lateral-custom-link">TESTIMONIOS</a>
                         </h6>
                     </li>
+                    <li class="list-group-item mt-4">
+                        <h6 class="text-center">
+                            <a href="docs/manual_usuario.pdf" class="text-decoration-none menu-lateral-custom-link" target="_blank">MANUAL DE USUARIO</a>
+                        </h6>
+                    </li>
                 </ul>
             </div>
         </div>
